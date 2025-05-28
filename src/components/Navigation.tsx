@@ -1,9 +1,17 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, User, Search } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ShoppingCart, User, Search, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface NavigationProps {
   brand?: 'bhyross' | 'deecodes';
@@ -11,7 +19,9 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ brand }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { getTotalItems, toggleCart } = useCart();
+  const { user, signOut, isAdmin } = useAuth();
   const totalItems = getTotalItems();
 
   const brandColors = {
@@ -25,6 +35,16 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
     { name: 'Monk Strap', path: 'monk-strap' },
     { name: 'Loafer', path: 'loafer' }
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const handleSearch = () => {
+    // For now, we'll just show an alert. You can implement search functionality later
+    alert('Search functionality coming soon!');
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200">
@@ -68,26 +88,60 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
+            <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={handleSearch}>
               <Search className="h-4 w-4" />
             </Button>
             
-            <Button variant="ghost" size="sm">
-              <User className="h-4 w-4" />
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="font-medium">
+                    {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin">Admin Dashboard</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
             
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={toggleCart}
               className="relative"
+              asChild
             >
-              <ShoppingCart className="h-4 w-4" />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
+              <Link to="/cart">
+                <ShoppingCart className="h-4 w-4" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
             </Button>
           </div>
         </div>
