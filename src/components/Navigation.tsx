@@ -67,7 +67,7 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
             </span>
           </Link>
 
-          {/* Category Navigation */}
+          {/* Category Navigation and Dashboard Button */}
           {brand && (
             <div className="hidden md:flex items-center space-x-8">
               {categories.map((category) => (
@@ -83,6 +83,12 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
                   {category.name}
                 </Link>
               ))}
+              <Link
+                to="/"
+                className="text-sm font-medium text-neutral-600 hover:text-neutral-900 px-3 py-1 border border-neutral-300 rounded-md transition-colors duration-200"
+              >
+                Dashboard
+              </Link>
             </div>
           )}
 
@@ -99,7 +105,7 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
                     <User className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="z-50 bg-white border border-neutral-200 shadow-lg">
                   <DropdownMenuItem className="font-medium">
                     {user.email}
                   </DropdownMenuItem>
