@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -9,11 +8,17 @@ import { useProducts } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
 
 const CategoryPage = () => {
-  const { category } = useParams();
+  const { category: categoryParam } = useParams();
   const brand = location.pathname.includes('/bhyross/') ? 'bhyross' : 'deecodes';
   const { addToCart } = useCart();
   const { toast } = useToast();
   
+  // Type guard to ensure category is valid
+  const isValidCategory = (cat: string | undefined): cat is 'oxford' | 'derby' | 'monk-strap' | 'loafer' => {
+    return cat === 'oxford' || cat === 'derby' || cat === 'monk-strap' || cat === 'loafer';
+  };
+  
+  const category = isValidCategory(categoryParam) ? categoryParam : undefined;
   const { data: products = [], isLoading } = useProducts(brand, category);
 
   const handleAddToCart = (product: any) => {
@@ -42,7 +47,7 @@ const CategoryPage = () => {
     }
   };
 
-  const currentCategory = categoryInfo[category as keyof typeof categoryInfo];
+  const currentCategory = category ? categoryInfo[category] : undefined;
 
   if (isLoading) {
     return (
@@ -67,7 +72,7 @@ const CategoryPage = () => {
             <span className="mx-2">/</span>
             <Link to={`/${brand}`} className="hover:text-neutral-900 capitalize">{brand}</Link>
             <span className="mx-2">/</span>
-            <span className="text-neutral-900 capitalize">{category?.replace('-', ' ')}</span>
+            <span className="text-neutral-900 capitalize">{categoryParam?.replace('-', ' ')}</span>
           </nav>
         </div>
       </div>
@@ -77,10 +82,10 @@ const CategoryPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl font-bold text-neutral-900 mb-4">
-              {currentCategory?.title}
+              {currentCategory?.title || 'Products'}
             </h1>
             <p className="text-lg text-neutral-600 mb-8">
-              {currentCategory?.description}
+              {currentCategory?.description || 'Browse our collection of premium footwear.'}
             </p>
             <div className="flex items-center justify-center space-x-8 text-sm text-neutral-500">
               <span>Free Shipping on orders over ₹{brand === 'bhyross' ? '10,000' : '2,500'}</span>
@@ -134,7 +139,7 @@ const CategoryPage = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Link to={`/${brand}/${category}/${product.id}`}>
+                    <Link to={`/${brand}/${categoryParam}/${product.id}`}>
                       <Button variant="outline" className="w-full">
                         View Details
                       </Button>
