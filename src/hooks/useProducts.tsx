@@ -17,7 +17,7 @@ export interface Product {
   is_active: boolean;
 }
 
-export const useProducts = (brand?: string, category?: string) => {
+export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
   return useQuery({
     queryKey: ['products', brand, category],
     queryFn: async () => {
@@ -26,11 +26,11 @@ export const useProducts = (brand?: string, category?: string) => {
         .select('*')
         .eq('is_active', true);
 
-      if (brand) {
+      if (brand && (brand === 'bhyross' || brand === 'deecodes')) {
         query = query.eq('brand', brand);
       }
 
-      if (category) {
+      if (category && ['oxford', 'derby', 'monk-strap', 'loafer'].includes(category)) {
         query = query.eq('category', category);
       }
 

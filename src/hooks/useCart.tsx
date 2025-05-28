@@ -1,8 +1,8 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export interface CartItem {
   id: string;
@@ -25,6 +25,7 @@ export const useCart = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const { data: cartItems = [], isLoading } = useQuery({
     queryKey: ['cart', user?.id],
@@ -176,14 +177,20 @@ export const useCart = () => {
     return cartItems.reduce((total, item) => total + (item.products.price * item.quantity), 0);
   };
 
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
+
   return {
     cartItems,
     isLoading,
+    isCartOpen,
     addToCart: addToCartMutation.mutate,
     updateQuantity: updateQuantityMutation.mutate,
     removeFromCart: removeFromCartMutation.mutate,
     clearCart: clearCartMutation.mutate,
     getTotalItems,
     getTotalPrice,
+    toggleCart,
   };
 };
