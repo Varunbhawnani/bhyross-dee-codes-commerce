@@ -4,13 +4,48 @@ import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 
 const CartPage = () => {
-  const { state, updateQuantity, removeItem, clearCart, getTotalPrice } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, clearCart, getTotalPrice, isLoading } = useCart();
+  const { user } = useAuth();
 
-  if (state.items.length === 0) {
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="pt-24 pb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <ShoppingBag className="h-24 w-24 text-neutral-400 mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-neutral-900 mb-4">Please sign in</h1>
+            <p className="text-lg text-neutral-600 mb-8">
+              Sign in to view your cart and start shopping
+            </p>
+            <Link to="/auth">
+              <Button className="bg-neutral-900 hover:bg-neutral-800">
+                Sign In
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="pt-24 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-white">
         <Navigation />
@@ -50,24 +85,24 @@ const CartPage = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {state.items.map((item) => (
-                <Card key={`${item.id}-${item.size}`} className="p-6">
+              {cartItems.map((item) => (
+                <Card key={item.id} className="p-6">
                   <div className="flex items-center space-x-4">
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.products.images[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center'}
+                      alt={item.products.name}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
                     
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg text-neutral-900 mb-1">
-                        {item.name}
+                        {item.products.name}
                       </h3>
                       <p className="text-sm text-neutral-600 mb-2">
-                        Brand: <span className="capitalize font-medium">{item.brand}</span> | Size: {item.size}
+                        Brand: <span className="capitalize font-medium">{item.products.brand}</span> | Size: {item.size}
                       </p>
                       <p className="text-lg font-bold text-neutral-900">
-                        ₹{item.price.toLocaleString()}
+                        ₹{item.products.price.toLocaleString()}
                       </p>
                     </div>
                     
@@ -75,7 +110,7 @@ const CartPage = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(`${item.id}-${item.size}`, item.quantity - 1)}
+                        onClick={() => updateQuantity({ id: item.id, quantity: item.quantity - 1 })}
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-4 w-4" />
@@ -86,7 +121,7 @@ const CartPage = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(`${item.id}-${item.size}`, item.quantity + 1)}
+                        onClick={() => updateQuantity({ id: item.id, quantity: item.quantity + 1 })}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -95,7 +130,7 @@ const CartPage = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => removeItem(`${item.id}-${item.size}`)}
+                      onClick={() => removeFromCart(item.id)}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -105,7 +140,7 @@ const CartPage = () => {
               ))}
               
               <div className="flex justify-between items-center pt-4">
-                <Button variant="outline" onClick={clearCart}>
+                <Button variant="outline" onClick={() => clearCart()}>
                   Clear Cart
                 </Button>
                 <Link to="/">

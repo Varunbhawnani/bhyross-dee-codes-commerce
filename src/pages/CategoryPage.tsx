@@ -4,86 +4,22 @@ import { useParams, Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/hooks/useCart';
+import { useProducts } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
 
 const CategoryPage = () => {
   const { category } = useParams();
   const brand = location.pathname.includes('/bhyross/') ? 'bhyross' : 'deecodes';
-  const { addItem } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
-
-  // Mock product data
-  const products = [
-    {
-      id: '1',
-      name: `Classic ${category?.replace('-', ' ')} Shoe`,
-      price: brand === 'bhyross' ? 15999 : 2999,
-      originalPrice: brand === 'bhyross' ? 18999 : 3999,
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop&crop=center',
-      rating: 4.8,
-      reviews: 156
-    },
-    {
-      id: '2',
-      name: `Premium ${category?.replace('-', ' ')} Collection`,
-      price: brand === 'bhyross' ? 22999 : 3999,
-      originalPrice: brand === 'bhyross' ? 25999 : 4999,
-      image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=400&h=400&fit=crop&crop=center',
-      rating: 4.9,
-      reviews: 89
-    },
-    {
-      id: '3',
-      name: `Modern ${category?.replace('-', ' ')} Style`,
-      price: brand === 'bhyross' ? 18999 : 3499,
-      originalPrice: brand === 'bhyross' ? 21999 : 4499,
-      image: 'https://images.unsplash.com/photo-1582897085656-c636d006a246?w=400&h=400&fit=crop&crop=center',
-      rating: 4.7,
-      reviews: 203
-    },
-    {
-      id: '4',
-      name: `Executive ${category?.replace('-', ' ')} Edition`,
-      price: brand === 'bhyross' ? 24999 : 4499,
-      originalPrice: brand === 'bhyross' ? 27999 : 5499,
-      image: 'https://images.unsplash.com/photo-1571245078683-3bbf52d98bf6?w=400&h=400&fit=crop&crop=center',
-      rating: 4.9,
-      reviews: 127
-    },
-    {
-      id: '5',
-      name: `Signature ${category?.replace('-', ' ')} Design`,
-      price: brand === 'bhyross' ? 19999 : 3799,
-      originalPrice: brand === 'bhyross' ? 22999 : 4799,
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop&crop=center',
-      rating: 4.8,
-      reviews: 178
-    },
-    {
-      id: '6',
-      name: `Professional ${category?.replace('-', ' ')} Line`,
-      price: brand === 'bhyross' ? 17999 : 3299,
-      originalPrice: brand === 'bhyross' ? 20999 : 4299,
-      image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=400&h=400&fit=crop&crop=center',
-      rating: 4.6,
-      reviews: 94
-    }
-  ];
+  
+  const { data: products = [], isLoading } = useProducts(brand, category);
 
   const handleAddToCart = (product: any) => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      size: '9', // Default size
-      brand: brand as 'bhyross' | 'deecodes'
-    });
-    
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
+    addToCart({
+      productId: product.id,
+      size: 9, // Default size
     });
   };
 
@@ -107,6 +43,17 @@ const CategoryPage = () => {
   };
 
   const currentCategory = categoryInfo[category as keyof typeof categoryInfo];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation brand={brand} />
+        <div className="pt-24 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -157,7 +104,6 @@ const CategoryPage = () => {
               <option>Sort by: Featured</option>
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
-              <option>Customer Rating</option>
             </select>
           </div>
 
@@ -166,15 +112,10 @@ const CategoryPage = () => {
               <Card key={product.id} className="group overflow-hidden hover-lift animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
                 <div className="relative">
                   <img
-                    src={product.image}
+                    src={product.images[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop&crop=center'}
                     alt={product.name}
                     className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  {product.originalPrice > product.price && (
-                    <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
-                      Save ₹{(product.originalPrice - product.price).toLocaleString()}
-                    </div>
-                  )}
                 </div>
                 
                 <div className="p-6">
@@ -182,28 +123,14 @@ const CategoryPage = () => {
                     {product.name}
                   </h3>
                   
-                  <div className="flex items-center mb-3">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-neutral-300'}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <span className="ml-2 text-sm text-neutral-600">
-                      {product.rating} ({product.reviews} reviews)
-                    </span>
-                  </div>
+                  <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
+                    {product.description}
+                  </p>
                   
                   <div className="flex items-baseline space-x-2 mb-4">
                     <span className="text-2xl font-bold text-neutral-900">
                       ₹{product.price.toLocaleString()}
                     </span>
-                    {product.originalPrice > product.price && (
-                      <span className="text-lg text-neutral-500 line-through">
-                        ₹{product.originalPrice.toLocaleString()}
-                      </span>
-                    )}
                   </div>
                   
                   <div className="space-y-2">
