@@ -98,7 +98,7 @@ const AuthPage = () => {
           title: "Account created!",
           description: "Please check your email to verify your account before signing in.",
         });
-        setIsLogin(true); // Switch to login after successful signup
+        setIsLogin(true);
       }
     } catch (error: any) {
       toast({
@@ -112,59 +112,59 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
-      <Card className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <Link to="/" className="text-2xl font-bold text-neutral-900">
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4 py-8">
+      <Card className="w-full max-w-md p-6 sm:p-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <Link to="/" className="text-xl sm:text-2xl font-bold text-neutral-900">
             Bhyross & Dee Codes
           </Link>
-          <p className="text-neutral-600 mt-2">
+          <p className="text-neutral-600 mt-2 text-sm sm:text-base">
             {isLogin ? 'Welcome back' : 'Create your account'}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {!isLogin && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-sm">First Name</Label>
                 <Input
                   id="firstName"
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required={!isLogin}
-                  className="mt-1"
+                  className="mt-1 text-sm"
                 />
               </div>
               <div>
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName" className="text-sm">Last Name</Label>
                 <Input
                   id="lastName"
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required={!isLogin}
-                  className="mt-1"
+                  className="mt-1 text-sm"
                 />
               </div>
             </div>
           )}
 
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-sm">Email</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1"
+              className="mt-1 text-sm"
             />
           </div>
 
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-sm">Password</Label>
             <div className="relative mt-1">
               <Input
                 id="password"
@@ -172,7 +172,7 @@ const AuthPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="pr-10"
+                className="pr-10 text-sm"
               />
               <button
                 type="button"
@@ -184,27 +184,27 @@ const AuthPage = () => {
             </div>
             
             {!isLogin && password && (
-              <div className="mt-3 space-y-2">
-                <p className="text-sm font-medium text-neutral-700">Password requirements:</p>
+              <div className="mt-2 sm:mt-3 space-y-2">
+                <p className="text-xs sm:text-sm font-medium text-neutral-700">Password requirements:</p>
                 <div className="grid grid-cols-1 gap-1 text-xs">
                   <div className={`flex items-center space-x-2 ${requirements.length ? 'text-green-600' : 'text-red-500'}`}>
-                    {requirements.length ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                    {requirements.length ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <XCircle className="h-3 w-3 flex-shrink-0" />}
                     <span>At least 8 characters</span>
                   </div>
                   <div className={`flex items-center space-x-2 ${requirements.uppercase ? 'text-green-600' : 'text-red-500'}`}>
-                    {requirements.uppercase ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                    {requirements.uppercase ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <XCircle className="h-3 w-3 flex-shrink-0" />}
                     <span>One uppercase letter</span>
                   </div>
                   <div className={`flex items-center space-x-2 ${requirements.lowercase ? 'text-green-600' : 'text-red-500'}`}>
-                    {requirements.lowercase ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                    {requirements.lowercase ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <XCircle className="h-3 w-3 flex-shrink-0" />}
                     <span>One lowercase letter</span>
                   </div>
                   <div className={`flex items-center space-x-2 ${requirements.number ? 'text-green-600' : 'text-red-500'}`}>
-                    {requirements.number ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                    {requirements.number ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <XCircle className="h-3 w-3 flex-shrink-0" />}
                     <span>One number</span>
                   </div>
                   <div className={`flex items-center space-x-2 ${requirements.special ? 'text-green-600' : 'text-red-500'}`}>
-                    {requirements.special ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                    {requirements.special ? <CheckCircle className="h-3 w-3 flex-shrink-0" /> : <XCircle className="h-3 w-3 flex-shrink-0" />}
                     <span>One special character</span>
                   </div>
                 </div>
@@ -212,22 +212,22 @@ const AuthPage = () => {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full text-sm sm:text-base" disabled={loading}>
             {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-4 sm:mt-6 text-center">
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-neutral-600 hover:text-neutral-900"
+            className="text-xs sm:text-sm text-neutral-600 hover:text-neutral-900"
           >
             {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
           </button>
         </div>
 
-        <div className="mt-8 text-center">
-          <Link to="/" className="text-sm text-neutral-500 hover:text-neutral-700">
+        <div className="mt-6 sm:mt-8 text-center">
+          <Link to="/" className="text-xs sm:text-sm text-neutral-500 hover:text-neutral-700">
             ← Back to home
           </Link>
         </div>

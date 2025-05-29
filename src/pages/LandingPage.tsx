@@ -12,26 +12,26 @@ const LandingPage = () => {
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-neutral-900/5 to-neutral-600/10" />
       
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-bhyross-500/10 rounded-full blur-xl animate-float" />
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-deecodes-500/10 rounded-full blur-xl animate-float animation-delay-400" />
+      {/* Floating Elements - Hidden on mobile for better performance */}
+      <div className="hidden md:block absolute top-20 left-10 w-32 h-32 bg-bhyross-500/10 rounded-full blur-xl animate-float" />
+      <div className="hidden md:block absolute bottom-20 right-10 w-40 h-40 bg-deecodes-500/10 rounded-full blur-xl animate-float animation-delay-400" />
       
-      <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-neutral-900 mb-6">
-            <span className="brand-bhyross">Bhyross</span>
-            <span className="text-neutral-400 mx-4">&</span>
-            <span className="brand-deecodes">Dee Codes</span>
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fade-in-up">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-neutral-900 mb-4 sm:mb-6 leading-tight">
+            <span className="brand-bhyross block sm:inline">Bhyross</span>
+            <span className="text-neutral-400 mx-2 sm:mx-4 hidden sm:inline">&</span>
+            <span className="brand-deecodes block sm:inline mt-2 sm:mt-0">Dee Codes</span>
           </h1>
-          <p className="text-xl sm:text-2xl text-neutral-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl lg:text-2xl text-neutral-600 max-w-3xl mx-auto leading-relaxed px-4">
             Where <span className="font-semibold text-bhyross-600">premium craftsmanship</span> meets{' '}
             <span className="font-semibold text-deecodes-600">affordable excellence</span> in formal footwear
           </p>
         </div>
 
         {/* Brand Selection Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-6xl w-full">
           {/* Bhyross Card */}
           <Card
             className={`group relative overflow-hidden cursor-pointer transition-all duration-700 hover-lift ${
@@ -40,44 +40,44 @@ const LandingPage = () => {
             onMouseEnter={() => setHoveredBrand('bhyross')}
             onMouseLeave={() => setHoveredBrand(null)}
           >
-            <div className="p-8 sm:p-12 min-h-[400px] flex flex-col justify-between relative">
+            <div className="p-6 sm:p-8 lg:p-12 min-h-[350px] sm:min-h-[400px] flex flex-col justify-between relative">
               {/* Background Pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-bhyross-50 to-bhyross-100/30" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-bhyross-500/10 rounded-full blur-3xl" />
+              <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-bhyross-500/10 rounded-full blur-3xl" />
               
               <div className="relative z-10">
-                <div className="mb-8">
-                  <h2 className="text-3xl sm:text-4xl font-bold brand-bhyross mb-4">
+                <div className="mb-6 sm:mb-8">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold brand-bhyross mb-3 sm:mb-4">
                     Bhyross
                   </h2>
-                  <p className="text-lg text-neutral-600 mb-6">
+                  <p className="text-base sm:text-lg text-neutral-600 mb-4 sm:mb-6 leading-relaxed">
                     Premium craftsmanship for the discerning gentleman. Each shoe is a masterpiece of traditional techniques and modern design.
                   </p>
                   
-                  <div className="space-y-3 text-sm text-neutral-700">
+                  <div className="space-y-2 sm:space-y-3 text-sm text-neutral-700">
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-bhyross-500 rounded-full mr-3" />
+                      <div className="w-2 h-2 bg-bhyross-500 rounded-full mr-3 flex-shrink-0" />
                       <span>Hand-stitched construction</span>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-bhyross-500 rounded-full mr-3" />
+                      <div className="w-2 h-2 bg-bhyross-500 rounded-full mr-3 flex-shrink-0" />
                       <span>Premium Italian leather</span>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-bhyross-500 rounded-full mr-3" />
+                      <div className="w-2 h-2 bg-bhyross-500 rounded-full mr-3 flex-shrink-0" />
                       <span>Goodyear welted soles</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="text-2xl font-bold text-neutral-900">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="text-xl sm:text-2xl font-bold text-neutral-900">
                     Starting from ₹15,999
                   </div>
                   
                   <Link to="/bhyross" className="block">
                     <Button 
-                      className="w-full bg-gradient-to-r from-bhyross-500 to-bhyross-600 hover:from-bhyross-600 hover:to-bhyross-700 text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-bhyross-500/25"
+                      className="w-full bg-gradient-to-r from-bhyross-500 to-bhyross-600 hover:from-bhyross-600 hover:to-bhyross-700 text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-bhyross-500/25 text-sm sm:text-base"
                       size="lg"
                     >
                       Explore Bhyross
@@ -99,44 +99,44 @@ const LandingPage = () => {
             onMouseEnter={() => setHoveredBrand('deecodes')}
             onMouseLeave={() => setHoveredBrand(null)}
           >
-            <div className="p-8 sm:p-12 min-h-[400px] flex flex-col justify-between relative">
+            <div className="p-6 sm:p-8 lg:p-12 min-h-[350px] sm:min-h-[400px] flex flex-col justify-between relative">
               {/* Background Pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-deecodes-50 to-deecodes-100/30" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-deecodes-500/10 rounded-full blur-3xl" />
+              <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-deecodes-500/10 rounded-full blur-3xl" />
               
               <div className="relative z-10">
-                <div className="mb-8">
-                  <h2 className="text-3xl sm:text-4xl font-bold brand-deecodes mb-4">
+                <div className="mb-6 sm:mb-8">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold brand-deecodes mb-3 sm:mb-4">
                     Dee Codes
                   </h2>
-                  <p className="text-lg text-neutral-600 mb-6">
+                  <p className="text-base sm:text-lg text-neutral-600 mb-4 sm:mb-6 leading-relaxed">
                     Exceptional value without compromise. Modern design meets reliable quality for the contemporary professional.
                   </p>
                   
-                  <div className="space-y-3 text-sm text-neutral-700">
+                  <div className="space-y-2 sm:space-y-3 text-sm text-neutral-700">
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-deecodes-500 rounded-full mr-3" />
+                      <div className="w-2 h-2 bg-deecodes-500 rounded-full mr-3 flex-shrink-0" />
                       <span>Durable construction</span>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-deecodes-500 rounded-full mr-3" />
+                      <div className="w-2 h-2 bg-deecodes-500 rounded-full mr-3 flex-shrink-0" />
                       <span>Quality synthetic materials</span>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-2 h-2 bg-deecodes-500 rounded-full mr-3" />
+                      <div className="w-2 h-2 bg-deecodes-500 rounded-full mr-3 flex-shrink-0" />
                       <span>Comfortable daily wear</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="text-2xl font-bold text-neutral-900">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="text-xl sm:text-2xl font-bold text-neutral-900">
                     Starting from ₹2,999
                   </div>
                   
                   <Link to="/deecodes" className="block">
                     <Button 
-                      className="w-full bg-gradient-to-r from-deecodes-500 to-deecodes-600 hover:from-deecodes-600 hover:to-deecodes-700 text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-deecodes-500/25"
+                      className="w-full bg-gradient-to-r from-deecodes-500 to-deecodes-600 hover:from-deecodes-600 hover:to-deecodes-700 text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-deecodes-500/25 text-sm sm:text-base"
                       size="lg"
                     >
                       Explore Dee Codes
@@ -152,7 +152,7 @@ const LandingPage = () => {
         </div>
 
         {/* Footer Message */}
-        <div className="mt-16 text-center animate-fade-in animation-delay-600">
+        <div className="mt-8 sm:mt-12 lg:mt-16 text-center animate-fade-in animation-delay-600">
           <p className="text-neutral-500 text-sm">
             Crafted with passion, designed for excellence
           </p>
