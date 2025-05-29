@@ -134,14 +134,14 @@
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   @media (min-width: 768px) {
     .hover-lift:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
   }
 
@@ -166,29 +166,34 @@
     background-clip: text;
   }
 
-  /* Responsive animations */
+  /* Simplified animations - always visible by default */
   .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
-    opacity: 0;
-    transform: translateY(20px);
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeInUp 0.6s ease-out;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.6s ease-out forwards;
-    opacity: 0;
-    transform: scale(0.95);
+    opacity: 1;
+    transform: scale(1);
+    animation: scaleIn 0.6s ease-out;
   }
 
   .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-    opacity: 0;
+    opacity: 1;
+    animation: fadeIn 0.6s ease-out;
   }
 
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
 
+  /* Ensure elements are visible during animation */
   @keyframes fadeInUp {
+    from {
+      opacity: 0.8;
+      transform: translateY(20px);
+    }
     to {
       opacity: 1;
       transform: translateY(0);
@@ -196,6 +201,10 @@
   }
 
   @keyframes scaleIn {
+    from {
+      opacity: 0.8;
+      transform: scale(0.98);
+    }
     to {
       opacity: 1;
       transform: scale(1);
@@ -203,6 +212,9 @@
   }
 
   @keyframes fadeIn {
+    from {
+      opacity: 0.8;
+    }
     to {
       opacity: 1;
     }
@@ -213,7 +225,7 @@
       transform: translateY(0px);
     }
     50% {
-      transform: translateY(-20px);
+      transform: translateY(-10px);
     }
   }
 
@@ -292,8 +304,15 @@
   .animate-scale-in,
   .animate-fade-in,
   .animate-float {
-    animation: none;
-    opacity: 1;
-    transform: none;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
+}
+
+/* Fix for disappearing elements */
+.animate-fade-in-up,
+.animate-scale-in,
+.animate-fade-in {
+  opacity: 1 !important;
 }
