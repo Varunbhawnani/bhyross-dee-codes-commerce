@@ -1,14 +1,13 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<any>;
-  signIn: (email: string, password: string) => Promise<any>;
+  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{ data: any; error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<{ data: any; error: AuthError | null }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
 }
@@ -21,85 +20,164 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Function to check admin status
+  const checkAdminStatus = async (userId: string) => {
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        console.log('No admin role found for user:', error.message);
+        return false;
+      }
+
+      const hasAdminRole = data?.role === 'admin' || data?.role === 'super_admin';
+      return hasAdminRole || false;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
+    let mounted = true;
+
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting initial session:', error);
+        }
+
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const adminStatus = await checkAdminStatus(session.user.id);
+            setIsAdmin(adminStatus);
+          } else {
+            setIsAdmin(false);
+          }
+          
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error in getInitialSession:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    getInitialSession();
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+        console.log('Auth state changed:', event, session?.user?.email);
         
-        if (session?.user) {
-          // Check if user is admin
-          setTimeout(async () => {
-            try {
-              const { data } = await supabase
-                .from('user_roles')
-                .select('role')
-                .eq('user_id', session.user.id);
-              
-              const hasAdminRole = data?.some(role => 
-                role.role === 'admin' || role.role === 'super_admin'
-              );
-              setIsAdmin(hasAdminRole || false);
-            } catch (error) {
-              console.error('Error checking admin status:', error);
-              setIsAdmin(false);
-            }
-          }, 0);
-        } else {
-          setIsAdmin(false);
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+
+          if (session?.user) {
+            // Check admin status for authenticated users
+            const adminStatus = await checkAdminStatus(session.user.id);
+            setIsAdmin(adminStatus);
+          } else {
+            setIsAdmin(false);
+          }
+
+          // Only set loading to false after we've processed everything
+          if (loading) {
+            setLoading(false);
+          }
         }
-        
-        setLoading(false);
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [loading]);
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName || '',
+            last_name: lastName || '',
+          },
         },
-      },
-    });
-    return { data, error };
+      });
+
+      if (error) {
+        console.error('SignUp error:', error);
+      }
+
+      return { data, error };
+    } catch (error) {
+      console.error('SignUp catch error:', error);
+      return { data: null, error: error as AuthError };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { data, error };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('SignIn error:', error);
+      }
+
+      return { data, error };
+    } catch (error) {
+      console.error('SignIn catch error:', error);
+      return { data: null, error: error as AuthError };
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('SignOut error:', error);
+      }
+      // Clear local state
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+    } catch (error) {
+      console.error('SignOut catch error:', error);
+    }
+  };
+
+  const value = {
+    user,
+    session,
+    loading,
+    signUp,
+    signIn,
+    signOut,
+    isAdmin,
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      session,
-      loading,
-      signUp,
-      signIn,
-      signOut,
-      isAdmin,
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

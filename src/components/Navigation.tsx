@@ -1,7 +1,6 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, LogIn, LogOut, Menu } from 'lucide-react';
+import { ShoppingCart, User, Search, LogIn, LogOut, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
@@ -20,8 +19,11 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ brand }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { getTotalItems, toggleCart } = useCart();
+  const { getTotalItems } = useCart();
   const { user, signOut, isAdmin } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const totalItems = getTotalItems();
 
   const brandColors = {
@@ -42,41 +44,211 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
   };
 
   const handleSearch = () => {
-    alert('Search functionality coming soon!');
+    if (searchQuery.trim()) {
+      console.log('Searching for:', searchQuery);
+      navigate(`/${brand || 'bhyross'}?search=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery('');
+      setIsSearchOpen(false);
+    } else {
+      setIsSearchOpen(!isSearchOpen);
+    }
+  };
+
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 sm:h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-900">
-              {brand ? (
-                <span className={brand === 'bhyross' ? 'brand-bhyross' : 'brand-deecodes'}>
-                  {brand === 'bhyross' ? 'Bhyross' : 'Dee Codes'}
-                </span>
-              ) : (
-                <>
-                  <span className="brand-bhyross">Bhyross</span>
-                  <span className="text-neutral-400 mx-1">&</span>
-                  <span className="brand-deecodes">Dee Codes</span>
-                </>
-              )}
-            </span>
-          </Link>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2 z-10">
+              <span className="text-2xl font-bold text-neutral-900">
+                {brand ? (
+                  <span className={brand === 'bhyross' ? 'brand-bhyross' : 'brand-deecodes'}>
+                    {brand === 'bhyross' ? 'Bhyross' : 'Dee Codes'}
+                  </span>
+                ) : (
+                  <>
+                    <span className="brand-bhyross">Bhyross</span>
+                    <span className="text-neutral-400 mx-1">&</span>
+                    <span className="brand-deecodes">Dee Codes</span>
+                  </>
+                )}
+              </span>
+            </Link>
 
-          {/* Category Navigation and Dashboard Button - Hidden on mobile */}
+            {/* Desktop Category Navigation */}
+            {brand && (
+              <div className="hidden md:flex items-center space-x-8">
+                <Link
+                  to="/"
+                  className="text-sm font-medium text-neutral-600 hover:text-neutral-900 px-3 py-1 border border-neutral-300 rounded-md transition-colors duration-200 hover:border-neutral-400"
+                >
+                  Dashboard
+                </Link> 
+                {categories.map((category) => (
+                  <Link
+                    key={category.path}
+                    to={`/${brand}/${category.path}`}
+                    className={`text-sm font-medium transition-colors duration-200 ${
+                      location.pathname.includes(category.path)
+                        ? brandColors[brand]
+                        : 'text-neutral-600 hover:text-neutral-900'
+                    }`}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center space-x-4">
+              {/* Search */}
+              <div className="relative">
+                {isSearchOpen ? (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                      className="px-3 py-1 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
+                      autoFocus
+                    />
+                    <Button variant="ghost" size="sm" onClick={handleSearch}>
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button variant="ghost" size="sm" onClick={handleSearch}>
+                    <Search className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              
+              {/* User Menu */}
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="z-50 bg-white border border-neutral-200 shadow-lg min-w-[200px] relative"
+                    sideOffset={5}
+                    avoidCollisions={true}
+                    collisionPadding={8}
+                  >
+                    <DropdownMenuItem className="font-medium text-neutral-900 cursor-default">
+                      {user.email}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-neutral-200" />
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className="w-full cursor-pointer hover:bg-neutral-50">
+                            Admin Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-neutral-200" />
+                      </>
+                    )}
+                    <DropdownMenuItem 
+                      onClick={handleSignOut}
+                      className="cursor-pointer hover:bg-neutral-50 text-red-600 hover:text-red-700"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/auth">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Link>
+                </Button>
+              )}
+              
+              {/* Cart */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleCartClick}
+                className="relative"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Button variant="ghost" size="sm" onClick={toggleMobileMenu}>
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu */}
+      <div className={`fixed top-16 left-0 right-0 z-40 bg-white border-b border-neutral-200 transition-transform duration-300 ease-in-out md:hidden shadow-lg ${
+        isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
+      }`}>
+        <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          {/* Mobile Search */}
+          <div className="flex items-center space-x-2 pb-4 border-b border-neutral-200">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              className="flex-1 px-3 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
+            />
+            <Button variant="ghost" size="sm" onClick={handleSearch}>
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Mobile Categories */}
           {brand && (
-            <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+            <div className="space-y-2">
+              <h3 className="font-semibold text-neutral-900 mb-3">Categories</h3>
               {categories.map((category) => (
                 <Link
                   key={category.path}
                   to={`/${brand}/${category.path}`}
-                  className={`text-sm font-medium transition-colors duration-200 ${
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block py-2 px-3 rounded-md text-sm font-medium transition-colors duration-200 ${
                     location.pathname.includes(category.path)
-                      ? brandColors[brand]
-                      : 'text-neutral-600 hover:text-neutral-900'
+                      ? `${brandColors[brand]} bg-neutral-100`
+                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
                   }`}
                 >
                   {category.name}
@@ -84,100 +256,73 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
               ))}
               <Link
                 to="/"
-                className="text-sm font-medium text-neutral-600 hover:text-neutral-900 px-3 py-1 border border-neutral-300 rounded-md transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border border-neutral-300 mt-3"
               >
                 Dashboard
               </Link>
             </div>
           )}
 
-          {/* Mobile Category Menu */}
-          {brand && (
-            <div className="lg:hidden">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Menu className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-50 bg-white border border-neutral-200 shadow-lg w-48">
-                  {categories.map((category) => (
-                    <DropdownMenuItem key={category.path} asChild>
-                      <Link to={`/${brand}/${category.path}`} className="w-full">
-                        {category.name}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/" className="w-full">Dashboard</Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={handleSearch}>
-              <Search className="h-4 w-4" />
-            </Button>
-            
+          {/* Mobile Actions */}
+          <div className="pt-4 border-t border-neutral-200 space-y-2">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <User className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-50 bg-white border border-neutral-200 shadow-lg">
-                  <DropdownMenuItem className="font-medium text-xs sm:text-sm">
-                    {user.email}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin">Admin Dashboard</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <>
+                <div className="px-3 py-2 text-sm font-medium text-neutral-900 bg-neutral-50 rounded-md">
+                  {user.email}
+                </div>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center w-full text-left py-2 px-3 rounded-md text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </button>
+              </>
             ) : (
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/auth" className="flex items-center">
-                  <LogIn className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Sign In</span>
-                </Link>
-              </Button>
+              <Link
+                to="/auth"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Link>
             )}
             
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={toggleCart}
-              className="relative"
-              asChild
+            <button
+              onClick={() => {
+                handleCartClick();
+                setIsMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-between w-full py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
             >
-              <Link to="/cart">
-                <ShoppingCart className="h-4 w-4" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center text-[10px] sm:text-xs">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-            </Button>
+              <span className="flex items-center">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Cart
+              </span>
+              {totalItems > 0 && (
+                <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 

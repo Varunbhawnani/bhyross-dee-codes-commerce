@@ -1,39 +1,118 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star, Heart, Zap, DollarSign } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+// Types for your data
+interface ProductImage {
+  id: string;
+  product_id: string;
+  image_url: string;
+  is_primary: boolean;
+  sort_order: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  images: ProductImage[];
+}
+
+interface Category {
+  id: string;
+  name: string;
+  path: string;
+  description: string;
+  image_url: string;
+}
 
 const DeeCodesPage = () => {
-  const categories = [
-    {
-      name: 'Oxford',
-      path: 'oxford',
-      description: 'Professional style at an affordable price',
-      image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=400&h=300&fit=crop&crop=center'
-    },
-    {
-      name: 'Derby',
-      path: 'derby',
-      description: 'Versatile everyday formal shoes',
-      image: 'https://images.unsplash.com/photo-1582897085656-c636d006a246?w=400&h=300&fit=crop&crop=center'
-    },
-    {
-      name: 'Monk Strap',
-      path: 'monk-strap',
-      description: 'Modern buckle design with contemporary appeal',
-      image: 'https://images.unsplash.com/photo-1571245078683-3bbf52d98bf6?w=400&h=300&fit=crop&crop=center'
-    },
-    {
-      name: 'Loafer',
-      path: 'loafer',
-      description: 'Comfortable slip-on style for daily wear',
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop&crop=center'
-    }
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch products with images
+  const fetchProducts = async () => {
+    try {
+      const { data: productsData, error: productsError } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_images (
+            id,
+            image_url,
+            is_primary,
+            sort_order
+          )
+        `)
+        .eq('category', 'derby')
+        .limit(6);
+
+      if (productsError) throw productsError;
+
+      // Transform the data to match our interface
+      const transformedProducts: Product[] = (productsData?.map(product => ({
+  ...product,
+  images: product.product_images || []
+})) as Product[]) || [];
+
+      setProducts(transformedProducts);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to load products');
+    }
+  };
+
+  // Fetch categories
+  const fetchCategories = async () => {
+  try {
+    // @ts-ignore
+    const { data: categoriesData, error: categoriesError } = await supabase
+  .from('categories' as any)
+  .select('*')
+  .eq('brand', 'deecodes');
+    
+    if (categoriesError) throw categoriesError;
+    // @ts-ignore
+    setCategories(categoriesData || []);
+  } catch (err) {
+    console.error('Error fetching categories:', err);
+    setError('Failed to load categories');
+  }
+};
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchProducts(), fetchCategories()]);
+      setLoading(false);
+    };
+    
+    loadData();
+  }, []);
+
+  // Helper function to get primary image or first image for a product
+  const getPrimaryImage = (product: Product): string => {
+    if (!product.images || product.images.length === 0) {
+      return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop'; // fallback
+    }
+    
+    const primaryImage = product.images.find(img => img.is_primary);
+    if (primaryImage) return primaryImage.image_url;
+    
+    // Sort by sort_order and get first image
+    const sortedImages = [...product.images].sort((a, b) => a.sort_order - b.sort_order);
+    return sortedImages[0]?.image_url || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop';
+  };
+
+  // Static data (you can also move these to database)
   const features = [
     {
       icon: DollarSign,
@@ -73,171 +152,228 @@ const DeeCodesPage = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation brand="deecodes" />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-xl">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation brand="deecodes" />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-xl text-red-600">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation brand="deecodes" />
       
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-deecodes-50 to-neutral-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="animate-fade-in-up">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 mb-6">
-                <span className="brand-deecodes">Dee Codes</span>
-                <br />
-                <span className="text-neutral-700">Smart Value</span>
-              </h1>
-              <p className="text-xl text-neutral-600 mb-8 leading-relaxed">
-                Quality formal footwear that fits your budget. Modern design meets reliable 
-                construction for the smart shopper who values both style and savings.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-deecodes-500 hover:bg-deecodes-600">
-                  Shop Collection
-                </Button>
-                <Button size="lg" variant="outline">
-                  Why Choose Us
-                </Button>
-              </div>
-            </div>
-            
-            <div className="relative animate-scale-in animation-delay-200">
-              <img
-                src="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center"
-                alt="Dee Codes Quality Shoe"
-                className="w-full h-[500px] object-cover rounded-2xl shadow-2xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl" />
-              <div className="absolute top-6 right-6 bg-deecodes-500 text-white px-4 py-2 rounded-full font-semibold">
-                Starting ₹2,999
-              </div>
-            </div>
-          </div>
+      <section className="hero">
+        <img 
+          src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+          alt="Modern lifestyle sneakers" 
+          className="hero-background" 
+        />
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <h1 className="hero-title">Code Your Style</h1>
+          <p className="hero-subtitle">Smart design meets everyday comfort for the modern lifestyle</p>
+          <a href="#" className="cta-button dee-codes">Shop Now</a>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-neutral-900 mb-4">
-              Smart Choice for Smart Shoppers
-            </h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              Get the quality you deserve without the premium price tag
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-6 text-center hover-lift animate-fade-in-up" style={{ animationDelay: `${index * 200}ms` }}>
-                <feature.icon className="h-12 w-12 text-deecodes-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-neutral-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-neutral-600">
-                  {feature.description}
-                </p>
-              </Card>
-            ))}
-          </div>
+      <section className="products-section">
+        <h2 className="section-title dee-codes">Featured Collection</h2>
+        <div className="products-grid">
+          {products.map((product) => (
+            <div key={product.id} className="product-card">
+              <div className="product-image">
+                <img 
+                  src={getPrimaryImage(product)} 
+                  alt={product.name}
+                  className="w-full h-full object-cover rounded"
+                  onError={(e) => {
+                    // Fallback image if the image fails to load
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop';
+                  }}
+                />
+              </div>
+              <div className="product-info">
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-price dee-codes">${product.price}</p>
+                <Link 
+                  to={`/deecodes/${product.category}/${product.id}`}
+                  className="mt-2 inline-block bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition-colors"
+                >
+                  View Details
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-gradient-to-br from-neutral-50 to-deecodes-50/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-neutral-900 mb-4">
-              Find Your Perfect Style
-            </h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              Professional looks for every occasion, all at prices that make sense
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
-              <Link key={category.path} to={`/deecodes/${category.path}`}>
-                <Card className="group overflow-hidden hover-lift animate-fade-in-up" style={{ animationDelay: `${index * 150}ms` }}>
-                  <div className="relative">
+      {/* Categories Section - if you have categories data */}
+      {categories.length > 0 && (
+        <section className="categories-section mt-16">
+          <h2 className="section-title dee-codes">Shop by Category</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
+            {categories.map((category) => (
+              <Link 
+                key={category.id} 
+                to={`/category/${category.path}`}
+                className="group"
+              >
+                <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="aspect-[4/3] overflow-hidden">
                     <img
-                      src={category.image}
+                      src={category.image_url}
                       alt={category.name}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop';
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
-                      <p className="text-sm opacity-90">{category.description}</p>
-                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
+                    <p className="text-gray-600 text-sm">{category.description}</p>
                   </div>
                 </Card>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Value Proposition */}
-      <section className="py-16 bg-deecodes-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Quality You Can Trust, Prices You'll Love
-          </h2>
-          <p className="text-xl text-deecodes-100 mb-8 max-w-3xl mx-auto">
-            Don't compromise on style or comfort. Our shoes undergo rigorous quality testing 
-            to ensure they meet the highest standards while keeping costs reasonable.
-          </p>
-          <div className="grid md:grid-cols-3 gap-8 text-white">
-            <div>
-              <div className="text-3xl font-bold mb-2">50,000+</div>
-              <div className="text-deecodes-100">Happy Customers</div>
+      {/* Rest of your existing sections */}
+      <section className="why-section">
+        <div className="why-container">
+          <h2 className="section-title dee-codes">Why Dee Codes?</h2>
+          <div className="why-grid">
+            <div className="why-item">
+              <div className="why-icon dee-codes">💡</div>
+              <h3 className="why-title">Smart Innovation</h3>
+              <p className="why-description">Cutting-edge materials and technology integrated seamlessly into everyday designs, delivering performance without compromise.</p>
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">98%</div>
-              <div className="text-deecodes-100">Satisfaction Rate</div>
+            <div className="why-item">
+              <div className="why-icon dee-codes">🌟</div>
+              <h3 className="why-title">Accessible Style</h3>
+              <p className="why-description">Premium design philosophy made affordable, ensuring everyone can access quality footwear that elevates their daily experience.</p>
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">1 Year</div>
-              <div className="text-deecodes-100">Quality Warranty</div>
+            <div className="why-item">
+              <div className="why-icon dee-codes">🚀</div>
+              <h3 className="why-title">Future Forward</h3>
+              <p className="why-description">Always evolving, always improving. We stay ahead of trends to bring you tomorrow's comfort and style, today.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-neutral-900 mb-4">
-              Loved by Customers Everywhere
-            </h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              See why thousands choose Dee Codes for their formal footwear needs
-            </p>
+      {/* Keep all your other existing sections... */}
+      <section className="collection-showcase">
+        <div className="collection-content">
+          <div className="collection-text dee-codes">
+            <h2>Code Your Future</h2>
+            <p>Dee Codes represents the intersection of technology and style. Our innovative approach combines sustainable materials with cutting-edge design, creating footwear that adapts to your dynamic lifestyle.</p>
+            <div className="collection-stats">
+              <div className="stat-item">
+                <span className="stat-number dee-codes">50+</span>
+                <span className="stat-label">Tech Features</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-number dee-codes">24/7</span>
+                <span className="stat-label">Comfort</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-number dee-codes">100%</span>
+                <span className="stat-label">Sustainable</span>
+              </div>
+            </div>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="collection-visual">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Modern sneaker technology" className="collection-image" />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials section */}
+      <section className="testimonials-section">
+        <div className="testimonials-container">
+          <h2 className="section-title dee-codes">What Our Community Says</h2>
+          <div className="testimonials-grid">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="p-6 animate-fade-in-up" style={{ animationDelay: `${index * 200}ms` }}>
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
+              <div key={index} className="testimonial-card">
+                <div className="stars">★★★★★</div>
+                <p className="testimonial-quote">"{testimonial.comment}"</p>
+                <div className="testimonial-author">
+                  <div className="author-avatar">👤</div>
+                  <div className="author-info">
+                    <h4>{testimonial.name}</h4>
+                    <p>{testimonial.role}</p>
+                  </div>
                 </div>
-                <p className="text-neutral-600 mb-4 italic">
-                  "{testimonial.comment}"
-                </p>
-                <div className="border-t pt-4">
-                  <div className="font-semibold text-neutral-900">{testimonial.name}</div>
-                  <div className="text-sm text-neutral-500">{testimonial.role}</div>
-                </div>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
+
+      <section className="newsletter-section">
+        <div className="newsletter-container">
+          <h2 className="newsletter-title">Join the Movement</h2>
+          <p className="newsletter-subtitle">Get early access to new drops, exclusive member benefits, and the latest in footwear innovation.</p>
+          <form className="newsletter-form">
+            <input type="email" className="newsletter-input" placeholder="Enter your email" required />
+            <button type="submit" className="newsletter-btn dee-codes">Subscribe</button>
+          </form>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-section dee-codes">
+            <h3>Dee Codes</h3>
+            <ul className="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Technology</a></li>
+              <li><a href="#">Collections</a></li>
+              <li><a href="#">Size Guide</a></li>
+            </ul>
+          </div>
+          <div className="footer-section">
+            <h3>Customer Service</h3>
+            <ul className="footer-links">
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Shipping Info</a></li>
+              <li><a href="#">Returns</a></li>
+              <li><a href="#">Care Guide</a></li>
+            </ul>
+          </div>
+          <div className="footer-section">
+            <h3>Connect</h3>
+            <div className="social-links">
+              <a href="#" className="social-link dee-codes">📘</a>
+              <a href="#" className="social-link dee-codes">📷</a>
+              <a href="#" className="social-link dee-codes">🐦</a>
+              <a href="#" className="social-link dee-codes">📧</a>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2024 Dee Codes. All rights reserved. | Privacy Policy | Terms of Service</p>
+        </div>
+      </footer>
     </div>
   );
 };

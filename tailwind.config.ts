@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -188,6 +187,10 @@ export default {
 						opacity: '0.8',
 						transform: 'scale(1.05)' 
 					}
+				},
+				'hover-lift': {
+					'0%': { transform: 'translateY(0) scale(1)' },
+					'100%': { transform: 'translateY(-4px) scale(1.02)' }
 				}
 			},
 			animation: {
@@ -200,7 +203,21 @@ export default {
 				'typewriter': 'typewriter 2s steps(20) infinite alternate',
 				'blink': 'blink 1s infinite',
 				'float': 'float 6s ease-in-out infinite',
-				'pulse-glow': 'pulse-glow 2s ease-in-out infinite'
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'hover-lift': 'hover-lift 0.3s ease-out forwards'
+			},
+			// Animation delays
+			animationDelay: {
+				'100': '100ms',
+				'200': '200ms',
+				'300': '300ms',
+				'400': '400ms',
+				'500': '500ms',
+				'600': '600ms',
+				'700': '700ms',
+				'800': '800ms',
+				'900': '900ms',
+				'1000': '1000ms',
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -212,5 +229,28 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		// Custom plugin for animation delays and hover-lift
+		function({ addUtilities, theme }) {
+			const delays = theme('animationDelay');
+			const delayUtilities = Object.entries(delays).reduce((acc, [key, value]) => {
+				acc[`.animation-delay-${key}`] = {
+					'animation-delay': value,
+				};
+				return acc;
+			}, {});
+
+			addUtilities({
+				...delayUtilities,
+				'.hover-lift': {
+					'transition': 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+					'&:hover': {
+						'transform': 'translateY(-4px) scale(1.02)',
+						'box-shadow': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+					}
+				}
+			});
+		}
+	],
 } satisfies Config;

@@ -1,0 +1,799 @@
+
+        :root {
+            /* Color Palette */
+            --primary-dark: #1a1a1a;
+            --primary-light: #ffffff;
+            --accent-gold: #d4af37;
+            --accent-blue: #2563eb;
+            --neutral-100: #f8fafc;
+            --neutral-200: #e2e8f0;
+            --neutral-400: #94a3b8;
+            --neutral-600: #475569;
+            --neutral-800: #334155;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-medium: 0.4s ease;
+            --transition-slow: 0.6s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--primary-dark);
+            overflow-x: hidden;
+        }
+
+        /* Dual Option Landing Page */
+        .dual-landing {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--neutral-100) 0%, var(--primary-light) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-container {
+            display: flex;
+            gap: 4rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        .brand-button {
+            position: relative;
+            padding: 2rem 3rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid transparent;
+            border-radius: 1rem;
+            transition: all var(--transition-medium);
+            cursor: pointer;
+            background: var(--primary-light);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .brand-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+            z-index: -1;
+        }
+
+        .brand-button.bhyross {
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+        }
+
+        .brand-button.dee-codes {
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .brand-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-button.bhyross:hover {
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        .brand-button.dee-codes:hover {
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+        }
+
+        .brand-button:hover::before {
+            opacity: 1;
+        }
+
+        .brand-button:hover .button-text {
+            color: var(--primary-light);
+            z-index: 2;
+            position: relative;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+            z-index: 1;
+        }
+
+        .brand-button:hover .video-background {
+            opacity: 0.3;
+        }
+
+        /* Brand Landing Pages */
+        .brand-landing {
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn var(--transition-slow);
+        }
+
+        .brand-landing.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--neutral-200);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo.bhyross { color: var(--accent-gold); }
+        .logo.dee-codes { color: var(--accent-blue); }
+
+        .home-button {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--neutral-400);
+            border-radius: 0.5rem;
+            color: var(--neutral-600);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        .home-button:hover {
+            background: var(--neutral-100);
+            border-color: var(--neutral-600);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            color: var(--primary-light);
+            max-width: 600px;
+            padding: 0 2rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all var(--transition-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cta-button.bhyross {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        .cta-button.dee-codes {
+            background: var(--accent-blue);
+            color: var(--primary-light);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Product Grid */
+        .products-section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+
+        .section-title.bhyross { color: var(--accent-gold); }
+        .section-title.dee-codes { color: var(--accent-blue); }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .product-card {
+            background: var(--primary-light);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-medium);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: var(--neutral-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--neutral-400);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .product-price.bhyross { color: var(--accent-gold); }
+        .product-price.dee-codes { color: var(--accent-blue); }
+
+        /* Why Section */
+        .why-section {
+            background: var(--neutral-100);
+            padding: 5rem 2rem;
+        }
+
+        .why-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .why-item {
+            text-align: center;
+        }
+
+        .why-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+
+        .why-icon.bhyross { background: var(--accent-gold); }
+        .why-icon.dee-codes { background: var(--accent-blue); }
+
+        .why-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .why-description {
+            color: var(--neutral-600);
+            line-height: 1.7;
+        }
+
+        /* Collection Showcase */
+        .collection-showcase {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--neutral-800) 100%);
+            color: var(--primary-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collection-showcase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="1" fill="white" opacity="0.1"/><circle cx="40" cy="80" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .collection-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .collection-text h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .collection-text.bhyross h2 { color: var(--accent-gold); }
+        .collection-text.dee-codes h2 { color: var(--accent-blue); }
+
+        .collection-text p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .collection-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-number.bhyross { color: var(--accent-gold); }
+        .stat-number.dee-codes { color: var(--accent-blue); }
+
+        .stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .collection-visual {
+            position: relative;
+        }
+
+        .collection-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            padding: 6rem 2rem;
+            background: var(--primary-light);
+        }
+
+        .testimonials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .testimonial-card {
+            background: var(--neutral-100);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all var(--transition-medium);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .testimonial-quote {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            font-style: italic;
+            color: var(--neutral-800);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--neutral-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .author-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-info p {
+            font-size: 0.9rem;
+            color: var(--neutral-600);
+        }
+
+        .stars {
+            margin-bottom: 1.5rem;
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+
+        /* Technology/Process Section */
+        .process-section {
+            padding: 6rem 0;
+            background: linear-gradient(45deg, var(--neutral-100) 0%, var(--primary-light) 50%, var(--neutral-100) 100%);
+        }
+
+        .process-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .process-step {
+            position: relative;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .process-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin: 0 auto 1.5rem;
+        }
+
+        .process-number.bhyross { background: var(--accent-gold); }
+        .process-number.dee-codes { background: var(--accent-blue); }
+
+        .process-step h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .process-step p {
+            color: var(--neutral-600);
+            line-height: 1.6;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            padding: 4rem 2rem;
+            background: var(--primary-dark);
+            color: var(--primary-light);
+            text-align: center;
+        }
+
+        .newsletter-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .newsletter-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 2.5rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--neutral-400);
+        }
+
+        .newsletter-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .newsletter-btn.bhyross {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        .newsletter-btn.dee-codes {
+            background: var(--accent-blue);
+            color: var(--primary-light);
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--neutral-800);
+            color: var(--primary-light);
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section.bhyross h3 { color: var(--accent-gold); }
+        .footer-section.dee-codes h3 { color: var(--accent-blue); }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--neutral-400);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--neutral-600);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--neutral-400);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--neutral-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .social-link:hover {
+            background: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .social-link.dee-codes:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .choice-container {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .brand-button {
+                padding: 1.5rem 2rem;
+                font-size: 1.25rem;
+            }
+
+            .hero {
+                height: 60vh;
+            }
+
+            .hero-content {
+                padding: 0 1rem;
+            }
+
+            .products-section, .why-section {
+                padding: 3rem 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Accessibility */
+        .brand-button:focus,
+        .cta-button:focus,
+        .home-button:focus {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+      

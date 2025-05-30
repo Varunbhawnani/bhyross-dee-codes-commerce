@@ -1,0 +1,99 @@
+/* Brand-specific styles */
+
+/* Bhyross Brand Styling */
+.brand-bhyross {
+  background: linear-gradient(135deg, #d4af37 0%, #ffd700 40%, #b8941f 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Dee Codes Brand Styling */
+.brand-deecodes {
+  background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 40%, #0284c7 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  animation-delay: 1.5s;
+}
+
+/* Gradient animation for brand text */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Enhanced hover effects for brand cards */
+.brand-card-bhyross {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-card-bhyross::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+  transition: left 0.8s ease-in-out;
+}
+
+.brand-card-bhyross:hover::before {
+  left: 100%;
+}
+
+.brand-card-deecodes {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-card-deecodes::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.1), transparent);
+  transition: left 0.8s ease-in-out;
+}
+
+.brand-card-deecodes:hover::before {
+  left: 100%;
+}
+
+/* Responsive brand text scaling */
+@media (max-width: 768px) {
+  .brand-bhyross,
+  .brand-deecodes {
+    font-size: 0.9em;
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Print styles - fallback for brand colors */
+@media print {
+  .brand-bhyross {
+    color: #d4af37 !important;
+    -webkit-text-fill-color: #d4af37 !important;
+  }
+  
+  .brand-deecodes {
+    color: #0ea5e9 !important;
+    -webkit-text-fill-color: #0ea5e9 !important;
+  }
+}

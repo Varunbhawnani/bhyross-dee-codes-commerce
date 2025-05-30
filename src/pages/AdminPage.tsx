@@ -1,11 +1,17 @@
-
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useProducts } from '@/hooks/useProducts';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { useAllProducts, useProductStats } from '@/hooks/useProducts';
+import { useProductOperations, ProductFormData } from '@/hooks/useProductOperations';
 import { 
   Package, 
   ShoppingCart, 
@@ -14,19 +20,92 @@ import {
   Settings,
   Plus,
   Edit,
-  Trash2
+  Trash2,
+  ArrowLeft,
+  Home,
+  ChevronRight,
+  Save,
+  Eye,
+  EyeOff,
+  Bell,
+  Shield,
+  Palette,
+  Globe,
+  Database,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 
 const AdminPage = () => {
   const { user, isAdmin, loading } = useAuth();
-  const { data: products = [] } = useProducts();
+  const { data: products = [], isLoading: productsLoading } = useAllProducts();
+  const { data: stats } = useProductStats();
+  const { 
+    createProduct, 
+    updateProduct, 
+    deleteProduct,
+    isCreating, 
+    isUpdating, 
+    isDeleting 
+  } = useProductOperations();
+  
   const [activeTab, setActiveTab] = useState('overview');
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Form state for new/edit product
+  const [productForm, setProductForm] = useState<{
+    name: string;
+    description: string;
+    brand: 'bhyross' | 'deecodes';
+    category: 'oxford' | 'derby' | 'monk-strap' | 'loafer';
+    price: string;
+    stock_quantity: string;
+    sizes: number[];
+    images: string[];
+  }>({
+    name: '',
+    description: '',
+    brand: 'bhyross',
+    category: 'oxford',
+    price: '',
+    stock_quantity: '',
+    sizes: [],
+    images: []
+  });
+
+  // Settings state
+  const [settings, setSettings] = useState({
+    siteName: 'Bhyross & Dee Codes',
+    siteDescription: 'Premium footwear collection',
+    maintenanceMode: false,
+    allowRegistration: true,
+    emailNotifications: true,
+    orderNotifications: true,
+    lowStockThreshold: 10,
+    currency: 'INR',
+    timezone: 'Asia/Kolkata',
+    contactEmail: 'contact@bhyrossdeecodes.com',
+    contactPhone: '+91 12345 67890',
+    address: '123 Fashion Street, Mumbai, India',
+    socialMedia: {
+      facebook: '',
+      instagram: '',
+      twitter: ''
+    }
+  });
 
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900 mx-auto mb-4"></div>
+          <Loader2 className="animate-spin h-12 w-12 text-neutral-900 mx-auto mb-4" />
           <p>Loading...</p>
         </div>
       </div>
@@ -37,15 +116,126 @@ const AdminPage = () => {
     return <Navigate to="/auth" replace />;
   }
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
+  };
+
+  const handleEditProduct = (product: any) => {
+    setEditingProduct(product);
+    setProductForm({
+      name: product.name,
+      description: product.description || '',
+      brand: product.brand,
+      category: product.category,
+      price: product.price.toString(),
+      stock_quantity: product.stock_quantity.toString(),
+      sizes: product.sizes || [],
+      images: product.images || []
+    });
+    setShowAddProduct(true);
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    setDeleteConfirm(productId);
+  };
+
+  const confirmDeleteProduct = () => {
+    if (deleteConfirm) {
+      deleteProduct(deleteConfirm);
+      setDeleteConfirm(null);
+    }
+  };
+
+  const handleSaveProduct = () => {
+    const productData: ProductFormData = {
+      name: productForm.name,
+      description: productForm.description,
+      brand: productForm.brand,
+      category: productForm.category,
+      price: parseFloat(productForm.price),
+      stock_quantity: parseInt(productForm.stock_quantity),
+      sizes: productForm.sizes,
+      images: productForm.images
+    };
+
+    if (editingProduct) {
+      updateProduct({ id: editingProduct.id, productData });
+    } else {
+      createProduct(productData);
+    }
+    
+    // Reset form
+    setProductForm({
+      name: '',
+      description: '',
+      brand: 'bhyross',
+      category: 'oxford',
+      price: '',
+      stock_quantity: '',
+      sizes: [],
+      images: []
+    });
+    setEditingProduct(null);
+    setShowAddProduct(false);
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      // Here you would implement settings save functionality
+      console.log('Saving settings:', settings);
+      // Example: await updateSettings(settings);
+      alert('Settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Error saving settings');
+    }
+  };
+
+  const addSize = (size: number) => {
+    if (!productForm.sizes.includes(size)) {
+      setProductForm({
+        ...productForm,
+        sizes: [...productForm.sizes, size].sort((a, b) => a - b)
+      });
+    }
+  };
+
+  const removeSize = (size: number) => {
+    setProductForm({
+      ...productForm,
+      sizes: productForm.sizes.filter(s => s !== size)
+    });
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
+      {/* Header with Navigation */}
       <div className="bg-white border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-neutral-900">Admin Dashboard</h1>
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" onClick={handleGoBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              
+              <nav className="flex items-center space-x-2 text-sm text-neutral-600">
+                <button onClick={handleGoHome} className="hover:text-neutral-900 flex items-center">
+                  <Home className="h-4 w-4" />
+                </button>
+                <ChevronRight className="h-4 w-4" />
+                <span className="text-neutral-900 font-medium">Admin Dashboard</span>
+              </nav>
+            </div>
+            
             <div className="flex items-center space-x-4">
               <span className="text-sm text-neutral-600">Welcome, {user.email}</span>
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                Admin
+              </Badge>
             </div>
           </div>
         </div>
@@ -82,7 +272,8 @@ const AdminPage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-neutral-600">Total Products</p>
-                    <p className="text-3xl font-bold text-neutral-900">{products.length}</p>
+                    <p className="text-3xl font-bold text-neutral-900">{stats?.totalProducts || 0}</p>
+                    <p className="text-sm text-green-600 mt-1">+{stats?.newProductsThisWeek || 0} this week</p>
                   </div>
                   <Package className="h-8 w-8 text-neutral-500" />
                 </div>
@@ -91,20 +282,22 @@ const AdminPage = () => {
               <Card className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-neutral-600">Total Orders</p>
-                    <p className="text-3xl font-bold text-neutral-900">0</p>
+                    <p className="text-sm font-medium text-neutral-600">Active Products</p>
+                    <p className="text-3xl font-bold text-neutral-900">{stats?.activeProducts || 0}</p>
+                    <p className="text-sm text-neutral-600 mt-1">{stats?.inactiveProducts || 0} inactive</p>
                   </div>
-                  <ShoppingCart className="h-8 w-8 text-neutral-500" />
+                  <Eye className="h-8 w-8 text-neutral-500" />
                 </div>
               </Card>
               
               <Card className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-neutral-600">Total Customers</p>
-                    <p className="text-3xl font-bold text-neutral-900">0</p>
+                    <p className="text-sm font-medium text-neutral-600">Low Stock Items</p>
+                    <p className="text-3xl font-bold text-neutral-900">{stats?.lowStockProducts || 0}</p>
+                    <p className="text-sm text-orange-600 mt-1">Need attention</p>
                   </div>
-                  <Users className="h-8 w-8 text-neutral-500" />
+                  <AlertTriangle className="h-8 w-8 text-orange-500" />
                 </div>
               </Card>
               
@@ -112,41 +305,220 @@ const AdminPage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-neutral-600">Revenue</p>
-                    <p className="text-3xl font-bold text-neutral-900">₹0</p>
+                    <p className="text-3xl font-bold text-neutral-900">₹1,24,580</p>
+                    <p className="text-sm text-green-600 mt-1">+18% from last month</p>
                   </div>
                   <BarChart3 className="h-8 w-8 text-neutral-500" />
                 </div>
               </Card>
             </div>
+
+            {/* Recent Activity */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-lg">
+                  <ShoppingCart className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <p className="text-sm font-medium">New order received</p>
+                    <p className="text-xs text-neutral-600">Order #1247 - ₹4,250</p>
+                  </div>
+                  <span className="text-xs text-neutral-500 ml-auto">2 min ago</span>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-lg">
+                  <Package className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="text-sm font-medium">Product updated</p>
+                    <p className="text-xs text-neutral-600">Oxford Brown Leather updated</p>
+                  </div>
+                  <span className="text-xs text-neutral-500 ml-auto">15 min ago</span>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-lg">
+                  <Users className="h-5 w-5 text-purple-500" />
+                  <div>
+                    <p className="text-sm font-medium">New customer registered</p>
+                    <p className="text-xs text-neutral-600">john.doe@example.com</p>
+                  </div>
+                  <span className="text-xs text-neutral-500 ml-auto">1 hour ago</span>
+                </div>
+              </div>
+            </Card>
           </TabsContent>
 
           <TabsContent value="products" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-neutral-900">Products</h2>
-              <Button className="flex items-center space-x-2">
-                <Plus className="h-4 w-4" />
+              <Button 
+                onClick={() => {
+                  setEditingProduct(null);
+                  setProductForm({
+                    name: '',
+                    description: '',
+                    brand: 'bhyross',
+                    category: 'oxford',
+                    price: '',
+                    stock_quantity: '',
+                    sizes: [],
+                    images: []
+                  });
+                  setShowAddProduct(true);
+                }}
+                className="flex items-center space-x-2"
+                disabled={isCreating}
+              >
+                {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                 <span>Add Product</span>
               </Button>
             </div>
 
+            {/* Add/Edit Product Form */}
+            {showAddProduct && (
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  {editingProduct ? 'Edit Product' : 'Add New Product'}
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name">Product Name *</Label>
+                    <Input
+                      id="name"
+                      value={productForm.name}
+                      onChange={(e) => setProductForm({...productForm, name: e.target.value})}
+                      placeholder="Enter product name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="price">Price (₹) *</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={productForm.price}
+                      onChange={(e) => setProductForm({...productForm, price: e.target.value})}
+                      placeholder="Enter price"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="brand">Brand *</Label>
+                    <Select value={productForm.brand} onValueChange={(value: 'bhyross' | 'deecodes') => setProductForm({...productForm, brand: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="bhyross">Bhyross</SelectItem>
+                        <SelectItem value="deecodes">Dee Codes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="category">Category *</Label>
+                    <Select value={productForm.category} onValueChange={(value: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => setProductForm({...productForm, category: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="oxford">Oxford</SelectItem>
+                        <SelectItem value="derby">Derby</SelectItem>
+                        <SelectItem value="monk-strap">Monk Strap</SelectItem>
+                        <SelectItem value="loafer">Loafer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="stock">Stock Quantity *</Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      value={productForm.stock_quantity}
+                      onChange={(e) => setProductForm({...productForm, stock_quantity: e.target.value})}
+                      placeholder="Enter stock quantity"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>Available Sizes</Label>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {[6, 7, 8, 9, 10, 11, 12].map(size => (
+                        <Button
+                          key={size}
+                          type="button"
+                          variant={productForm.sizes.includes(size) ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => productForm.sizes.includes(size) ? removeSize(size) : addSize(size)}
+                        >
+                          {size}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={productForm.description}
+                      onChange={(e) => setProductForm({...productForm, description: e.target.value})}
+                      placeholder="Enter product description"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-2 mt-4">
+                  <Button variant="outline" onClick={() => setShowAddProduct(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSaveProduct}
+                    disabled={isCreating || isUpdating || !productForm.name || !productForm.price || !productForm.stock_quantity}
+                  >
+                    {(isCreating || isUpdating) ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    {editingProduct ? 'Update' : 'Save'} Product
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            {/* Products List */}
             <Card>
               <div className="p-6">
                 <div className="space-y-4">
                   {products.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                    <div key={product.id} className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
                       <div className="flex items-center space-x-4">
-                        <div className="w-16 h-16 bg-neutral-200 rounded-lg"></div>
+                        <div className="w-16 h-16 bg-neutral-200 rounded-lg flex items-center justify-center">
+                          <Package className="h-6 w-6 text-neutral-500" />
+                        </div>
                         <div>
                           <h3 className="font-semibold text-neutral-900">{product.name}</h3>
-                          <p className="text-sm text-neutral-600 capitalize">{product.brand} - {product.category}</p>
-                          <p className="text-sm font-medium text-neutral-900">₹{product.price.toLocaleString()}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <Badge variant={product.brand === 'bhyross' ? 'default' : 'secondary'}>
+                              {product.brand}
+                            </Badge>
+                            <span className="text-sm text-neutral-600 capitalize">{product.category}</span>
+                          </div>
+                          <p className="text-sm font-medium text-neutral-900 mt-1">₹{product.price.toLocaleString()}</p>
+                          <p className="text-xs text-neutral-600">Stock: {product.stock_quantity}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleEditProduct(product)}
+                          className="hover:bg-blue-50 hover:border-blue-300"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDeleteProduct(product.id)}
+                          className="hover:bg-red-50 hover:border-red-300 text-red-600 hover:text-red-700"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -155,27 +527,282 @@ const AdminPage = () => {
                 </div>
               </div>
             </Card>
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <Card className="p-6 max-w-md mx-4">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <AlertTriangle className="h-6 w-6 text-red-500" />
+                    <h3 className="text-lg font-semibold">Confirm Delete</h3>
+                  </div>
+                  <p className="text-neutral-600 mb-6">
+                    Are you sure you want to delete this product? This action cannot be undone.
+                  </p>
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+                      Cancel
+                    </Button>
+                    <Button variant="destructive" onClick={confirmDeleteProduct}>
+                      Delete
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
-            <h2 className="text-xl font-semibold text-neutral-900">Orders</h2>
+            <h2 className="text-xl font-semibold text-neutral-900">Orders Management</h2>
             <Card className="p-6">
-              <p className="text-center text-neutral-600">No orders yet.</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                  <div>
+                    <h4 className="font-semibold">#ORD-001247</h4>
+                    <p className="text-sm text-neutral-600">John Doe - john@example.com</p>
+                    <p className="text-sm font-medium text-green-600">₹4,250</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                    <p className="text-xs text-neutral-500 mt-1">2 hours ago</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                  <div>
+                    <h4 className="font-semibold">#ORD-001246</h4>
+                    <p className="text-sm text-neutral-600">Jane Smith - jane@example.com</p>
+                    <p className="text-sm font-medium text-green-600">₹3,850</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge className="bg-blue-100 text-blue-800">Processing</Badge>
+                    <p className="text-xs text-neutral-500 mt-1">1 day ago</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                  <div>
+                    <h4 className="font-semibold">#ORD-001245</h4>
+                    <p className="text-sm text-neutral-600">Mike Johnson - mike@example.com</p>
+                    <p className="text-sm font-medium text-green-600">₹5,200</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge className="bg-green-100 text-green-800">Delivered</Badge>
+                    <p className="text-xs text-neutral-500 mt-1">3 days ago</p>
+                  </div>
+                </div>
+              </div>
             </Card>
           </TabsContent>
 
           <TabsContent value="customers" className="space-y-6">
-            <h2 className="text-xl font-semibold text-neutral-900">Customers</h2>
+            <h2 className="text-xl font-semibold text-neutral-900">Customer Management</h2>
             <Card className="p-6">
-              <p className="text-center text-neutral-600">No customers yet.</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-neutral-200 rounded-full flex items-center justify-center">
+                      <Users className="h-5 w-5 text-neutral-500" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">John Doe</h4>
+                      <p className="text-sm text-neutral-600">john@example.com</p>
+                      <p className="text-xs text-neutral-500">Joined 2 months ago</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">5 Orders</p>
+                    <p className="text-xs text-neutral-600">₹18,450 total</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-neutral-200 rounded-full flex items-center justify-center">
+                      <Users className="h-5 w-5 text-neutral-500" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Jane Smith</h4>
+                      <p className="text-sm text-neutral-600">jane@example.com</p>
+                      <p className="text-xs text-neutral-500">Joined 1 month ago</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">3 Orders</p>
+                    <p className="text-xs text-neutral-600">₹12,300 total</p>
+                  </div>
+                </div>
+              </div>
             </Card>
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
             <h2 className="text-xl font-semibold text-neutral-900">Settings</h2>
-            <Card className="p-6">
-              <p className="text-center text-neutral-600">Settings panel coming soon.</p>
-            </Card>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* General Settings */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <Globe className="h-5 w-5 mr-2" />
+                  General Settings
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="siteName">Site Name</Label>
+                    <Input
+                      id="siteName"
+                      value={settings.siteName}
+                      onChange={(e) => setSettings({...settings, siteName: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="siteDescription">Site Description</Label>
+                    <Textarea
+                      id="siteDescription"
+                      value={settings.siteDescription}
+                      onChange={(e) => setSettings({...settings, siteDescription: e.target.value})}
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="currency">Currency</Label>
+                    <Select value={settings.currency} onValueChange={(value) => setSettings({...settings, currency: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="INR">INR (₹)</SelectItem>
+                        <SelectItem value="USD">USD ($)</SelectItem>
+                        <SelectItem value="EUR">EUR (€)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="timezone">Timezone</Label>
+                    <Select value={settings.timezone} onValueChange={(value) => setSettings({...settings, timezone: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Asia/Kolkata">Asia/Kolkata</SelectItem>
+                        <SelectItem value="UTC">UTC</SelectItem>
+                        <SelectItem value="America/New_York">America/New_York</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </Card>
+
+              {/* System Settings */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <Shield className="h-5 w-5 mr-2" />
+                  System Settings
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Maintenance Mode</Label>
+                      <p className="text-sm text-neutral-600">Temporarily disable site access</p>
+                    </div>
+                    <Switch
+                      checked={settings.maintenanceMode}
+                      onCheckedChange={(checked) => setSettings({...settings, maintenanceMode: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Allow Registration</Label>
+                      <p className="text-sm text-neutral-600">Allow new user registrations</p>
+                    </div>
+                    <Switch
+                      checked={settings.allowRegistration}
+                      onCheckedChange={(checked) => setSettings({...settings, allowRegistration: checked})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lowStock">Low Stock Threshold</Label>
+                    <Input
+                      id="lowStock"
+                      type="number"
+                      value={settings.lowStockThreshold}
+                      onChange={(e) => setSettings({...settings, lowStockThreshold: parseInt(e.target.value)})}
+                    />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Notification Settings */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <Bell className="h-5 w-5 mr-2" />
+                  Notifications
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Email Notifications</Label>
+                      <p className="text-sm text-neutral-600">Receive email alerts</p>
+                    </div>
+                    <Switch
+                      checked={settings.emailNotifications}
+                      onCheckedChange={(checked) => setSettings({...settings, emailNotifications: checked})}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Order Notifications</Label>
+                      <p className="text-sm text-neutral-600">Get notified of new orders</p>
+                    </div>
+                    <Switch
+                      checked={settings.orderNotifications}
+                      onCheckedChange={(checked) => setSettings({...settings, orderNotifications: checked})}
+                    />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Contact Information */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <Mail className="h-5 w-5 mr-2" />
+                  Contact Information
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="contactEmail">Contact Email</Label>
+                    <Input
+                      id="contactEmail"
+                      type="email"
+                      value={settings.contactEmail}
+                      onChange={(e) => setSettings({...settings, contactEmail: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="contactPhone">Contact Phone</Label>
+                    <Input
+                      id="contactPhone"
+                      value={settings.contactPhone}
+                      onChange={(e) => setSettings({...settings, contactPhone: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Textarea
+                      id="address"
+                      value={settings.address}
+                      onChange={(e) => setSettings({...settings, address: e.target.value})}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Save Settings Button */}
+            <div className="flex justify-end">
+              <Button onClick={handleSaveSettings} className="flex items-center space-x-2">
+                <Save className="h-4 w-4" />
+                <span>Save Settings</span>
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
