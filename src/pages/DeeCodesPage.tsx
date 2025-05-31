@@ -47,6 +47,7 @@ const DeeCodesPage = () => {
           *,
           product_images (
             id,
+            product_id,
             image_url,
             is_primary,
             sort_order
@@ -59,9 +60,15 @@ const DeeCodesPage = () => {
 
       // Transform the data to match our interface
       const transformedProducts: Product[] = (productsData?.map(product => ({
-  ...product,
-  images: product.product_images || []
-})) as Product[]) || [];
+        ...product,
+        images: product.product_images?.map(img => ({
+          id: img.id,
+          product_id: img.product_id,
+          image_url: img.image_url,
+          is_primary: img.is_primary,
+          sort_order: img.sort_order
+        })) || []
+      })) as Product[]) || [];
 
       setProducts(transformedProducts);
     } catch (err) {
@@ -72,21 +79,21 @@ const DeeCodesPage = () => {
 
   // Fetch categories
   const fetchCategories = async () => {
-  try {
-    // @ts-ignore
-    const { data: categoriesData, error: categoriesError } = await supabase
-  .from('categories' as any)
-  .select('*')
-  .eq('brand', 'deecodes');
-    
-    if (categoriesError) throw categoriesError;
-    // @ts-ignore
-    setCategories(categoriesData || []);
-  } catch (err) {
-    console.error('Error fetching categories:', err);
-    setError('Failed to load categories');
-  }
-};
+    try {
+      // @ts-ignore
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('categories' as any)
+        .select('*')
+        .eq('brand', 'deecodes');
+      
+      if (categoriesError) throw categoriesError;
+      // @ts-ignore
+      setCategories(categoriesData || []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      setError('Failed to load categories');
+    }
+  };
 
   useEffect(() => {
     const loadData = async () => {

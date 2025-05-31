@@ -47,6 +47,7 @@ const BhyrossPage = () => {
           *,
           product_images (
             id,
+            product_id,
             image_url,
             is_primary,
             sort_order
@@ -60,7 +61,13 @@ const BhyrossPage = () => {
       // Transform the data to match our interface
       const transformedProducts: Product[] = (productsData?.map(product => ({
         ...product,
-        images: product.product_images || []
+        images: product.product_images?.map(img => ({
+          id: img.id,
+          product_id: img.product_id,
+          image_url: img.image_url,
+          is_primary: img.is_primary,
+          sort_order: img.sort_order
+        })) || []
       })) as Product[]) || [];
 
       setProducts(transformedProducts);
@@ -266,8 +273,7 @@ const BhyrossPage = () => {
     <div className="min-h-screen bg-white">
       <Navigation brand="bhyross" />
 
-      //hero section
-
+      {/* hero section */}
       <section className="hero">
         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
         <div className="hero-overlay"></div>
@@ -278,8 +284,7 @@ const BhyrossPage = () => {
         </div>
       </section>
 
-      //product section
-
+      {/* product section */}
       <section className="products-section">
         <h2 className="section-title bhyross">Featured Collection</h2>
         <div className="products-grid">
@@ -300,19 +305,18 @@ const BhyrossPage = () => {
                 <h3 className="product-name">{product.name}</h3>
                 <p className="product-price bhyross">${product.price}</p>
                 <Link 
-  to={`/bhyross/${product.category}/${product.id}`}
-  className="mt-2 inline-block bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition-colors"
->
-  View Details
-</Link>
+                  to={`/bhyross/${product.category}/${product.id}`}
+                  className="mt-2 inline-block bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition-colors"
+                >
+                  View Details
+                </Link>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-//collection showcase section
-
+      {/* collection showcase section */}
       <section className="collection-showcase">
         <div className="collection-content">
           <div className="collection-text bhyross">
@@ -339,6 +343,7 @@ const BhyrossPage = () => {
         </div>
       </section>
 
+      {/* process section */}
       <section className="process-section">
         <div className="process-container">
           <h2 className="section-title bhyross">The Bhyross Process</h2>
