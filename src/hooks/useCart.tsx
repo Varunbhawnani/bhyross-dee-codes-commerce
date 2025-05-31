@@ -1,9 +1,9 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { triggerCartWebhook } from '@/utils/webhookService';
 
 export interface CartItem {
   id: string;
@@ -57,6 +57,15 @@ export const useCart = () => {
     mutationFn: async ({ productId, size, quantity = 1 }: { productId: string; size: number; quantity?: number }) => {
       if (!user) throw new Error('User not authenticated');
 
+      // Get product details for webhook
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .select('id, name, price, brand')
+        .eq('id', productId)
+        .single();
+
+      if (productError) throw productError;
+
       // Check if item already exists
       const { data: existingItem } = await supabase
         .from('cart_items')
@@ -66,17 +75,21 @@ export const useCart = () => {
         .eq('size', size)
         .single();
 
+      let result;
+      let finalQuantity = quantity;
+
       if (existingItem) {
         // Update quantity
+        finalQuantity = existingItem.quantity + quantity;
         const { data, error } = await supabase
           .from('cart_items')
-          .update({ quantity: existingItem.quantity + quantity })
+          .update({ quantity: finalQuantity })
           .eq('id', existingItem.id)
           .select()
           .single();
 
         if (error) throw error;
-        return data;
+        result = data;
       } else {
         // Insert new item
         const { data, error } = await supabase
@@ -91,8 +104,36 @@ export const useCart = () => {
           .single();
 
         if (error) throw error;
-        return data;
+        result = data;
       }
+
+      // Trigger webhook with product information
+      const webhookPayload = {
+        event: "item_added_to_cart",
+        timestamp: new Date().toISOString(),
+        user: {
+          id: user.id,
+          email: user.email || "",
+        },
+        product: {
+          id: product.id,
+          name: product.name,
+          brand: product.brand,
+          price: product.price,
+        },
+        cartItem: {
+          quantity: finalQuantity,
+          size: size,
+        },
+        message: `Customer ${user.email} added ${quantity} x ${product.name} (Size: ${size}) to cart. Total quantity for this item: ${finalQuantity}. Product ID: ${product.id}, Brand: ${product.brand}, Price: ₹${product.price}`
+      };
+
+      // Trigger webhook (don't await to avoid blocking the UI)
+      triggerCartWebhook(webhookPayload).catch(error => {
+        console.error("Webhook trigger failed:", error);
+      });
+
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
