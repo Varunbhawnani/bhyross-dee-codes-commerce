@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,7 +23,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Function to check admin status
   const checkAdminStatus = async (userId: string) => {
-    
     try {
       const { data, error } = await supabase
         .from('user_roles')
@@ -88,17 +88,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(session?.user ?? null);
 
           if (session?.user) {
-            // Check admin status for authenticated users
-            const adminStatus = await checkAdminStatus(session.user.id);
-            setIsAdmin(adminStatus);
+            // Use setTimeout to prevent blocking the auth state change
+            setTimeout(async () => {
+              if (mounted) {
+                const adminStatus = await checkAdminStatus(session.user.id);
+                setIsAdmin(adminStatus);
+              }
+            }, 0);
           } else {
             setIsAdmin(false);
           }
 
-          // Only set loading to false after we've processed everything
-          if (loading) {
-            setLoading(false);
-          }
+          // Set loading to false immediately for auth state changes
+          setLoading(false);
         }
       }
     );
@@ -107,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [loading]);
+  }, []); // Remove loading dependency to prevent infinite loop
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     try {

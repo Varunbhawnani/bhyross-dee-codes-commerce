@@ -47,6 +47,39 @@ export type Database = {
           },
         ]
       }
+      categories: {
+        Row: {
+          brand: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          path: string
+          updated_at: string | null
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          path: string
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          path?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string | null
@@ -131,6 +164,88 @@ export type Database = {
         }
         Relationships: []
       }
+      product_images: {
+        Row: {
+          alt_text: string | null
+          created_at: string | null
+          id: string
+          image_url: string
+          is_primary: boolean | null
+          product_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string | null
+          id?: string
+          image_url: string
+          is_primary?: boolean | null
+          product_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          is_primary?: boolean | null
+          product_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants: {
+        Row: {
+          additional_price: number | null
+          color: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          product_id: string
+          size: string | null
+          sku: string | null
+          stock_quantity: number | null
+        }
+        Insert: {
+          additional_price?: number | null
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          product_id: string
+          size?: string | null
+          sku?: string | null
+          stock_quantity?: number | null
+        }
+        Update: {
+          additional_price?: number | null
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          product_id?: string
+          size?: string | null
+          sku?: string | null
+          stock_quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           brand: Database["public"]["Enums"]["brand_type"]
@@ -143,6 +258,7 @@ export type Database = {
           name: string
           price: number
           sizes: number[] | null
+          sku: string | null
           stock_quantity: number
           updated_at: string | null
         }
@@ -157,6 +273,7 @@ export type Database = {
           name: string
           price: number
           sizes?: number[] | null
+          sku?: string | null
           stock_quantity?: number
           updated_at?: string | null
         }
@@ -171,6 +288,7 @@ export type Database = {
           name?: string
           price?: number
           sizes?: number[] | null
+          sku?: string | null
           stock_quantity?: number
           updated_at?: string | null
         }

@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,7 +23,7 @@ export interface CartItem {
 }
 
 export const useCart = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -49,7 +50,7 @@ export const useCart = () => {
       if (error) throw error;
       return data as CartItem[];
     },
-    enabled: !!user,
+    enabled: !!user && !authLoading,
   });
 
   const addToCartMutation = useMutation({
