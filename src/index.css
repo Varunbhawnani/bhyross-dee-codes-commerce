@@ -224,7 +224,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0.75rem 1rem;
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(10px);
     position: sticky;
@@ -233,7 +233,7 @@
   }
 
   .logo {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
     text-decoration: none;
   }
@@ -263,7 +263,7 @@
 
   .hero {
     position: relative;
-    height: 60vh;
+    height: 50vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -299,21 +299,21 @@
   }
 
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: bold;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
   }
 
   .hero-subtitle {
-    font-size: 1.125rem;
-    margin-bottom: 2rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
   }
 
   .cta-button {
-    padding: 0.875rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
     text-decoration: none;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -330,15 +330,25 @@
     transform: translateY(-2px);
   }
 
+  .cta-button.dee-codes {
+    background: #FF6B6B;
+    color: white;
+  }
+
+  .cta-button.dee-codes:hover {
+    background: #FF5252;
+    transform: translateY(-2px);
+  }
+
   .products-section {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     background: #f8f8f8;
   }
 
   .section-title {
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
     font-weight: bold;
   }
 
@@ -346,12 +356,17 @@
     color: #8B4513;
   }
 
+  .section-title.dee-codes {
+    color: #FF6B6B;
+  }
+
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 0.5rem;
   }
 
   .product-card {
@@ -361,6 +376,7 @@
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
+    max-width: 100%;
   }
 
   .product-card:hover {
@@ -368,12 +384,15 @@
   }
 
   .product-image {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
   }
 
   .product-name {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
     color: #333;
@@ -382,14 +401,19 @@
   .product-price {
     font-size: 1.125rem;
     font-weight: bold;
+    margin-bottom: 0.75rem;
   }
 
   .product-price.bhyross {
     color: #8B4513;
   }
 
+  .product-price.dee-codes {
+    color: #FF6B6B;
+  }
+
   .collection-showcase {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     background: white;
   }
 
@@ -398,60 +422,64 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
   }
 
   .collection-text h2 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
     color: #8B4513;
   }
 
   .collection-text p {
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.6;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     color: #666;
   }
 
   .collection-stats {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .stat-item {
     text-align: center;
-    flex: 1;
-    min-width: 80px;
   }
 
   .stat-number {
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 
   .stat-number.bhyross {
     color: #8B4513;
   }
 
+  .stat-number.dee-codes {
+    color: #FF6B6B;
+  }
+
   .stat-label {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: #666;
   }
 
   .collection-image {
     width: 100%;
+    max-height: 250px;
+    object-fit: cover;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   }
 
   .process-section {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     background: #f8f8f8;
   }
 
@@ -462,50 +490,54 @@
 
   .process-steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
 
   .process-step {
     background: white;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
 
   .process-number {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: bold;
     color: white;
-    margin: 0 auto 1rem;
+    margin: 0 auto 0.75rem;
   }
 
   .process-number.bhyross {
     background: #8B4513;
   }
 
+  .process-number.dee-codes {
+    background: #FF6B6B;
+  }
+
   .process-step h3 {
-    font-size: 1.125rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
     color: #333;
   }
 
   .process-step p {
     color: #666;
     line-height: 1.6;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .testimonials-section {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     background: white;
   }
 
@@ -516,55 +548,55 @@
 
   .testimonials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
 
   .testimonial-card {
     background: #f8f8f8;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
 
   .stars {
     color: #FFD700;
-    font-size: 1rem;
-    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
   }
 
   .testimonial-quote {
     font-style: italic;
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #333;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .testimonial-author {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .author-avatar {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .author-info h4 {
     margin-bottom: 0.2rem;
     color: #333;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .author-info p {
     color: #666;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .why-section {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     background: #f8f8f8;
   }
 
@@ -575,81 +607,93 @@
 
   .why-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
 
   .why-item {
     background: white;
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
 
   .why-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
   }
 
   .why-icon.bhyross {
     color: #8B4513;
   }
 
+  .why-icon.dee-codes {
+    color: #FF6B6B;
+  }
+
   .why-title {
-    font-size: 1.125rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
     color: #333;
   }
 
   .why-description {
     color: #666;
     line-height: 1.6;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .newsletter-section {
-    padding: 2rem 1rem;
-    background: #8B4513;
-    color: white;
+    padding: 1.5rem 0.75rem;
     text-align: center;
   }
 
+  .newsletter-section.bhyross {
+    background: #8B4513;
+    color: white;
+  }
+
+  .newsletter-section.dee-codes {
+    background: #FF6B6B;
+    color: white;
+  }
+
   .newsletter-title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .newsletter-subtitle {
-    font-size: 1rem;
-    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
     opacity: 0.9;
   }
 
   .newsletter-form {
     display: flex;
-    gap: 1rem;
-    max-width: 400px;
-    margin: 0 auto;
     flex-direction: column;
+    gap: 0.75rem;
+    max-width: 350px;
+    margin: 0 auto;
   }
 
   .newsletter-input {
-    flex: 1;
     padding: 0.75rem;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .newsletter-btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
     transition: background 0.3s ease;
+    font-size: 0.9rem;
   }
 
   .newsletter-btn.bhyross {
@@ -661,27 +705,40 @@
     background: #CD853F;
   }
 
+  .newsletter-btn.dee-codes {
+    background: #FF5252;
+    color: white;
+  }
+
+  .newsletter-btn.dee-codes:hover {
+    background: #FF3030;
+  }
+
   .footer {
     background: #333;
     color: white;
-    padding: 2rem 1rem 1rem;
+    padding: 1.5rem 0.75rem 1rem;
   }
 
   .footer-content {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
   .footer-section h3 {
-    margin-bottom: 1rem;
-    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
   }
 
   .footer-section.bhyross h3 {
     color: #8B4513;
+  }
+
+  .footer-section.dee-codes h3 {
+    color: #FF6B6B;
   }
 
   .footer-links {
@@ -697,7 +754,7 @@
     color: #ccc;
     text-decoration: none;
     transition: color 0.3s ease;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .footer-links a:hover {
@@ -711,7 +768,7 @@
   }
 
   .social-link {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     text-decoration: none;
     transition: transform 0.3s ease;
   }
@@ -721,79 +778,34 @@
   }
 
   .footer-bottom {
-    margin-top: 2rem;
-    padding-top: 2rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
     border-top: 1px solid #555;
     text-align: center;
     color: #ccc;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
 
-  /* Mobile Responsive Improvements */
-  @media (max-width: 768px) {
+  /* Mobile First - Small screens (default) */
+  @media (max-width: 479px) {
     .choice-container {
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1rem;
+      padding: 0 0.5rem;
     }
     
     .brand-button {
-      height: 250px;
+      height: 200px;
+      max-width: 280px;
+    }
+    
+    .button-text {
+      font-size: 0.9rem;
+      bottom: 12px;
     }
     
     .hero {
-      height: 50vh;
-    }
-    
-    .hero-title {
-      font-size: 2rem;
-    }
-    
-    .hero-subtitle {
-      font-size: 1rem;
-    }
-    
-    .section-title {
-      font-size: 1.75rem;
-    }
-    
-    .collection-content {
-      grid-template-columns: 1fr;
-    }
-    
-    .collection-text h2 {
-      font-size: 1.75rem;
-    }
-    
-    .newsletter-form {
-      flex-direction: column;
-    }
-    
-    .newsletter-title {
-      font-size: 1.75rem;
-    }
-    
-    .collection-stats {
-      justify-content: center;
-      gap: 1rem;
-    }
-    
-    .stat-item {
-      min-width: 60px;
-    }
-    
-    .logo {
-      font-size: 1.25rem;
-    }
-    
-    .home-button {
-      font-size: 0.75rem;
-      padding: 0.375rem 0.75rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .dual-landing {
-      padding: 0.5rem;
+      height: 40vh;
     }
     
     .hero-title {
@@ -804,54 +816,212 @@
       font-size: 0.875rem;
     }
     
-    .button-text {
+    .section-title {
+      font-size: 1.25rem;
+    }
+    
+    .collection-text h2 {
+      font-size: 1.25rem;
+    }
+    
+    .newsletter-title {
+      font-size: 1.25rem;
+    }
+    
+    .logo {
       font-size: 1rem;
-      bottom: 15px;
     }
     
-    .products-grid,
-    .process-steps,
-    .testimonials-grid,
-    .why-grid {
-      grid-template-columns: 1fr;
+    .home-button {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
     }
-    
-    .collection-stats {
-      flex-direction: column;
-      align-items: center;
+
+    .header {
+      padding: 0.5rem 0.75rem;
     }
-    
-    .stat-item {
-      width: 100%;
-      max-width: 120px;
+
+    .products-section,
+    .collection-showcase,
+    .process-section,
+    .testimonials-section,
+    .why-section,
+    .newsletter-section {
+      padding: 1rem 0.5rem;
+    }
+
+    .product-image {
+      height: 180px;
+    }
+
+    .collection-image {
+      max-height: 200px;
     }
   }
 
-  /* Larger tablets and desktops */
-  @media (min-width: 769px) {
+  /* Small tablets and large phones */
+  @media (min-width: 480px) and (max-width: 767px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .testimonials-grid,
+    .why-grid,
+    .process-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .hero {
+      height: 45vh;
+    }
+
+    .hero-title {
+      font-size: 1.75rem;
+    }
+
+    .product-image {
+      height: 160px;
+    }
+
+    .brand-button {
+      height: 220px;
+    }
+
+    .collection-stats {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+  }
+
+  /* Tablets */
+  @media (min-width: 768px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    .testimonials-grid,
+    .why-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .process-steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
     .newsletter-form {
       flex-direction: row;
+      max-width: 400px;
     }
     
     .collection-content {
       grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+      gap: 2rem;
     }
     
     .hero {
-      height: 80vh;
+      height: 55vh;
     }
     
     .hero-title {
-      font-size: 4rem;
+      font-size: 2.5rem;
     }
     
     .hero-subtitle {
-      font-size: 1.5rem;
+      font-size: 1.125rem;
     }
     
     .logo {
+      font-size: 1.5rem;
+    }
+
+    .footer-content {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+    }
+
+    .collection-text h2 {
+      font-size: 1.75rem;
+    }
+
+    .product-image {
+      height: 200px;
+    }
+  }
+
+  /* Large tablets and small desktops */
+  @media (min-width: 1024px) {
+    .products-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .testimonials-grid,
+    .why-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .process-steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .footer-content {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .hero {
+      height: 65vh;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+    }
+
+    .section-title {
       font-size: 2rem;
+    }
+
+    .collection-text h2 {
+      font-size: 2rem;
+    }
+  }
+
+  /* Large desktops */
+  @media (min-width: 1280px) {
+    .hero {
+      height: 70vh;
+    }
+    
+    .hero-title {
+      font-size: 3.5rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.375rem;
+    }
+    
+    .logo {
+      font-size: 1.75rem;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .process-steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .footer-content {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }
