@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Search, LogIn, LogOut, Menu, X } from 'lucide-react';
@@ -45,8 +46,9 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      console.log('Searching for:', searchQuery);
-      navigate(`/${brand || 'bhyross'}?search=${encodeURIComponent(searchQuery)}`);
+      // Navigate to the brand page with search parameter
+      const brandPath = brand || 'bhyross';
+      navigate(`/${brandPath}/${categories[0].path}?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
       setIsSearchOpen(false);
     } else {
@@ -60,6 +62,16 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleDashboardClick = () => {
+    if (brand) {
+      // If we're on a brand page, go to that brand's main page
+      navigate(`/${brand}`);
+    } else {
+      // If we're on the landing page, go to landing page
+      navigate('/');
+    }
   };
 
   return (
@@ -87,12 +99,12 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
             {/* Desktop Category Navigation */}
             {brand && (
               <div className="hidden md:flex items-center space-x-8">
-                <Link
-                  to="/"
+                <button
+                  onClick={handleDashboardClick}
                   className="text-sm font-medium text-neutral-600 hover:text-neutral-900 px-3 py-1 border border-neutral-300 rounded-md transition-colors duration-200 hover:border-neutral-400"
                 >
                   Dashboard
-                </Link> 
+                </button> 
                 {categories.map((category) => (
                   <Link
                     key={category.path}
@@ -254,13 +266,15 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
                   {category.name}
                 </Link>
               ))}
-              <Link
-                to="/"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border border-neutral-300 mt-3"
+              <button
+                onClick={() => {
+                  handleDashboardClick();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="block w-full text-left py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border border-neutral-300 mt-3"
               >
                 Dashboard
-              </Link>
+              </button>
             </div>
           )}
 

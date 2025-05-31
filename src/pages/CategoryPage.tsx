@@ -1,60 +1,106 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+
+import React, { useState, useMemo } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useCart } from '@/hooks/useCart';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
-import { useToast } from '@/hooks/use-toast';
+import { Loader2, Filter } from 'lucide-react';
 
 const CategoryPage = () => {
-  const { category: categoryParam } = useParams();
-  const brand = location.pathname.includes('/bhyross/') ? 'bhyross' : 'deecodes';
-  const { addToCart } = useCart();
-  const { toast } = useToast();
+  const { category } = useParams<{ category: string }>();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
   
-  // Type guard to ensure category is valid
-  const isValidCategory = (cat: string | undefined): cat is 'oxford' | 'derby' | 'monk-strap' | 'loafer' => {
-    return cat === 'oxford' || cat === 'derby' || cat === 'monk-strap' || cat === 'loafer';
-  };
+  // Determine brand from the current path
+  const brand = window.location.pathname.includes('/bhyross/') ? 'bhyross' : 'deecodes';
   
-  const category = isValidCategory(categoryParam) ? categoryParam : undefined;
-  const { data: products = [], isLoading } = useProducts(brand, category);
+  const [sortBy, setSortBy] = useState<string>('name-asc');
+  const [priceRange, setPriceRange] = useState<string>('all');
+  
+  const { data: products, isLoading, error } = useProducts(
+    brand as 'bhyross' | 'deecodes',
+    category as 'oxford' | 'derby' | 'monk-strap' | 'loafer'
+  );
 
-  const handleAddToCart = (product: any) => {
-    addToCart({
-      productId: product.id,
-      size: 9, // Default size
-    });
-  };
+  // Filter and sort products
+  const filteredAndSortedProducts = useMemo(() => {
+    if (!products) return [];
 
-  const categoryInfo = {
-    oxford: {
-      title: 'Oxford Shoes',
-      description: 'The quintessential formal shoe with closed lacing system, perfect for business meetings and formal events.'
-    },
-    derby: {
-      title: 'Derby Shoes',
-      description: 'Versatile open-lace shoes that offer both comfort and style for business casual and formal occasions.'
-    },
-    'monk-strap': {
-      title: 'Monk Strap Shoes',
-      description: 'Distinguished shoes featuring buckle closures, offering a unique alternative to traditional laced footwear.'
-    },
-    loafer: {
-      title: 'Loafer Shoes',
-      description: 'Slip-on shoes that combine elegance with convenience, ideal for both professional and social settings.'
+    let filtered = products;
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
-  };
 
-  const currentCategory = category ? categoryInfo[category] : undefined;
+    // Apply price range filter
+    if (priceRange !== 'all') {
+      const [min, max] = priceRange.split('-').map(Number);
+      filtered = filtered.filter(product => {
+        if (max) {
+          return product.price >= min && product.price <= max;
+        } else {
+          return product.price >= min;
+        }
+      });
+    }
+
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'name-asc':
+          return a.name.localeCompare(b.name);
+        case 'name-desc':
+          return b.name.localeCompare(a.name);
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [products, searchQuery, sortBy, priceRange]);
+
+  const categoryDisplayName = category?.split('-').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ') || '';
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
         <Navigation brand={brand} />
-        <div className="pt-24 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900"></div>
+        <div className="pt-16 min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation brand={brand} />
+        <div className="pt-16 min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 text-lg">Error loading products</p>
+            <p className="text-gray-600 mt-2">Please try again later</p>
+          </div>
         </div>
       </div>
     );
@@ -64,103 +110,121 @@ const CategoryPage = () => {
     <div className="min-h-screen bg-white">
       <Navigation brand={brand} />
       
-      {/* Breadcrumb */}
-      <div className="pt-20 pb-4 bg-neutral-50">
+      <div className="pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="text-sm text-neutral-600">
-            <Link to="/" className="hover:text-neutral-900">Home</Link>
-            <span className="mx-2">/</span>
-            <Link to={`/${brand}`} className="hover:text-neutral-900 capitalize">{brand}</Link>
-            <span className="mx-2">/</span>
-            <span className="text-neutral-900 capitalize">{categoryParam?.replace('-', ' ')}</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Category Header */}
-      <section className="py-12 bg-gradient-to-br from-neutral-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold text-neutral-900 mb-4">
-              {currentCategory?.title || 'Products'}
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {categoryDisplayName} Collection
             </h1>
-            <p className="text-lg text-neutral-600 mb-8">
-              {currentCategory?.description || 'Browse our collection of premium footwear.'}
+            {searchQuery && (
+              <p className="text-gray-600">
+                Search results for "{searchQuery}" in {categoryDisplayName}
+              </p>
+            )}
+            <p className="text-gray-600">
+              {filteredAndSortedProducts.length} product{filteredAndSortedProducts.length !== 1 ? 's' : ''} found
             </p>
-            <div className="flex items-center justify-center space-x-8 text-sm text-neutral-500">
-              <span>Free Shipping on orders over ₹{brand === 'bhyross' ? '10,000' : '2,500'}</span>
-              <span>•</span>
-              <span>Easy Returns</span>
-              <span>•</span>
-              <span>Quality Guarantee</span>
+          </div>
+
+          {/* Filters and Sort */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">Filters:</span>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              {/* Sort By */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 whitespace-nowrap">Sort by:</label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                    <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                    <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Price Range */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 whitespace-nowrap">Price range:</label>
+                <Select value={priceRange} onValueChange={setPriceRange}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Prices</SelectItem>
+                    <SelectItem value="0-200">$0 - $200</SelectItem>
+                    <SelectItem value="200-400">$200 - $400</SelectItem>
+                    <SelectItem value="400-600">$400 - $600</SelectItem>
+                    <SelectItem value="600">$600+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Products Grid */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-semibold text-neutral-900">
-              {products.length} Products
-            </h2>
-            <select className="border border-neutral-300 rounded-lg px-4 py-2 text-sm">
-              <option>Sort by: Featured</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-            </select>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product, index) => (
-              <Card key={product.id} className="group overflow-hidden hover-lift animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
-                <div className="relative">
-                  <img
-                    src={product.images[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop&crop=center'}
-                    alt={product.name}
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                
-                <div className="p-6">
-                  <h3 className="font-semibold text-lg text-neutral-900 mb-2 group-hover:text-neutral-700 transition-colors">
-                    {product.name}
-                  </h3>
-                  
-                  <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
-                    {product.description}
-                  </p>
-                  
-                  <div className="flex items-baseline space-x-2 mb-4">
-                    <span className="text-2xl font-bold text-neutral-900">
-                      ₹{product.price.toLocaleString()}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Link to={`/${brand}/${categoryParam}/${product.id}`}>
-                      <Button variant="outline" className="w-full">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Button 
-                      onClick={() => handleAddToCart(product)}
-                      className={`w-full ${
-                        brand === 'bhyross' 
-                          ? 'bg-bhyross-500 hover:bg-bhyross-600' 
-                          : 'bg-deecodes-500 hover:bg-deecodes-600'
-                      }`}
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+          {/* Products Grid */}
+          {filteredAndSortedProducts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">
+                {searchQuery ? `No products found for "${searchQuery}"` : 'No products found in this category'}
+              </p>
+              <p className="text-gray-400 mt-2">
+                Try adjusting your filters or search terms
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredAndSortedProducts.map((product) => (
+                <Card key={product.id} className="group overflow-hidden hover:shadow-lg transition-shadow">
+                  <Link to={`/${brand}/${category}/${product.id}`}>
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={product.images?.[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop'}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop';
+                        }}
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+                        {product.name}
+                      </h3>
+                      {product.description && (
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {product.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xl font-bold ${brand === 'bhyross' ? 'text-bhyross-600' : 'text-deecodes-600'}`}>
+                          ${product.price}
+                        </span>
+                        <Button 
+                          size="sm" 
+                          className={`${brand === 'bhyross' ? 'bg-bhyross-600 hover:bg-bhyross-700' : 'bg-deecodes-600 hover:bg-deecodes-700'} text-white`}
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
-      </section>
+      </div>
     </div>
   );
 };
