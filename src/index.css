@@ -3,7 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import './styles/brands.css';
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -134,20 +134,6 @@
     background-clip: text;
   }
 
-  .brand-bhyross {
-    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .brand-deecodes {
-    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
   .dual-landing {
     height: 100vh;
     display: flex;
@@ -206,14 +192,6 @@
     z-index: 2;
   }
 
-  .brand-button.bhyross {
-    background: linear-gradient(135deg, #8B4513, #A0522D);
-  }
-
-  .brand-button.dee-codes {
-    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
-  }
-
   /* Brand Landing Styles */
   .brand-landing {
     min-height: 100vh;
@@ -236,14 +214,6 @@
     font-size: 1.25rem;
     font-weight: bold;
     text-decoration: none;
-  }
-
-  .logo.bhyross {
-    color: #8B4513;
-  }
-
-  .logo.dee {
-    color: #FF6B6B;
   }
 
   .home-button {
@@ -320,26 +290,6 @@
     display: inline-block;
   }
 
-  .cta-button.bhyross {
-    background: #8B4513;
-    color: white;
-  }
-
-  .cta-button.bhyross:hover {
-    background: #A0522D;
-    transform: translateY(-2px);
-  }
-
-  .cta-button.dee-codes {
-    background: #FF6B6B;
-    color: white;
-  }
-
-  .cta-button.dee-codes:hover {
-    background: #FF5252;
-    transform: translateY(-2px);
-  }
-
   .products-section {
     padding: 1.5rem 0.75rem;
     background: #f8f8f8;
@@ -350,14 +300,6 @@
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
     font-weight: bold;
-  }
-
-  .section-title.bhyross {
-    color: #8B4513;
-  }
-
-  .section-title.dee-codes {
-    color: #FF6B6B;
   }
 
   .products-grid {
@@ -404,14 +346,6 @@
     margin-bottom: 0.75rem;
   }
 
-  .product-price.bhyross {
-    color: #8B4513;
-  }
-
-  .product-price.dee-codes {
-    color: #FF6B6B;
-  }
-
   .collection-showcase {
     padding: 1.5rem 0.75rem;
     background: white;
@@ -429,7 +363,6 @@
   .collection-text h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    color: #8B4513;
   }
 
   .collection-text p {
@@ -455,14 +388,6 @@
     font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 0.25rem;
-  }
-
-  .stat-number.bhyross {
-    color: #8B4513;
-  }
-
-  .stat-number.dee-codes {
-    color: #FF6B6B;
   }
 
   .stat-label {
@@ -514,14 +439,6 @@
     font-weight: bold;
     color: white;
     margin: 0 auto 0.75rem;
-  }
-
-  .process-number.bhyross {
-    background: #8B4513;
-  }
-
-  .process-number.dee-codes {
-    background: #FF6B6B;
   }
 
   .process-step h3 {
@@ -625,14 +542,6 @@
     margin-bottom: 0.75rem;
   }
 
-  .why-icon.bhyross {
-    color: #8B4513;
-  }
-
-  .why-icon.dee-codes {
-    color: #FF6B6B;
-  }
-
   .why-title {
     font-size: 1rem;
     margin-bottom: 0.75rem;
@@ -648,16 +557,6 @@
   .newsletter-section {
     padding: 1.5rem 0.75rem;
     text-align: center;
-  }
-
-  .newsletter-section.bhyross {
-    background: #8B4513;
-    color: white;
-  }
-
-  .newsletter-section.dee-codes {
-    background: #FF6B6B;
-    color: white;
   }
 
   .newsletter-title {
@@ -696,24 +595,6 @@
     font-size: 0.9rem;
   }
 
-  .newsletter-btn.bhyross {
-    background: #A0522D;
-    color: white;
-  }
-
-  .newsletter-btn.bhyross:hover {
-    background: #CD853F;
-  }
-
-  .newsletter-btn.dee-codes {
-    background: #FF5252;
-    color: white;
-  }
-
-  .newsletter-btn.dee-codes:hover {
-    background: #FF3030;
-  }
-
   .footer {
     background: #333;
     color: white;
@@ -731,14 +612,6 @@
   .footer-section h3 {
     margin-bottom: 0.75rem;
     font-size: 1rem;
-  }
-
-  .footer-section.bhyross h3 {
-    color: #8B4513;
-  }
-
-  .footer-section.dee-codes h3 {
-    color: #FF6B6B;
   }
 
   .footer-links {
