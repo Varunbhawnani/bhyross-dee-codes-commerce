@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import LandingPage from './LandingPage';
+import '../styles/brands.css';
 
 const Index = () => {
   return <LandingPage />;
