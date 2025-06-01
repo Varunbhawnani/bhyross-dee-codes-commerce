@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useAllProducts, useProductStats } from '@/hooks/useProducts';
+// Add these imports to your AdminPage.tsx
+import MultiImageUploader from '@/components/MultiImageUploader';
+import { 
+  uploadMultipleImages, 
+  parseImageUrlsFromDatabase, 
+  formatImageUrlsForDatabase 
+} from '@/utils/imageUploadUtils';
 import { useProductOperations, ProductFormData } from '@/hooks/useProductOperations';
 import { 
   Package, 
@@ -40,6 +47,7 @@ import {
   Loader2
 } from 'lucide-react';
 
+
 const AdminPage = () => {
   const { user, isAdmin, loading } = useAuth();
   const { data: products = [], isLoading: productsLoading } = useAllProducts();
@@ -59,26 +67,27 @@ const AdminPage = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Form state for new/edit product
-  const [productForm, setProductForm] = useState<{
-    name: string;
-    description: string;
-    brand: 'bhyross' | 'deecodes';
-    category: 'oxford' | 'derby' | 'monk-strap' | 'loafer';
-    price: string;
-    stock_quantity: string;
-    sizes: number[];
-    images: string[];
-  }>({
-    name: '',
-    description: '',
-    brand: 'bhyross',
-    category: 'oxford',
-    price: '',
-    stock_quantity: '',
-    sizes: [],
-    images: []
-  });
+  // Add these state variables to your AdminPage component
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const uploaderRef = useRef<any>(null);
+
+  // Update your productForm state initialization to parse existing images
+  const initializeProductForm = (product?: any) => {
+    return {
+      name: product?.name || '',
+      description: product?.description || '',
+      brand: product?.brand || 'bhyross',
+      category: product?.category || 'oxford',
+      price: product?.price?.toString() || '',
+      stock_quantity: product?.stock_quantity?.toString() || '',
+      sizes: product?.sizes || [],
+      images: product ? parseImageUrlsFromDatabase(product.images) : []
+    };
+  };
+
+  // Update your form state initialization
+  const [productForm, setProductForm] = useState(initializeProductForm());
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -124,18 +133,17 @@ const AdminPage = () => {
     navigate('/');
   };
 
+  // Function to handle editing a product
   const handleEditProduct = (product: any) => {
     setEditingProduct(product);
-    setProductForm({
-      name: product.name,
-      description: product.description || '',
-      brand: product.brand,
-      category: product.category,
-      price: product.price.toString(),
-      stock_quantity: product.stock_quantity.toString(),
-      sizes: product.sizes || [],
-      images: product.images || []
-    });
+    setProductForm(initializeProductForm(product));
+    setShowAddProduct(true);
+  };
+
+  // Function to handle adding new product
+  const handleAddNewProduct = () => {
+    setProductForm(initializeProductForm());
+    setEditingProduct(null);
     setShowAddProduct(true);
   };
 
@@ -150,37 +158,60 @@ const AdminPage = () => {
     }
   };
 
-  const handleSaveProduct = () => {
-    const productData: ProductFormData = {
-      name: productForm.name,
-      description: productForm.description,
-      brand: productForm.brand,
-      category: productForm.category,
-      price: parseFloat(productForm.price),
-      stock_quantity: parseInt(productForm.stock_quantity),
-      sizes: productForm.sizes,
-      images: productForm.images
-    };
+  // Function to handle form submission with image upload
+  const handleProductSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUploading(true);
+    setUploadProgress(0);
 
-    if (editingProduct) {
-      updateProduct({ id: editingProduct.id, productData });
-    } else {
-      createProduct(productData);
+    try {
+      let finalImageUrls = [...productForm.images];
+
+      // Get new files to upload from the uploader component
+      const newFiles = uploaderRef.current?.getFilesForUpload() || [];
+      
+      if (newFiles.length > 0) {
+        // Upload new images
+        const newImageUrls = await uploadMultipleImages(
+          newFiles,
+          editingProduct?.id, // Pass product ID for folder organization
+          'products',
+          setUploadProgress
+        );
+        
+        finalImageUrls = [...finalImageUrls, ...newImageUrls];
+      }
+
+      // Prepare product data
+      const productData: ProductFormData = {
+        name: productForm.name,
+        description: productForm.description,
+        brand: productForm.brand,
+        category: productForm.category,
+        price: parseFloat(productForm.price),
+        stock_quantity: parseInt(productForm.stock_quantity),
+        sizes: productForm.sizes,
+        images: formatImageUrlsForDatabase(finalImageUrls)
+      };
+
+      if (editingProduct) {
+        await updateProduct({ id: editingProduct.id, productData });
+      } else {
+        await createProduct(productData);
+      }
+
+      // Reset form and close modals
+      setProductForm(initializeProductForm());
+      setEditingProduct(null);
+      setShowAddProduct(false);
+      setUploadProgress(0);
+      
+    } catch (error) {
+      console.error('Product submission error:', error);
+      // You might want to show a toast notification here
+    } finally {
+      setIsUploading(false);
     }
-    
-    // Reset form
-    setProductForm({
-      name: '',
-      description: '',
-      brand: 'bhyross',
-      category: 'oxford',
-      price: '',
-      stock_quantity: '',
-      sizes: [],
-      images: []
-    });
-    setEditingProduct(null);
-    setShowAddProduct(false);
   };
 
   const handleSaveSettings = async () => {
@@ -210,6 +241,177 @@ const AdminPage = () => {
       sizes: productForm.sizes.filter(s => s !== size)
     });
   };
+
+  // JSX for the product form (replace your existing form JSX)
+  const ProductForm = () => (
+    <form onSubmit={handleProductSubmit} className="space-y-6">
+      {/* Existing form fields */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="name">Product Name</Label>
+          <Input
+            id="name"
+            value={productForm.name}
+            onChange={(e) => setProductForm(prev => ({ ...prev, name: e.target.value }))}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="price">Price (₹)</Label>
+          <Input
+            id="price"
+            type="number"
+            step="0.01"
+            value={productForm.price}
+            onChange={(e) => setProductForm(prev => ({ ...prev, price: e.target.value }))}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="brand">Brand</Label>
+          <Select 
+            value={productForm.brand} 
+            onValueChange={(value: 'bhyross' | 'deecodes') => 
+              setProductForm(prev => ({ ...prev, brand: value }))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="bhyross">Bhyross</SelectItem>
+              <SelectItem value="deecodes">Dee Codes</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="category">Category</Label>
+          <Select 
+            value={productForm.category} 
+            onValueChange={(value: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => 
+              setProductForm(prev => ({ ...prev, category: value }))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="oxford">Oxford</SelectItem>
+              <SelectItem value="derby">Derby</SelectItem>
+              <SelectItem value="monk-strap">Monk Strap</SelectItem>
+              <SelectItem value="loafer">Loafer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="stock">Stock Quantity</Label>
+        <Input
+          id="stock"
+          type="number"
+          value={productForm.stock_quantity}
+          onChange={(e) => setProductForm(prev => ({ ...prev, stock_quantity: e.target.value }))}
+          required
+        />
+      </div>
+
+      <div>
+        <Label>Available Sizes</Label>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {[6, 7, 8, 9, 10, 11, 12].map(size => (
+            <Button
+              key={size}
+              type="button"
+              variant={productForm.sizes.includes(size) ? "default" : "outline"}
+              size="sm"
+              onClick={() => productForm.sizes.includes(size) ? removeSize(size) : addSize(size)}
+            >
+              {size}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={productForm.description}
+          onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
+          rows={4}
+        />
+      </div>
+
+      {/* Multi-Image Upload Section */}
+      <div>
+        <Label>Product Images</Label>
+        <MultiImageUploader
+          ref={uploaderRef}
+          images={productForm.images}
+          onChange={(images) => setProductForm(prev => ({ ...prev, images }))}
+          maxFileSize={5}
+          acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
+        />
+      </div>
+
+      {/* Upload Progress */}
+      {isUploading && (
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Uploading images...</span>
+            <span>{Math.round(uploadProgress)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Form Actions */}
+      <div className="flex justify-end gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setShowAddProduct(false);
+            setEditingProduct(null);
+            setProductForm(initializeProductForm());
+          }}
+          disabled={isUploading}
+        >
+          Cancel
+        </Button>
+        <Button 
+          type="submit" 
+          disabled={isCreating || isUpdating || isUploading}
+        >
+          {isUploading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Uploading...
+            </>
+          ) : isCreating || isUpdating ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              {editingProduct ? 'Updating...' : 'Creating...'}
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4 mr-2" />
+              {editingProduct ? 'Update Product' : 'Create Product'}
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  );
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -349,20 +551,7 @@ const AdminPage = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-neutral-900">Products</h2>
               <Button 
-                onClick={() => {
-                  setEditingProduct(null);
-                  setProductForm({
-                    name: '',
-                    description: '',
-                    brand: 'bhyross',
-                    category: 'oxford',
-                    price: '',
-                    stock_quantity: '',
-                    sizes: [],
-                    images: []
-                  });
-                  setShowAddProduct(true);
-                }}
+                onClick={handleAddNewProduct}
                 className="flex items-center space-x-2"
                 disabled={isCreating}
               >
@@ -377,108 +566,7 @@ const AdminPage = () => {
                 <h3 className="text-lg font-semibold mb-4">
                   {editingProduct ? 'Edit Product' : 'Add New Product'}
                 </h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Product Name *</Label>
-                    <Input
-                      id="name"
-                      value={productForm.name}
-                      onChange={(e) => setProductForm({...productForm, name: e.target.value})}
-                      placeholder="Enter product name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="price">Price (₹) *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      value={productForm.price}
-                      onChange={(e) => setProductForm({...productForm, price: e.target.value})}
-                      placeholder="Enter price"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="brand">Brand *</Label>
-                    <Select value={productForm.brand} onValueChange={(value: 'bhyross' | 'deecodes') => setProductForm({...productForm, brand: value})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="bhyross">Bhyross</SelectItem>
-                        <SelectItem value="deecodes">Dee Codes</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="category">Category *</Label>
-                    <Select value={productForm.category} onValueChange={(value: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => setProductForm({...productForm, category: value})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="oxford">Oxford</SelectItem>
-                        <SelectItem value="derby">Derby</SelectItem>
-                        <SelectItem value="monk-strap">Monk Strap</SelectItem>
-                        <SelectItem value="loafer">Loafer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="stock">Stock Quantity *</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      value={productForm.stock_quantity}
-                      onChange={(e) => setProductForm({...productForm, stock_quantity: e.target.value})}
-                      placeholder="Enter stock quantity"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label>Available Sizes</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {[6, 7, 8, 9, 10, 11, 12].map(size => (
-                        <Button
-                          key={size}
-                          type="button"
-                          variant={productForm.sizes.includes(size) ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => productForm.sizes.includes(size) ? removeSize(size) : addSize(size)}
-                        >
-                          {size}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={productForm.description}
-                      onChange={(e) => setProductForm({...productForm, description: e.target.value})}
-                      placeholder="Enter product description"
-                      rows={3}
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-end space-x-2 mt-4">
-                  <Button variant="outline" onClick={() => setShowAddProduct(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleSaveProduct}
-                    disabled={isCreating || isUpdating || !productForm.name || !productForm.price || !productForm.stock_quantity}
-                  >
-                    {(isCreating || isUpdating) ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Save className="h-4 w-4 mr-2" />
-                    )}
-                    {editingProduct ? 'Update' : 'Save'} Product
-                  </Button>
-                </div>
+                <ProductForm />
               </Card>
             )}
 

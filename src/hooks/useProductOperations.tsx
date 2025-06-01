@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
-import { toast } from '@/hooks/use-toast';
+import { deleteProductImage } from '@/utils/imageUpload';
+import { useToast } from '@/hooks/use-toast';
 
 export interface ProductFormData {
   name: string;
@@ -11,33 +11,21 @@ export interface ProductFormData {
   price: number;
   stock_quantity: number;
   sizes: number[];
-  images: string[];
-  is_active?: boolean;
+  images: string; // This field is ignored now - images are managed separately
 }
 
 export const useProductOperations = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  // Create Product
-  const createProductMutation = useMutation({
+  const createProduct = useMutation({
     mutationFn: async (productData: ProductFormData) => {
-      const insertData: TablesInsert<'products'> = {
-        name: productData.name,
-        description: productData.description,
-        brand: productData.brand,
-        category: productData.category,
-        price: productData.price,
-        stock_quantity: productData.stock_quantity,
-        sizes: productData.sizes,
-        images: productData.images,
-        is_active: productData.is_active ?? true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
+      // Don't include images in the product creation - they're managed separately
+      const { images, ...dbData } = productData;
+      
       const { data, error } = await supabase
         .from('products')
-        .insert([insertData])
+        .insert([dbData])
         .select()
         .single();
 
@@ -46,32 +34,30 @@ export const useProductOperations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product-stats'] });
       toast({
         title: "Success",
-        description: "Product created successfully!",
+        description: "Product created successfully",
       });
     },
     onError: (error) => {
-      console.error('Error creating product:', error);
+      console.error('Create product error:', error);
       toast({
         title: "Error",
-        description: "Failed to create product. Please try again.",
+        description: "Failed to create product",
         variant: "destructive",
       });
     },
   });
 
-  // Update Product
-  const updateProductMutation = useMutation({
-    mutationFn: async ({ id, productData }: { id: string; productData: Partial<ProductFormData> }) => {
-      const updateData: TablesUpdate<'products'> = {
-        ...productData,
-        updated_at: new Date().toISOString(),
-      };
-
+  const updateProduct = useMutation({
+    mutationFn: async ({ id, productData }: { id: string; productData: ProductFormData }) => {
+      // Don't include images in the product update - they're managed separately
+      const { images, ...dbData } = productData;
+      
       const { data, error } = await supabase
         .from('products')
-        .update(updateData)
+        .update(dbData)
         .eq('id', id)
         .select()
         .single();
@@ -81,90 +67,76 @@ export const useProductOperations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product-stats'] });
       toast({
         title: "Success",
-        description: "Product updated successfully!",
+        description: "Product updated successfully",
       });
     },
     onError: (error) => {
-      console.error('Error updating product:', error);
+      console.error('Update product error:', error);
       toast({
         title: "Error",
-        description: "Failed to update product. Please try again.",
+        description: "Failed to update product",
         variant: "destructive",
       });
     },
   });
 
-  // Delete Product (Soft delete by setting is_active to false)
-  const deleteProductMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      const { data, error } = await supabase
-        .from('products')
-        .update({ 
-          is_active: false,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', productId)
-        .select()
-        .single();
+  const deleteProduct = useMutation({
+    mutationFn: async (id: string) => {
+      try {
+        // First, get all product images from the product_images table
+        const { data: images, error: fetchError } = await supabase
+          .from('product_images')
+          .select('*')
+          .eq('product_id', id);
 
-      if (error) throw error;
-      return data;
+        if (fetchError) throw fetchError;
+
+        // Delete all associated images from storage and database
+        if (images && images.length > 0) {
+          await Promise.allSettled(
+            images.map(img => deleteProductImage(img.id, img.image_url))
+          );
+        }
+
+        // Delete the product from database
+        const { error } = await supabase
+          .from('products')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Delete product error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product-stats'] });
       toast({
         title: "Success",
-        description: "Product deleted successfully!",
+        description: "Product deleted successfully",
       });
     },
     onError: (error) => {
-      console.error('Error deleting product:', error);
+      console.error('Delete product error:', error);
       toast({
         title: "Error",
-        description: "Failed to delete product. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Hard Delete Product (permanent deletion)
-  const hardDeleteProductMutation = useMutation({
-    mutationFn: async (productId: string) => {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId);
-
-      if (error) throw error;
-      return productId;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast({
-        title: "Success",
-        description: "Product permanently deleted!",
-      });
-    },
-    onError: (error) => {
-      console.error('Error permanently deleting product:', error);
-      toast({
-        title: "Error",
-        description: "Failed to permanently delete product. Please try again.",
+        description: "Failed to delete product",
         variant: "destructive",
       });
     },
   });
 
   return {
-    createProduct: createProductMutation.mutate,
-    updateProduct: updateProductMutation.mutate,
-    deleteProduct: deleteProductMutation.mutate,
-    hardDeleteProduct: hardDeleteProductMutation.mutate,
-    isCreating: createProductMutation.isPending,
-    isUpdating: updateProductMutation.isPending,
-    isDeleting: deleteProductMutation.isPending,
-    isHardDeleting: hardDeleteProductMutation.isPending,
+    createProduct: createProduct.mutate,
+    updateProduct: updateProduct.mutate,
+    deleteProduct: deleteProduct.mutate,
+    isCreating: createProduct.isPending,
+    isUpdating: updateProduct.isPending,
+    isDeleting: deleteProduct.isPending,
   };
 };

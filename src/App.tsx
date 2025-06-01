@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,10 @@ import CartPage from "./pages/CartPage";
 import AuthPage from "./pages/AuthPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
+import AboutPage from "./pages/AboutPage";
+import CraftsmanshipPage from "./pages/CraftsmanshipPage";
+import CollectionsPage from "./pages/CollectionsPage";
+import SizeGuidePage from "./pages/SizeGuidePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +40,8 @@ const App = () => {
               <div className="min-h-screen">
                 <Routes>
                   <Route path="/" element={<LandingPage />} />
+<Route path="/deecodes" element={<DeeCodesPage />} />
+<Route path="/bhyross" element={<BhyrossPage />} />
                   <Route path="/auth" element={<AuthPage />} />
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="/bhyross" element={<BhyrossPage />} />
@@ -46,6 +51,13 @@ const App = () => {
                   <Route path="/bhyross/:category/:productId" element={<ProductPage />} />
                   <Route path="/deecodes/:category/:productId" element={<ProductPage />} />
                   <Route path="/cart" element={<CartPage />} />
+                  
+                  {/* Shared brand pages */}
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/craftsmanship" element={<CraftsmanshipPage />} />
+                  <Route path="/collections" element={<CollectionsPage />} />
+                  <Route path="/size-guide" element={<SizeGuidePage />} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>

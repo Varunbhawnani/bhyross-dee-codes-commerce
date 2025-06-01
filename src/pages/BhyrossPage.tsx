@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star, Award, Shield, Truck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import Footer from '@/components/Footer';
+
 
 // Types for your data
 interface ProductImage {
@@ -466,40 +468,7 @@ const BhyrossPage = () => {
         </div>
       </section>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-section bhyross">
-            <h3>Bhyross</h3>
-            <ul className="footer-links">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Craftsmanship</a></li>
-              <li><a href="#">Collections</a></li>
-              <li><a href="#">Size Guide</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3>Customer Service</h3>
-            <ul className="footer-links">
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Shipping Info</a></li>
-              <li><a href="#">Returns</a></li>
-              <li><a href="#">Care Guide</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3>Connect</h3>
-            <div className="social-links">
-              <a href="#" className="social-link">📘</a>
-              <a href="#" className="social-link">📷</a>
-              <a href="#" className="social-link">🐦</a>
-              <a href="#" className="social-link">📧</a>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; 2024 Bhyross. All rights reserved. | Privacy Policy | Terms of Service</p>
-        </div>
-      </footer>
+      <Footer brand="bhyross" />
     </div>
   );
 };
