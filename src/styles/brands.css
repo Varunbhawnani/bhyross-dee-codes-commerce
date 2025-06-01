@@ -1,8 +1,9 @@
-/* Brand-specific styles */
+
+/* Professional Brand Styling */
 
 /* Bhyross Brand Styling */
 .brand-bhyross {
-  background: linear-gradient(135deg, #d4af37 0%, #ffd700 40%, #b8941f 100%);
+  background: linear-gradient(135deg, #f67e0b 0%, #c04f08 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -12,7 +13,19 @@
   letter-spacing: 0.02em;
 }
 
-/* Gradient animation for brand text */
+/* Dee Codes Brand Styling */
+.brand-deecodes {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Refined gradient animation */
 @keyframes gradient-shift {
   0%, 100% {
     background-position: 0% 50%;
@@ -22,10 +35,11 @@
   }
 }
 
-/* Enhanced hover effects for brand cards */
+/* Professional Card Hover Effects */
 .brand-card-bhyross {
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .brand-card-bhyross::before {
@@ -35,8 +49,13 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(246, 126, 11, 0.1), transparent);
   transition: left 0.8s ease-in-out;
+}
+
+.brand-card-bhyross:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(246, 126, 11, 0.25);
 }
 
 .brand-card-bhyross:hover::before {
@@ -46,6 +65,7 @@
 .brand-card-deecodes {
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .brand-card-deecodes::before {
@@ -55,15 +75,20 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
   transition: left 0.8s ease-in-out;
+}
+
+.brand-card-deecodes:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.25);
 }
 
 .brand-card-deecodes:hover::before {
   left: 100%;
 }
 
-/* Responsive brand text scaling */
+/* Professional Typography Scaling */
 @media (max-width: 768px) {
   .brand-bhyross,
   .brand-deecodes {
@@ -72,43 +97,93 @@
   }
 }
 
-/* Print styles - fallback for brand colors */
+/* Print styles with professional colors */
 @media print {
   .brand-bhyross {
-    color: #d4af37 !important;
-    -webkit-text-fill-color: #d4af37 !important;
+    color: #f67e0b !important;
+    -webkit-text-fill-color: #f67e0b !important;
   }
   
   .brand-deecodes {
-    color: #0ea5e9 !important;
-    -webkit-text-fill-color: #0ea5e9 !important;
+    color: #3b82f6 !important;
+    -webkit-text-fill-color: #3b82f6 !important;
   }
-
-  @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Professional Animation Classes */
+@keyframes professional-fade-in {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 }
 
-@keyframes slide-in-from-bottom {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes professional-fade-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 }
 
+@keyframes professional-slide-in-from-bottom {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes professional-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Professional Animation Utilities */
 .animate-in {
   animation-fill-mode: both;
 }
 
-.fade-in { animation-name: fade-in; }
-.fade-in-up { animation-name: fade-in-up; }
-.slide-in-from-bottom { animation-name: slide-in-from-bottom; }
+.professional-fade-in { 
+  animation: professional-fade-in 0.6s ease-out;
+}
+
+.professional-fade-in-up { 
+  animation: professional-fade-in-up 0.8s ease-out;
+}
+
+.professional-slide-in-from-bottom { 
+  animation: professional-slide-in-from-bottom 0.6s ease-out;
+}
+
+.professional-scale-in {
+  animation: professional-scale-in 0.5s ease-out;
+}
+
+/* Duration and delay utilities */
 .duration-300 { animation-duration: 300ms; }
 .duration-500 { animation-duration: 500ms; }
 .duration-700 { animation-duration: 700ms; }
 .duration-1000 { animation-duration: 1000ms; }
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
-}
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }

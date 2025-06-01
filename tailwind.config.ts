@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -65,43 +66,61 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Brand specific colors
-				bhyross: {
-					50: '#fefefe',
-					100: '#fdfdfd',
-					200: '#f8f8f8',
-					300: '#f0f0f0',
-					400: '#e8e8e8',
-					500: '#d4af37', // Golden accent
-					600: '#b8941f',
-					700: '#9c7a16',
-					800: '#80640f',
-					900: '#644e08'
+				// Professional Trust Colors
+				trust: {
+					50: '#f8fafc',
+					100: '#f1f5f9',
+					200: '#e2e8f0',
+					300: '#cbd5e1',
+					400: '#94a3b8',
+					500: '#64748b',
+					600: '#475569',
+					700: '#334155',
+					800: '#1e293b',
+					900: '#0f172a',
+					950: '#020617'
 				},
-				deecodes: {
-					50: '#f0f9ff',
-					100: '#e0f2fe',
-					200: '#bae6fd',
-					300: '#7dd3fc',
-					400: '#38bdf8',
-					500: '#0ea5e9', // Blue accent
-					600: '#0284c7',
-					700: '#0369a1',
-					800: '#075985',
-					900: '#0c4a6e'
+				// Professional Blue (Primary Brand)
+				professional: {
+					50: '#eff6ff',
+					100: '#dbeafe',
+					200: '#bfdbfe',
+					300: '#93c5fd',
+					400: '#60a5fa',
+					500: '#3b82f6',
+					600: '#2563eb',
+					700: '#1d4ed8',
+					800: '#1e40af',
+					900: '#1e3a8a',
+					950: '#172554'
 				},
-				neutral: {
-					50: '#fafafa',
-					100: '#f5f5f5',
-					200: '#e5e5e5',
-					300: '#d4d4d4',
-					400: '#a3a3a3',
-					500: '#737373',
-					600: '#525252',
-					700: '#404040',
-					800: '#262626',
-					900: '#171717',
-					950: '#0a0a0a'
+				// Warm Accent (Secondary)
+				warm: {
+					50: '#fef7ed',
+					100: '#fdedd3',
+					200: '#fcd9a5',
+					300: '#fbbf6d',
+					400: '#f89c33',
+					500: '#f67e0b',
+					600: '#e76506',
+					700: '#c04f08',
+					800: '#9a3f0f',
+					900: '#7c3510',
+					950: '#431a06'
+				},
+				// Success/Trust Green
+				success: {
+					50: '#f0fdf4',
+					100: '#dcfce7',
+					200: '#bbf7d0',
+					300: '#86efac',
+					400: '#4ade80',
+					500: '#22c55e',
+					600: '#16a34a',
+					700: '#15803d',
+					800: '#166534',
+					900: '#14532d',
+					950: '#052e16'
 				}
 			},
 			borderRadius: {
@@ -166,31 +185,41 @@ export default {
 						transform: 'translateX(0)'
 					}
 				},
-				'typewriter': {
-					'0%': { width: '0' },
-					'100%': { width: '100%' }
-				},
-				'blink': {
-					'0%, 50%': { 'border-color': 'transparent' },
-					'51%, 100%': { 'border-color': 'currentColor' }
+				'slide-in-left': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateX(-50px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateX(0)'
+					}
 				},
 				'float': {
 					'0%, 100%': { transform: 'translateY(0px)' },
-					'50%': { transform: 'translateY(-20px)' }
+					'50%': { transform: 'translateY(-10px)' }
 				},
-				'pulse-glow': {
+				'shine': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
+				},
+				'glow': {
 					'0%, 100%': { 
-						opacity: '1',
-						transform: 'scale(1)' 
+						boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' 
 					},
 					'50%': { 
-						opacity: '0.8',
-						transform: 'scale(1.05)' 
+						boxShadow: '0 0 30px rgba(59, 130, 246, 0.8)' 
 					}
 				},
-				'hover-lift': {
-					'0%': { transform: 'translateY(0) scale(1)' },
-					'100%': { transform: 'translateY(-4px) scale(1.02)' }
+				'stagger-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(30px) scale(0.95)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0) scale(1)'
+					}
 				}
 			},
 			animation: {
@@ -200,11 +229,11 @@ export default {
 				'fade-in-up': 'fade-in-up 0.8s ease-out',
 				'scale-in': 'scale-in 0.5s ease-out',
 				'slide-in-right': 'slide-in-right 0.7s ease-out',
-				'typewriter': 'typewriter 2s steps(20) infinite alternate',
-				'blink': 'blink 1s infinite',
+				'slide-in-left': 'slide-in-left 0.7s ease-out',
 				'float': 'float 6s ease-in-out infinite',
-				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-				'hover-lift': 'hover-lift 0.3s ease-out forwards'
+				'shine': 'shine 2s ease-in-out infinite',
+				'glow': 'glow 2s ease-in-out infinite alternate',
+				'stagger-in': 'stagger-in 0.6s ease-out'
 			},
 			// Animation delays
 			animationDelay: {
@@ -219,19 +248,14 @@ export default {
 				'900': '900ms',
 				'1000': '1000ms',
 			},
-			backgroundImage: {
-				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-				'luxury-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-				'premium-gradient': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-				'golden-gradient': 'linear-gradient(135deg, #d4af37 0%, #ffd700 100%)',
-				'blue-gradient': 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)'
+			backdropBlur: {
+				xs: '2px',
 			}
 		}
 	},
 	plugins: [
 		require("tailwindcss-animate"),
-		// Custom plugin for animation delays and hover-lift
+		// Custom plugin for professional animations and interactions
 		function({ addUtilities, theme }) {
 			const delays = theme('animationDelay');
 			const delayUtilities = Object.entries(delays).reduce((acc, [key, value]) => {
@@ -243,12 +267,70 @@ export default {
 
 			addUtilities({
 				...delayUtilities,
-				'.hover-lift': {
+				// Professional Card Hover Effects
+				'.card-hover': {
 					'transition': 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
 					'&:hover': {
-						'transform': 'translateY(-4px) scale(1.02)',
-						'box-shadow': '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+						'transform': 'translateY(-8px) scale(1.02)',
+						'box-shadow': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
 					}
+				},
+				// Button Micro-interactions
+				'.btn-professional': {
+					'transition': 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+					'&:hover': {
+						'transform': 'translateY(-2px)',
+						'box-shadow': '0 10px 25px -5px rgba(59, 130, 246, 0.4)',
+					},
+					'&:active': {
+						'transform': 'translateY(0)',
+						'transition': 'all 0.1s',
+					}
+				},
+				// Shine Effect
+				'.shine-effect': {
+					'position': 'relative',
+					'overflow': 'hidden',
+					'&::before': {
+						'content': '""',
+						'position': 'absolute',
+						'top': '0',
+						'left': '-100%',
+						'width': '100%',
+						'height': '100%',
+						'background': 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+						'transition': 'left 0.6s ease-in-out',
+					},
+					'&:hover::before': {
+						'left': '100%',
+					}
+				},
+				// Stagger Animation Classes
+				'.stagger-item': {
+					'opacity': '0',
+					'animation': 'stagger-in 0.6s ease-out forwards',
+				},
+				'.stagger-1': { 'animation-delay': '0.1s' },
+				'.stagger-2': { 'animation-delay': '0.2s' },
+				'.stagger-3': { 'animation-delay': '0.3s' },
+				'.stagger-4': { 'animation-delay': '0.4s' },
+				'.stagger-5': { 'animation-delay': '0.5s' },
+				'.stagger-6': { 'animation-delay': '0.6s' },
+				// Glass Morphism
+				'.glass': {
+					'background': 'rgba(255, 255, 255, 0.1)',
+					'backdrop-filter': 'blur(10px)',
+					'border': '1px solid rgba(255, 255, 255, 0.2)',
+				},
+				// Professional Gradients
+				'.gradient-professional': {
+					'background': 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+				},
+				'.gradient-warm': {
+					'background': 'linear-gradient(135deg, #f67e0b 0%, #c04f08 100%)',
+				},
+				'.gradient-trust': {
+					'background': 'linear-gradient(135deg, #64748b 0%, #334155 100%)',
 				}
 			});
 		}
