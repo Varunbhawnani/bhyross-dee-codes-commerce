@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Star, Heart, Zap, DollarSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
-import '@/styles/brands.css'; 
+import '/workspaces/bhyross-dee-codes-commerce/src/index.css'
+import '../styles/brands.css';
 
 // Types for your data
 interface ProductImage {
