@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useAllProducts, useProductStats } from '@/hooks/useProducts';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 // Add these imports to your AdminPage.tsx
 import MultiImageUploader from '@/components/MultiImageUploader';
 import { 
@@ -159,60 +161,133 @@ const AdminPage = () => {
   };
 
   // Function to handle form submission with image upload
-  const handleProductSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsUploading(true);
-    setUploadProgress(0);
+// Function to save images to product_images table
+const saveProductImages = async (
+  productId: string, 
+  imageUrls: string[], 
+  startingSortOrder: number = 1
+) => {
+  if (imageUrls.length === 0) return;
 
-    try {
-      let finalImageUrls = [...productForm.images];
+  const imageRecords = imageUrls.map((url, index) => ({
+    product_id: productId,
+    image_url: url,
+    alt_text: `Product image ${startingSortOrder + index}`,
+    is_primary: index === 0 && startingSortOrder === 1, // First image of a new product is primary
+    sort_order: startingSortOrder + index
+  }));
 
-      // Get new files to upload from the uploader component
-      const newFiles = uploaderRef.current?.getFilesForUpload() || [];
-      
-      if (newFiles.length > 0) {
-        // Upload new images
-        const newImageUrls = await uploadMultipleImages(
-          newFiles,
-          editingProduct?.id, // Pass product ID for folder organization
-          'products',
-          setUploadProgress
-        );
-        
-        finalImageUrls = [...finalImageUrls, ...newImageUrls];
-      }
+  const { error } = await supabase
+    .from('product_images')
+    .insert(imageRecords);
 
-      // Prepare product data
-      const productData: ProductFormData = {
-        name: productForm.name,
-        description: productForm.description,
-        brand: productForm.brand,
-        category: productForm.category,
-        price: parseFloat(productForm.price),
-        stock_quantity: parseInt(productForm.stock_quantity),
-        sizes: productForm.sizes,
-        images: formatImageUrlsForDatabase(finalImageUrls)
-      };
+  if (error) throw error;
+};
 
-      if (editingProduct) {
-        await updateProduct({ id: editingProduct.id, productData });
-      } else {
-        await createProduct(productData);
-      }
+// Function to get the next sort order for existing product images
+const getNextSortOrder = async (productId: string): Promise<number> => {
+  const { data, error } = await supabase
+    .from('product_images')
+    .select('sort_order')
+    .eq('product_id', productId)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .single();
 
-      // Reset form and close modals
-      setProductForm(initializeProductForm());
-      setEditingProduct(null);
-      setShowAddProduct(false);
-      setUploadProgress(0);
-      
-    } catch (error) {
-      console.error('Product submission error:', error);
-      // You might want to show a toast notification here
-    } finally {
-      setIsUploading(false);
+  if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+    throw error;
+  }
+
+  return data ? data.sort_order + 1 : 1;
+};
+
+// Updated Function to handle form submission with image upload
+const handleProductSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsUploading(true);
+  setUploadProgress(0);
+
+  try {
+    // Get new files to upload from the uploader component
+    const newFiles = uploaderRef.current?.getFilesForUpload() || [];
+    let newImageUrls: string[] = [];
+    
+    if (newFiles.length > 0) {
+      // Upload new images
+      newImageUrls = await uploadMultipleImages(
+        newFiles,
+        editingProduct?.id, // Pass product ID for folder organization
+        'products',
+        setUploadProgress
+      );
     }
-  };
+
+    // Prepare product data (images field is required by interface but ignored by mutations)
+    const productData: ProductFormData = {
+      name: productForm.name,
+      description: productForm.description,
+      brand: productForm.brand,
+      category: productForm.category,
+      price: parseFloat(productForm.price),
+      stock_quantity: parseInt(productForm.stock_quantity),
+      sizes: productForm.sizes,
+      images: "", // Dummy value - this field is ignored by the mutations
+    };
+
+    let productId: string;
+
+    if (editingProduct) {
+      // Update existing product
+      await new Promise((resolve, reject) => {
+        updateProduct(
+          { id: editingProduct.id, productData },
+          {
+            onSuccess: resolve,
+            onError: reject,
+          }
+        );
+      });
+      productId = editingProduct.id;
+      
+      // If there are new images, add them to product_images table
+      if (newImageUrls.length > 0) {
+        const nextSortOrder = await getNextSortOrder(productId);
+        await saveProductImages(productId, newImageUrls, nextSortOrder);
+      }
+    } else {
+      // Create new product - we need to get the product ID from the mutation
+      const newProduct = await new Promise<any>((resolve, reject) => {
+        createProduct(productData, {
+          onSuccess: resolve,
+          onError: reject,
+        });
+      });
+      productId = newProduct.id;
+      
+      // Save images to product_images table (starting from sort_order 1)
+      if (newImageUrls.length > 0) {
+        await saveProductImages(productId, newImageUrls, 1);
+      }
+    }
+
+    // Reset form and close modals
+    setProductForm(initializeProductForm());
+    setEditingProduct(null);
+    setShowAddProduct(false);
+    setUploadProgress(0);
+    
+  } catch (error) {
+    console.error('Product submission error:', error);
+    // You might want to show a toast notification here
+    toast({
+      title: "Error",
+      description: "Failed to save product and images",
+      variant: "destructive",
+    });
+  } finally {
+    setIsUploading(false);
+  }
+};
 
   const handleSaveSettings = async () => {
     try {

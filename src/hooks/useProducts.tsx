@@ -1,6 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+export interface ProductImage {
+  id: string;
+  product_id: string;
+  image_url: string;
+  alt_text: string | null;
+  is_primary: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -9,12 +19,30 @@ export interface Product {
   category: 'oxford' | 'derby' | 'monk-strap' | 'loafer';
   price: number;
   stock_quantity: number;
-  images: string[];
   sizes: number[];
   created_at: string;
   updated_at: string;
   is_active: boolean;
+  product_images: ProductImage[];
 }
+
+// Helper function to safely parse JSON arrays from database (for sizes)
+const parseJsonArray = (jsonString: any): number[] => {
+  if (Array.isArray(jsonString)) {
+    return jsonString;
+  }
+  
+  if (typeof jsonString === 'string') {
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error('Error parsing JSON:', error, jsonString);
+      return [];
+    }
+  }
+  
+  return [];
+};
 
 // Original hook for public use (only active products)
 export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
@@ -23,7 +51,16 @@ export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' 
     queryFn: async () => {
       let query = supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          product_images (
+            id,
+            image_url,
+            alt_text,
+            is_primary,
+            sort_order
+          )
+        `)
         .eq('is_active', true);
 
       if (brand && (brand === 'bhyross' || brand === 'deecodes')) {
@@ -40,7 +77,19 @@ export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' 
         throw error;
       }
 
-      return data as Product[];
+      // Parse sizes and sort product images
+      const parsedData = data?.map(product => ({
+        ...product,
+        sizes: parseJsonArray(product.sizes) as number[],
+        product_images: (product.product_images || []).sort((a: ProductImage, b: ProductImage) => {
+          // Primary images first, then by sort_order
+          if (a.is_primary && !b.is_primary) return -1;
+          if (!a.is_primary && b.is_primary) return 1;
+          return a.sort_order - b.sort_order;
+        })
+      })) || [];
+
+      return parsedData;;
     },
   });
 };
@@ -52,7 +101,16 @@ export const useAllProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxfor
     queryFn: async () => {
       let query = supabase
         .from('products')
-        .select('*');
+        .select(`
+          *,
+          product_images (
+            id,
+            image_url,
+            alt_text,
+            is_primary,
+            sort_order
+          )
+        `);
 
       if (brand && (brand === 'bhyross' || brand === 'deecodes')) {
         query = query.eq('brand', brand);
@@ -68,7 +126,19 @@ export const useAllProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxfor
         throw error;
       }
 
-      return data as Product[];
+      // Parse sizes and sort product images
+      const parsedData = data?.map(product => ({
+        ...product,
+        sizes: parseJsonArray(product.sizes) as number[],
+        product_images: (product.product_images || []).sort((a: ProductImage, b: ProductImage) => {
+          // Primary images first, then by sort_order
+          if (a.is_primary && !b.is_primary) return -1;
+          if (!a.is_primary && b.is_primary) return 1;
+          return a.sort_order - b.sort_order;
+        })
+      })) || [];
+
+      return parsedData;;
     },
   });
 };
@@ -79,7 +149,16 @@ export const useProduct = (id: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          product_images (
+            id,
+            image_url,
+            alt_text,
+            is_primary,
+            sort_order
+          )
+        `)
         .eq('id', id)
         .single();
 
@@ -87,7 +166,19 @@ export const useProduct = (id: string) => {
         throw error;
       }
 
-      return data as Product;
+      // Parse sizes and sort product images
+      const parsedData = {
+        ...data,
+        sizes: parseJsonArray(data.sizes) as number[],
+        product_images: (data.product_images || []).sort((a: ProductImage, b: ProductImage) => {
+          // Primary images first, then by sort_order
+          if (a.is_primary && !b.is_primary) return -1;
+          if (!a.is_primary && b.is_primary) return 1;
+          return a.sort_order - b.sort_order;
+        })
+      };
+
+      return parsedData;;
     },
     enabled: !!id,
   });
