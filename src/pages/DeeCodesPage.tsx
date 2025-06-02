@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -6,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Star, Heart, Zap, DollarSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
-import '/workspaces/bhyross-dee-codes-commerce/src/index.css'
 import '../styles/brands.css';
 
 // Types for your data
