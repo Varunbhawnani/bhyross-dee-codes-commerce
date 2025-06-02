@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -8,6 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
 import { Loader2, Filter } from 'lucide-react';
+
+// Helper function to get primary image or first image for a product
+const getPrimaryImage = (product: any): string => {
+  if (!product.product_images || product.product_images.length === 0) {
+    return 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop'; // fallback
+  }
+  
+  const primaryImage = product.product_images.find((img: any) => img.is_primary);
+  if (primaryImage) return primaryImage.image_url;
+  
+  // Images are already sorted by the hook (primary first, then by sort_order)
+  return product.product_images[0]?.image_url || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop';
+};
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
@@ -189,7 +201,7 @@ const CategoryPage = () => {
                   <Link to={`/${brand}/${category}/${product.id}`}>
                     <div className="aspect-square overflow-hidden">
                       <img
-                        src={product.images?.[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop'}
+                        src={getPrimaryImage(product)}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
