@@ -49,7 +49,10 @@ const ProductPage = () => {
     );
   }
 
-  const images = product.images.length > 0 ? product.images : [
+  const images = product.product_images.length > 0
+  ? product.product_images.map(img => img.image_url)
+  : [
+
     'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop&crop=center',
     'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center'
   ];
@@ -211,3 +214,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+
