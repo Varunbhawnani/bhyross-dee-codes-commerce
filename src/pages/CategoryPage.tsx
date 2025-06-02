@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
+import { useCart } from '@/hooks/useCart';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2, Filter } from 'lucide-react';
 
 // Helper function to get primary image or first image for a product
@@ -33,19 +35,31 @@ const CategoryPage = () => {
   const [sortBy, setSortBy] = useState<string>('name-asc');
   const [priceRange, setPriceRange] = useState<string>('all');
   
-  // Always search in oxford category when search is performed
-  const searchCategory = searchQuery ? 'oxford' : category;
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  // Get products from all categories for search, or specific category when not searching
+  const { data: oxfordProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'oxford');
+  const { data: derbyProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'derby');
+  const { data: monkStrapProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'monk-strap');
+  const { data: loaferProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'loafer');
   
-  const { data: products, isLoading, error } = useProducts(
+  // Get category specific products
+  const { data: categoryProducts, isLoading, error } = useProducts(
     brand as 'bhyross' | 'deecodes',
-    searchCategory as 'oxford' | 'derby' | 'monk-strap' | 'loafer'
+    category as 'oxford' | 'derby' | 'monk-strap' | 'loafer'
   );
+
+  // Combine all products for search or use category specific products
+  const allProducts = searchQuery 
+    ? [...(oxfordProducts || []), ...(derbyProducts || []), ...(monkStrapProducts || []), ...(loaferProducts || [])]
+    : categoryProducts || [];
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
-    if (!products) return [];
+    if (!allProducts) return [];
 
-    let filtered = products;
+    let filtered = allProducts;
 
     // Apply search filter
     if (searchQuery) {
@@ -88,11 +102,18 @@ const CategoryPage = () => {
     });
 
     return sorted;
-  }, [products, searchQuery, sortBy, priceRange]);
+  }, [allProducts, searchQuery, sortBy, priceRange]);
 
   const categoryDisplayName = category?.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ') || '';
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      productId: product.id,
+      size: product.sizes[0] || 9, // Default to first available size or 9
+    });
+  };
 
   if (isLoading) {
     return (
@@ -135,7 +156,7 @@ const CategoryPage = () => {
             </h1>
             {searchQuery && (
               <p className="text-gray-600">
-                Search results for "{searchQuery}" in Oxford collection
+                Search results for "{searchQuery}" across all collections
               </p>
             )}
             <p className="text-gray-600">
@@ -202,39 +223,50 @@ const CategoryPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredAndSortedProducts.map((product) => (
                 <Card key={product.id} className="group overflow-hidden hover:shadow-lg transition-shadow">
-                  <Link to={`/${brand}/${category}/${product.id}`}>
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        src={getPrimaryImage(product)}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop';
-                        }}
-                      />
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={getPrimaryImage(product)}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop';
+                      }}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    {product.description && (
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {product.description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`text-xl font-bold ${brand === 'bhyross' ? 'text-bhyross-600' : 'text-deecodes-600'}`}>
+                        ₹{product.price.toLocaleString()}
+                      </span>
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
-                        {product.name}
-                      </h3>
-                      {product.description && (
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                          {product.description}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <span className={`text-xl font-bold ${brand === 'bhyross' ? 'text-bhyross-600' : 'text-deecodes-600'}`}>
-                          ₹{product.price.toLocaleString()}
-                        </span>
+                    <div className="flex flex-col gap-2">
+                      <Link to={`/${brand}/${category}/${product.id}`}>
                         <Button 
                           size="sm" 
-                          className={`${brand === 'bhyross' ? 'bg-bhyross-600 hover:bg-bhyross-700' : 'bg-deecodes-600 hover:bg-deecodes-700'} text-white`}
+                          variant="outline"
+                          className="w-full"
                         >
                           View Details
                         </Button>
-                      </div>
+                      </Link>
+                      <Button 
+                        size="sm" 
+                        className={`w-full ${brand === 'bhyross' ? 'bg-bhyross-600 hover:bg-bhyross-700' : 'bg-deecodes-600 hover:bg-deecodes-700'} text-white`}
+                        onClick={() => handleAddToCart(product)}
+                        disabled={product.stock_quantity === 0}
+                      >
+                        {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+                      </Button>
                     </div>
-                  </Link>
+                  </div>
                 </Card>
               ))}
             </div>

@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { useCart } from '@/hooks/useCart';
 import { useProduct } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
-import { Star, Truck, Shield, ArrowLeft } from 'lucide-react';
+import { Star, Truck, Shield, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ProductPage = () => {
   const { category, productId } = useParams();
@@ -53,7 +53,6 @@ const ProductPage = () => {
   const images = product.product_images.length > 0
   ? product.product_images.map(img => img.image_url)
   : [
-
     'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop&crop=center',
     'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center'
   ];
@@ -75,6 +74,14 @@ const ProductPage = () => {
         'Reinforced stitching',
         'Easy care materials'
       ];
+
+  const nextImage = () => {
+    setSelectedImage((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -98,30 +105,63 @@ const ProductPage = () => {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden">
+            <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden relative group">
               <img
                 src={images[selectedImage]}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
+              
+              {/* Navigation Arrows - Only show if multiple images */}
+              {images.length > 1 && (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 hover:bg-white"
+                    onClick={prevImage}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 hover:bg-white"
+                    onClick={nextImage}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+
+              {/* Image Counter */}
+              {images.length > 1 && (
+                <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                  {selectedImage + 1} / {images.length}
+                </div>
+              )}
             </div>
-            <div className="grid grid-cols-4 gap-4">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`aspect-square bg-neutral-100 rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImage === index ? 'border-neutral-900' : 'border-transparent hover:border-neutral-300'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`${product.name} view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            
+            {/* Thumbnail Strip - Only show if multiple images */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-4">
+                {images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`aspect-square bg-neutral-100 rounded-lg overflow-hidden border-2 transition-colors ${
+                      selectedImage === index ? 'border-neutral-900' : 'border-transparent hover:border-neutral-300'
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}

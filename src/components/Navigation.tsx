@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, LogIn, LogOut, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, LogIn, LogOut, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import SearchDropdown from '@/components/SearchDropdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +24,6 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
   const { getTotalItems } = useCart();
   const { user, signOut, isAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const totalItems = getTotalItems();
 
   const brandColors = {
@@ -42,18 +41,6 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
-  };
-
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      // Navigate to the brand page with search parameter
-      const brandPath = brand || 'bhyross';
-      navigate(`/${brandPath}/${categories[0].path}?search=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery('');
-      setIsSearchOpen(false);
-    } else {
-      setIsSearchOpen(!isSearchOpen);
-    }
   };
 
   const handleCartClick = () => {
@@ -123,29 +110,8 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center space-x-4">
-              {/* Search */}
-              <div className="relative">
-                {isSearchOpen ? (
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      placeholder="Search products..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                      className="px-3 py-1 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
-                      autoFocus
-                    />
-                    <Button variant="ghost" size="sm" onClick={handleSearch}>
-                      <Search className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button variant="ghost" size="sm" onClick={handleSearch}>
-                    <Search className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+              {/* Search Dropdown */}
+              <SearchDropdown brand={brand} />
               
               {/* User Menu */}
               {user ? (
@@ -234,18 +200,8 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
       }`}>
         <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {/* Mobile Search */}
-          <div className="flex items-center space-x-2 pb-4 border-b border-neutral-200">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="flex-1 px-3 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
-            />
-            <Button variant="ghost" size="sm" onClick={handleSearch}>
-              <Search className="h-4 w-4" />
-            </Button>
+          <div className="pb-4 border-b border-neutral-200">
+            <SearchDropdown brand={brand} onSelect={() => setIsMobileMenuOpen(false)} />
           </div>
 
           {/* Mobile Categories */}
