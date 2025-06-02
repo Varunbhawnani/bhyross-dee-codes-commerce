@@ -18,11 +18,22 @@ export interface UpdateProductData extends Partial<CreateProductData> {
   id: string;
 }
 
+export interface ProductFormData {
+  name: string;
+  description: string;
+  brand: 'bhyross' | 'deecodes';
+  category: 'oxford' | 'derby' | 'monk-strap' | 'loafer';
+  price: string;
+  stock_quantity: string;
+  sizes: number[];
+  images: string;
+}
+
 export const useProductOperations = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const createProduct = useMutation({
+  const createProductMutation = useMutation({
     mutationFn: async (productData: CreateProductData) => {
       const { data, error } = await supabase
         .from('products')
@@ -51,7 +62,7 @@ export const useProductOperations = () => {
     },
   });
 
-  const updateProduct = useMutation({
+  const updateProductMutation = useMutation({
     mutationFn: async ({ id, ...updateData }: UpdateProductData) => {
       const { data, error } = await supabase
         .from('products')
@@ -81,7 +92,7 @@ export const useProductOperations = () => {
     },
   });
 
-  const deleteProduct = useMutation({
+  const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('products')
@@ -166,9 +177,12 @@ export const useProductOperations = () => {
   });
 
   return {
-    createProduct,
-    updateProduct,
-    deleteProduct,
+    createProduct: createProductMutation.mutate,
+    updateProduct: updateProductMutation.mutate,
+    deleteProduct: deleteProductMutation.mutate,
     uploadProductImage,
+    isCreating: createProductMutation.isPending,
+    isUpdating: updateProductMutation.isPending,
+    isDeleting: deleteProductMutation.isPending,
   };
 };

@@ -163,7 +163,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   try {
-    const productData: ProductFormData = {
+    const productData: CreateProductData = {
       name: productForm.name,
       description: productForm.description,
       brand: productForm.brand,
@@ -171,23 +171,12 @@ const handleProductSubmit = async (e: React.FormEvent) => {
       price: parseFloat(productForm.price),
       stock_quantity: parseInt(productForm.stock_quantity),
       sizes: productForm.sizes,
-      images: "", // Dummy value - ignored by mutations
     };
 
     if (editingProduct) {
-      await new Promise((resolve, reject) => {
-        updateProduct(
-          { id: editingProduct.id, productData },
-          { onSuccess: resolve, onError: reject }
-        );
-      });
+      updateProduct({ id: editingProduct.id, ...productData });
     } else {
-      await new Promise((resolve, reject) => {
-        createProduct(productData, {
-          onSuccess: resolve,
-          onError: reject,
-        });
-      });
+      createProduct(productData);
     }
 
     // Reset form and close modals
