@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,7 +15,7 @@ import { useAllProducts, useProductStats } from '@/hooks/useProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ProductImageManager from '@/components/ProductImageManager';
-import { useProductOperations, ProductFormData } from '@/hooks/useProductOperations';
+import { useProductOperations, ProductFormData, CreateProductData } from '@/hooks/useProductOperations';
 import { 
   Package, 
   ShoppingCart, 
