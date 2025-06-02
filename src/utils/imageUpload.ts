@@ -449,3 +449,59 @@ export const useProductImages = () => {
     uploadMultipleImages
   };
 };
+
+// Add these functions to the end of your imageUpload.ts file
+
+/**
+ * Parse image URLs from database
+ */
+export const parseImageUrlsFromDatabase = (imageData: string | null): string[] => {
+  if (!imageData) return [];
+  
+  try {
+    const parsed = JSON.parse(imageData);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error('Failed to parse image URLs:', error);
+    return [];
+  }
+};
+
+/**
+ * Update image URLs in database format
+ */
+export const formatImageUrlsForDatabase = (urls: string[]): string => {
+  return JSON.stringify(urls);
+};
+
+/**
+ * Validate image file
+ */
+export const validateImageFile = (
+  file: File,
+  options: {
+    maxSize?: number; // in MB
+    allowedTypes?: string[];
+  } = {}
+): { isValid: boolean; error?: string } => {
+  const {
+    maxSize = 5,
+    allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+  } = options;
+
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      isValid: false,
+      error: `File type ${file.type} is not supported. Please use ${allowedTypes.join(', ')}.`
+    };
+  }
+
+  if (file.size > maxSize * 1024 * 1024) {
+    return {
+      isValid: false,
+      error: `File size must be less than ${maxSize}MB.`
+    };
+  }
+
+  return { isValid: true };
+};
