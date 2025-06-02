@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -32,9 +33,12 @@ const CategoryPage = () => {
   const [sortBy, setSortBy] = useState<string>('name-asc');
   const [priceRange, setPriceRange] = useState<string>('all');
   
+  // Always search in oxford category when search is performed
+  const searchCategory = searchQuery ? 'oxford' : category;
+  
   const { data: products, isLoading, error } = useProducts(
     brand as 'bhyross' | 'deecodes',
-    category as 'oxford' | 'derby' | 'monk-strap' | 'loafer'
+    searchCategory as 'oxford' | 'derby' | 'monk-strap' | 'loafer'
   );
 
   // Filter and sort products
@@ -127,11 +131,11 @@ const CategoryPage = () => {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {categoryDisplayName} Collection
+              {searchQuery ? 'Search Results' : `${categoryDisplayName} Collection`}
             </h1>
             {searchQuery && (
               <p className="text-gray-600">
-                Search results for "{searchQuery}" in {categoryDisplayName}
+                Search results for "{searchQuery}" in Oxford collection
               </p>
             )}
             <p className="text-gray-600">
@@ -174,10 +178,10 @@ const CategoryPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Prices</SelectItem>
-                    <SelectItem value="0-200">$0 - $200</SelectItem>
-                    <SelectItem value="200-400">$200 - $400</SelectItem>
-                    <SelectItem value="400-600">$400 - $600</SelectItem>
-                    <SelectItem value="600">$600+</SelectItem>
+                    <SelectItem value="0-5000">₹0 - ₹5,000</SelectItem>
+                    <SelectItem value="5000-10000">₹5,000 - ₹10,000</SelectItem>
+                    <SelectItem value="10000-20000">₹10,000 - ₹20,000</SelectItem>
+                    <SelectItem value="20000">₹20,000+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -220,7 +224,7 @@ const CategoryPage = () => {
                       )}
                       <div className="flex items-center justify-between">
                         <span className={`text-xl font-bold ${brand === 'bhyross' ? 'text-bhyross-600' : 'text-deecodes-600'}`}>
-                          ${product.price}
+                          ₹{product.price.toLocaleString()}
                         </span>
                         <Button 
                           size="sm" 

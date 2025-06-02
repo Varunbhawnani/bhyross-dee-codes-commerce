@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Award, Shield, Truck } from 'lucide-react';
+import { Star, Award, Shield, Truck, ArrowLeft, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
-
 
 // Types for your data
 interface ProductImage {
@@ -106,6 +105,31 @@ const BhyrossPage = () => {
     
     loadData();
   }, []);
+
+  // Banner carousel state and functionality
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const bannerImages = [
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    'https://images.unsplash.com/photo-1608256246200-53e8b47b24f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  ];
+
+  // Auto-rotate banner every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [bannerImages.length]);
+
+  const nextBanner = () => {
+    setCurrentBannerIndex((prev) => (prev + 1) % bannerImages.length);
+  };
+
+  const prevBanner = () => {
+    setCurrentBannerIndex((prev) => (prev - 1 + bannerImages.length) % bannerImages.length);
+  };
 
   // Helper function to get primary image or first image for a product
   const getPrimaryImage = (product: Product): string => {
@@ -275,10 +299,47 @@ const BhyrossPage = () => {
     <div className="min-h-screen bg-white">
       <Navigation brand="bhyross" />
 
-      {/* hero section */}
-      <section className="hero">
-        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
+      {/* hero section with carousel */}
+      <section className="hero relative overflow-hidden">
+        {bannerImages.map((image, index) => (
+          <img 
+            key={index}
+            src={image}
+            alt={`Premium leather craftsmanship ${index + 1}`}
+            className={`hero-background transition-opacity duration-1000 ${
+              index === currentBannerIndex ? 'opacity-100' : 'opacity-0 absolute'
+            }`}
+          />
+        ))}
         <div className="hero-overlay"></div>
+        
+        {/* Navigation arrows */}
+        <button
+          onClick={prevBanner}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all z-10"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={nextBanner}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all z-10"
+        >
+          <ArrowRight className="h-6 w-6" />
+        </button>
+
+        {/* Banner dots indicator */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+          {bannerImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentBannerIndex(index)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentBannerIndex ? 'bg-white' : 'bg-white/50'
+              }`}
+            />
+          ))}
+        </div>
+
         <div className="hero-content">
           <h1 className="hero-title">Crafted Excellence</h1>
           <p className="hero-subtitle">Where luxury meets artisanal precision in every step</p>
@@ -305,7 +366,7 @@ const BhyrossPage = () => {
               </div>
               <div className="product-info">
                 <h3 className="product-name">{product.name}</h3>
-                <p className="product-price bhyross">${product.price}</p>
+                <p className="product-price bhyross">₹{product.price.toLocaleString()}</p>
                 <Link 
                   to={`/bhyross/${product.category}/${product.id}`}
                   className="mt-2 inline-block bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition-colors"

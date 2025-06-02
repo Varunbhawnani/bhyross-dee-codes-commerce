@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Heart, Zap, DollarSign } from 'lucide-react';
+import { Star, Heart, Zap, DollarSign, ArrowLeft, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
 import '../styles/brands.css';
@@ -108,6 +107,31 @@ const DeeCodesPage = () => {
     loadData();
   }, []);
 
+  // Banner carousel state and functionality
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const bannerImages = [
+    'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+    'https://images.unsplash.com/photo-1571245078683-3bbf52d98bf6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+  ];
+
+  // Auto-rotate banner every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [bannerImages.length]);
+
+  const nextBanner = () => {
+    setCurrentBannerIndex((prev) => (prev + 1) % bannerImages.length);
+  };
+
+  const prevBanner = () => {
+    setCurrentBannerIndex((prev) => (prev - 1 + bannerImages.length) % bannerImages.length);
+  };
+
   // Helper function to get primary image or first image for a product
   const getPrimaryImage = (product: Product): string => {
     if (!product.images || product.images.length === 0) {
@@ -188,13 +212,46 @@ const DeeCodesPage = () => {
     <div className="min-h-screen bg-white">
       <Navigation brand="deecodes" />
       
-      <section className="hero">
-        <img 
-          src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
-          alt="Modern lifestyle sneakers" 
-          className="hero-background" 
-        />
+      <section className="hero relative overflow-hidden">
+        {bannerImages.map((image, index) => (
+          <img 
+            key={index}
+            src={image}
+            alt={`Modern lifestyle sneakers ${index + 1}`}
+            className={`hero-background transition-opacity duration-1000 ${
+              index === currentBannerIndex ? 'opacity-100' : 'opacity-0 absolute'
+            }`}
+          />
+        ))}
         <div className="hero-overlay"></div>
+        
+        {/* Navigation arrows */}
+        <button
+          onClick={prevBanner}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all z-10"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={nextBanner}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all z-10"
+        >
+          <ArrowRight className="h-6 w-6" />
+        </button>
+
+        {/* Banner dots indicator */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+          {bannerImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentBannerIndex(index)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentBannerIndex ? 'bg-white' : 'bg-white/50'
+              }`}
+            />
+          ))}
+        </div>
+
         <div className="hero-content">
           <h1 className="hero-title">Code Your Style</h1>
           <p className="hero-subtitle">Smart design meets everyday comfort for the modern lifestyle</p>
@@ -220,7 +277,7 @@ const DeeCodesPage = () => {
               </div>
               <div className="product-info">
                 <h3 className="product-name">{product.name}</h3>
-                <p className="product-price dee-codes">${product.price}</p>
+                <p className="product-price dee-codes">₹{product.price.toLocaleString()}</p>
                 <Link 
                   to={`/deecodes/${product.category}/${product.id}`}
                   className="mt-2 inline-block bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 transition-colors"
