@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,57 +20,84 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Function to check admin status
-  const checkAdminStatus = async (userId: string) => {
+  // Function to check admin status with timeout and error handling
+  const checkAdminStatus = async (userId: string): Promise<boolean> => {
+    console.log('🔍 Checking admin status for user:', userId);
     try {
-      const { data, error } = await supabase
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Admin check timeout')), 5000);
+      });
+
+      const queryPromise = supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
         .single();
 
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
       if (error) {
-        console.log('No admin role found for user:', error.message);
+        console.log('ℹ️ No admin role found for user:', error.message);
         return false;
       }
 
       const hasAdminRole = data?.role === 'admin' || data?.role === 'super_admin';
+      console.log('✅ Admin status result:', hasAdminRole);
       return hasAdminRole || false;
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      console.error('❌ Error checking admin status:', error);
       return false;
     }
   };
 
+  // Separate function to handle admin status check without blocking auth state
+  const updateAdminStatus = async (userId: string) => {
+    try {
+      const adminStatus = await checkAdminStatus(userId);
+      setIsAdmin(adminStatus);
+    } catch (error) {
+      console.error('❌ Error updating admin status:', error);
+      setIsAdmin(false);
+    }
+  };
+
   useEffect(() => {
+    console.log('🚀 Auth useEffect starting...');
     let mounted = true;
 
     // Get initial session
     const getInitialSession = async () => {
+      console.log('📡 Getting initial session...');
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Error getting initial session:', error);
+          console.error('❌ Error getting initial session:', error);
         }
 
         if (mounted) {
+          console.log('✅ Setting initial session:', session?.user?.email || 'No user');
           setSession(session);
           setUser(session?.user ?? null);
           
+          // CRITICAL FIX: Set loading to false FIRST, then check admin status separately
+          console.log('✅ Setting loading to false (initial)');
+          setLoading(false);
+          
+          // Check admin status separately without blocking loading state
           if (session?.user) {
-            const adminStatus = await checkAdminStatus(session.user.id);
-            setIsAdmin(adminStatus);
+            updateAdminStatus(session.user.id);
           } else {
             setIsAdmin(false);
           }
-          
-          setLoading(false);
         }
       } catch (error) {
-        console.error('Error in getInitialSession:', error);
+        console.error('❌ Error in getInitialSession:', error);
         if (mounted) {
+          console.log('⚠️ Setting loading to false (error)');
           setLoading(false);
+          setIsAdmin(false);
         }
       }
     };
@@ -79,39 +105,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     getInitialSession();
 
     // Set up auth state listener
+    console.log('👂 Setting up auth state listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
+        console.log('🔄 Auth state changed:', event, session?.user?.email || 'No user');
         
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
 
+          // CRITICAL FIX: Set loading to false FIRST
+          console.log('✅ Setting loading to false (auth change)');
+          setLoading(false);
+
+          // Check admin status separately without blocking auth state
           if (session?.user) {
-            // Use setTimeout to prevent blocking the auth state change
-            setTimeout(async () => {
-              if (mounted) {
-                const adminStatus = await checkAdminStatus(session.user.id);
-                setIsAdmin(adminStatus);
-              }
-            }, 0);
+            updateAdminStatus(session.user.id);
           } else {
             setIsAdmin(false);
           }
-
-          // Set loading to false immediately for auth state changes
-          setLoading(false);
         }
       }
     );
 
     return () => {
+      console.log('🧹 Cleaning up auth useEffect...');
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Remove loading dependency to prevent infinite loop
+  }, []); // Empty dependency array
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
+    console.log('📝 Signing up user:', email);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -125,17 +150,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) {
-        console.error('SignUp error:', error);
+        console.error('❌ SignUp error:', error);
+      } else {
+        console.log('✅ SignUp successful');
       }
 
       return { data, error };
     } catch (error) {
-      console.error('SignUp catch error:', error);
+      console.error('❌ SignUp catch error:', error);
       return { data: null, error: error as AuthError };
     }
   };
 
   const signIn = async (email: string, password: string) => {
+    console.log('🔐 Signing in user:', email);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -143,30 +171,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (error) {
-        console.error('SignIn error:', error);
+        console.error('❌ SignIn error:', error);
+      } else {
+        console.log('✅ SignIn successful');
       }
 
       return { data, error };
     } catch (error) {
-      console.error('SignIn catch error:', error);
+      console.error('❌ SignIn catch error:', error);
       return { data: null, error: error as AuthError };
     }
   };
 
   const signOut = async () => {
+    console.log('🚪 Signing out user...');
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('SignOut error:', error);
+        console.error('❌ SignOut error:', error);
+      } else {
+        console.log('✅ SignOut successful');
       }
       // Clear local state
       setUser(null);
       setSession(null);
       setIsAdmin(false);
     } catch (error) {
-      console.error('SignOut catch error:', error);
+      console.error('❌ SignOut catch error:', error);
     }
   };
+
+  console.log('🎯 Auth state - User:', user?.email || 'None', 'Loading:', loading, 'Admin:', isAdmin);
 
   const value = {
     user,

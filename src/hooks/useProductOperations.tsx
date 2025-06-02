@@ -94,12 +94,12 @@ export const useProductOperations = () => {
 
         if (fetchError) throw fetchError;
 
-        // Delete all associated images from storage and database
-        if (images && images.length > 0) {
-          await Promise.allSettled(
-            images.map(img => deleteProductImage(img.id, img.image_url))
-          );
-        }
+       // Delete all associated images from storage and database
+if (images && images.length > 0) {
+  await Promise.allSettled(
+    images.map(img => deleteProductImage(img.image_url))
+  );
+}
 
         // Delete the product from database
         const { error } = await supabase

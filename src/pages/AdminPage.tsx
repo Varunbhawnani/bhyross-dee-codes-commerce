@@ -13,13 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAllProducts, useProductStats } from '@/hooks/useProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-// Add these imports to your AdminPage.tsx
-import MultiImageUploader from '@/components/MultiImageUploader';
-import { 
-  uploadMultipleImages, 
-  parseImageUrlsFromDatabase, 
-  formatImageUrlsForDatabase 
-} from '@/utils/imageUploadUtils';
+import ProductImageManager from '@/components/ProductImageManager';
 import { useProductOperations, ProductFormData } from '@/hooks/useProductOperations';
 import { 
   Package, 
@@ -49,10 +43,12 @@ import {
   Loader2
 } from 'lucide-react';
 
+// Then use it in your product editing section
+
 
 const AdminPage = () => {
   const { user, isAdmin, loading } = useAuth();
-  const { data: products = [], isLoading: productsLoading } = useAllProducts();
+  const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = useAllProducts();
   const { data: stats } = useProductStats();
   const { 
     createProduct, 
@@ -69,24 +65,22 @@ const AdminPage = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Add these state variables to your AdminPage component
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-  const uploaderRef = useRef<any>(null);
+ 
 
   // Update your productForm state initialization to parse existing images
   const initializeProductForm = (product?: any) => {
-    return {
-      name: product?.name || '',
-      description: product?.description || '',
-      brand: product?.brand || 'bhyross',
-      category: product?.category || 'oxford',
-      price: product?.price?.toString() || '',
-      stock_quantity: product?.stock_quantity?.toString() || '',
-      sizes: product?.sizes || [],
-      images: product ? parseImageUrlsFromDatabase(product.images) : []
-    };
+  return {
+    name: product?.name || '',
+    description: product?.description || '',
+    brand: product?.brand || 'bhyross',
+    category: product?.category || 'oxford',
+    price: product?.price?.toString() || '',
+    stock_quantity: product?.stock_quantity?.toString() || '',
+    sizes: product?.sizes || [],
+    images: "" // Dummy value - ProductImageManager handles images separately
   };
+};
+
 
   // Update your form state initialization
   const [productForm, setProductForm] = useState(initializeProductForm());
@@ -162,67 +156,13 @@ const AdminPage = () => {
 
   // Function to handle form submission with image upload
 // Function to save images to product_images table
-const saveProductImages = async (
-  productId: string, 
-  imageUrls: string[], 
-  startingSortOrder: number = 1
-) => {
-  if (imageUrls.length === 0) return;
 
-  const imageRecords = imageUrls.map((url, index) => ({
-    product_id: productId,
-    image_url: url,
-    alt_text: `Product image ${startingSortOrder + index}`,
-    is_primary: index === 0 && startingSortOrder === 1, // First image of a new product is primary
-    sort_order: startingSortOrder + index
-  }));
-
-  const { error } = await supabase
-    .from('product_images')
-    .insert(imageRecords);
-
-  if (error) throw error;
-};
-
-// Function to get the next sort order for existing product images
-const getNextSortOrder = async (productId: string): Promise<number> => {
-  const { data, error } = await supabase
-    .from('product_images')
-    .select('sort_order')
-    .eq('product_id', productId)
-    .order('sort_order', { ascending: false })
-    .limit(1)
-    .single();
-
-  if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-    throw error;
-  }
-
-  return data ? data.sort_order + 1 : 1;
-};
 
 // Updated Function to handle form submission with image upload
 const handleProductSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  setIsUploading(true);
-  setUploadProgress(0);
 
   try {
-    // Get new files to upload from the uploader component
-    const newFiles = uploaderRef.current?.getFilesForUpload() || [];
-    let newImageUrls: string[] = [];
-    
-    if (newFiles.length > 0) {
-      // Upload new images
-      newImageUrls = await uploadMultipleImages(
-        newFiles,
-        editingProduct?.id, // Pass product ID for folder organization
-        'products',
-        setUploadProgress
-      );
-    }
-
-    // Prepare product data (images field is required by interface but ignored by mutations)
     const productData: ProductFormData = {
       name: productForm.name,
       description: productForm.description,
@@ -231,61 +171,37 @@ const handleProductSubmit = async (e: React.FormEvent) => {
       price: parseFloat(productForm.price),
       stock_quantity: parseInt(productForm.stock_quantity),
       sizes: productForm.sizes,
-      images: "", // Dummy value - this field is ignored by the mutations
+      images: "", // Dummy value - ignored by mutations
     };
 
-    let productId: string;
-
     if (editingProduct) {
-      // Update existing product
       await new Promise((resolve, reject) => {
         updateProduct(
           { id: editingProduct.id, productData },
-          {
-            onSuccess: resolve,
-            onError: reject,
-          }
+          { onSuccess: resolve, onError: reject }
         );
       });
-      productId = editingProduct.id;
-      
-      // If there are new images, add them to product_images table
-      if (newImageUrls.length > 0) {
-        const nextSortOrder = await getNextSortOrder(productId);
-        await saveProductImages(productId, newImageUrls, nextSortOrder);
-      }
     } else {
-      // Create new product - we need to get the product ID from the mutation
-      const newProduct = await new Promise<any>((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         createProduct(productData, {
           onSuccess: resolve,
           onError: reject,
         });
       });
-      productId = newProduct.id;
-      
-      // Save images to product_images table (starting from sort_order 1)
-      if (newImageUrls.length > 0) {
-        await saveProductImages(productId, newImageUrls, 1);
-      }
     }
 
     // Reset form and close modals
     setProductForm(initializeProductForm());
     setEditingProduct(null);
     setShowAddProduct(false);
-    setUploadProgress(0);
     
   } catch (error) {
     console.error('Product submission error:', error);
-    // You might want to show a toast notification here
     toast({
       title: "Error",
-      description: "Failed to save product and images",
+      description: "Failed to save product",
       variant: "destructive",
     });
-  } finally {
-    setIsUploading(false);
   }
 };
 
@@ -421,33 +337,35 @@ const handleProductSubmit = async (e: React.FormEvent) => {
         />
       </div>
 
-      {/* Multi-Image Upload Section */}
-      <div>
-        <Label>Product Images</Label>
-        <MultiImageUploader
-          ref={uploaderRef}
-          images={productForm.images}
-          onChange={(images) => setProductForm(prev => ({ ...prev, images }))}
-          maxFileSize={5}
-          acceptedTypes={['image/jpeg', 'image/png', 'image/webp']}
-        />
-      </div>
+     {/* Product Image Management */}
+{editingProduct && (
+  <div>
+    <Label>Product Images</Label>
+    <div className="mt-2">
+      <ProductImageManager 
+        productId={editingProduct.id}
+        images={editingProduct.product_images || []}
+        onImagesUpdate={async () => {
+          // Refetch products to get updated data
+          const result = await refetchProducts();
+          // Find and update the editing product with fresh data
+          const updatedProduct = result.data?.find(p => p.id === editingProduct.id);
+          if (updatedProduct) {
+            setEditingProduct(updatedProduct);
+          }
+        }}
+      />
+    </div>
+  </div>
+)}
 
-      {/* Upload Progress */}
-      {isUploading && (
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Uploading images...</span>
-            <span>{Math.round(uploadProgress)}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-              style={{ width: `${uploadProgress}%` }}
-            />
-          </div>
-        </div>
-      )}
+{!editingProduct && (
+  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <p className="text-sm text-blue-800">
+      💡 <strong>Tip:</strong> Save the product first, then edit it to add images.
+    </p>
+  </div>
+)}
 
       {/* Form Actions */}
       <div className="flex justify-end gap-4">
@@ -459,20 +377,15 @@ const handleProductSubmit = async (e: React.FormEvent) => {
             setEditingProduct(null);
             setProductForm(initializeProductForm());
           }}
-          disabled={isUploading}
+          disabled={false}
         >
           Cancel
         </Button>
         <Button 
           type="submit" 
-          disabled={isCreating || isUpdating || isUploading}
+          disabled={isCreating || isUpdating}
         >
-          {isUploading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Uploading...
-            </>
-          ) : isCreating || isUpdating ? (
+          {isCreating || isUpdating ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               {editingProduct ? 'Updating...' : 'Creating...'}
@@ -652,9 +565,17 @@ const handleProductSubmit = async (e: React.FormEvent) => {
                   {products.map((product) => (
                     <div key={product.id} className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
                       <div className="flex items-center space-x-4">
-                        <div className="w-16 h-16 bg-neutral-200 rounded-lg flex items-center justify-center">
-                          <Package className="h-6 w-6 text-neutral-500" />
-                        </div>
+                       <div className="w-16 h-16 bg-neutral-200 rounded-lg flex items-center justify-center overflow-hidden">
+  {product.product_images?.length > 0 ? (
+    <img 
+      src={product.product_images.find(img => img.is_primary)?.image_url || product.product_images[0]?.image_url}
+      alt={product.name}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <Package className="h-6 w-6 text-neutral-500" />
+  )}
+</div>
                         <div>
                           <h3 className="font-semibold text-neutral-900">{product.name}</h3>
                           <div className="flex items-center space-x-2 mt-1">
