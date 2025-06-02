@@ -16,6 +16,7 @@ const ProductPage = () => {
   const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<number>(9);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [imageTransition, setImageTransition] = useState(false);
 
   const { data: product, isLoading } = useProduct(productId || '');
 
@@ -76,11 +77,19 @@ const ProductPage = () => {
       ];
 
   const nextImage = () => {
-    setSelectedImage((prev) => (prev + 1) % images.length);
+    setImageTransition(true);
+    setTimeout(() => {
+      setSelectedImage((prev) => (prev + 1) % images.length);
+      setImageTransition(false);
+    }, 150);
   };
 
   const prevImage = () => {
-    setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
+    setImageTransition(true);
+    setTimeout(() => {
+      setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
+      setImageTransition(false);
+    }, 150);
   };
 
   return (
@@ -109,7 +118,9 @@ const ProductPage = () => {
               <img
                 src={images[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover transition-opacity duration-300 ${
+                  imageTransition ? 'opacity-0' : 'opacity-100'
+                }`}
               />
               
               {/* Navigation Arrows - Only show if multiple images */}
@@ -207,11 +218,7 @@ const ProductPage = () => {
               <Button
                 onClick={handleAddToCart}
                 size="lg"
-                className={`w-full ${
-                  brand === 'bhyross' 
-                    ? 'bg-bhyross-500 hover:bg-bhyross-600' 
-                    : 'bg-deecodes-500 hover:bg-deecodes-600'
-                }`}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={product.stock_quantity === 0}
               >
                 {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
@@ -239,9 +246,7 @@ const ProductPage = () => {
               <ul className="space-y-2">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-center text-sm text-neutral-600">
-                    <div className={`w-2 h-2 rounded-full mr-3 ${
-                      brand === 'bhyross' ? 'bg-bhyross-500' : 'bg-deecodes-500'
-                    }`} />
+                    <div className="w-2 h-2 rounded-full mr-3 bg-blue-600" />
                     {feature}
                   </li>
                 ))}

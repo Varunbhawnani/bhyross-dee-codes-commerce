@@ -33,14 +33,49 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ brand, onSelect }) => {
     ];
   }, [oxfordProducts, derbyProducts, monkStrapProducts, loaferProducts]);
 
-  // Filter products based on search query
+  // Filter products based on search query with improved relevance scoring
   const filteredProducts = useMemo(() => {
     if (!searchQuery.trim()) return [];
     
-    return allProducts.filter(product =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5); // Limit to 5 results
+    const query = searchQuery.toLowerCase().trim();
+    
+    // Score products based on relevance
+    const scoredProducts = allProducts.map(product => {
+      const name = product.name.toLowerCase();
+      const description = product.description?.toLowerCase() || '';
+      
+      let score = 0;
+      
+      // Exact match at start gets highest score
+      if (name.startsWith(query)) {
+        score += 100;
+      }
+      // Word boundary match gets high score
+      else if (name.includes(' ' + query) || name.includes('-' + query)) {
+        score += 80;
+      }
+      // Contains match gets medium score
+      else if (name.includes(query)) {
+        score += 60;
+      }
+      // Description match gets lower score
+      else if (description.includes(query)) {
+        score += 30;
+      }
+      
+      // Boost score for shorter names (more relevant)
+      if (score > 0) {
+        score += Math.max(0, 50 - name.length);
+      }
+      
+      return { product, score };
+    }).filter(item => item.score > 0);
+    
+    // Sort by score (highest first) and return top 5
+    return scoredProducts
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map(item => item.product);
   }, [allProducts, searchQuery]);
 
   const handleSearch = () => {

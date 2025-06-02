@@ -7,8 +7,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
-import { useCart } from '@/hooks/useCart';
-import { useToast } from '@/hooks/use-toast';
 import { Loader2, Filter } from 'lucide-react';
 
 // Helper function to get primary image or first image for a product
@@ -34,9 +32,6 @@ const CategoryPage = () => {
   
   const [sortBy, setSortBy] = useState<string>('name-asc');
   const [priceRange, setPriceRange] = useState<string>('all');
-  
-  const { addToCart } = useCart();
-  const { toast } = useToast();
 
   // Get products from all categories for search, or specific category when not searching
   const { data: oxfordProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'oxford');
@@ -107,13 +102,6 @@ const CategoryPage = () => {
   const categoryDisplayName = category?.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ') || '';
-
-  const handleAddToCart = (product: any) => {
-    addToCart({
-      productId: product.id,
-      size: product.sizes[0] || 9, // Default to first available size or 9
-    });
-  };
 
   if (isLoading) {
     return (
@@ -243,7 +231,7 @@ const CategoryPage = () => {
                       </p>
                     )}
                     <div className="flex items-center justify-between mb-3">
-                      <span className={`text-xl font-bold ${brand === 'bhyross' ? 'text-bhyross-600' : 'text-deecodes-600'}`}>
+                      <span className={`text-xl font-bold ${brand === 'bhyross' ? 'text-blue-600' : 'text-blue-600'}`}>
                         ₹{product.price.toLocaleString()}
                       </span>
                     </div>
@@ -251,20 +239,11 @@ const CategoryPage = () => {
                       <Link to={`/${brand}/${category}/${product.id}`}>
                         <Button 
                           size="sm" 
-                          variant="outline"
-                          className="w-full"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           View Details
                         </Button>
                       </Link>
-                      <Button 
-                        size="sm" 
-                        className={`w-full ${brand === 'bhyross' ? 'bg-bhyross-600 hover:bg-bhyross-700' : 'bg-deecodes-600 hover:bg-deecodes-700'} text-white`}
-                        onClick={() => handleAddToCart(product)}
-                        disabled={product.stock_quantity === 0}
-                      >
-                        {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
-                      </Button>
                     </div>
                   </div>
                 </Card>
