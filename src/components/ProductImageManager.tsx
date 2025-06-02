@@ -70,16 +70,20 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   };
 
   // Delete an image
-  const handleDelete = async (imageId: string, imageUrl: string) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+  // Delete an image
+const handleDelete = async (imageId: string, imageUrl: string) => {
+  if (!confirm('Are you sure you want to delete this image?')) return;
 
-    const result = await deleteProductImage(imageId, imageUrl);
-    if (result.success) {
-      onImagesUpdate();
-    } else {
-      alert(`Failed to delete image: ${result.error}`);
-    }
-  };
+  try {
+    // Call deleteProductImage with just the imageUrl (not imageId)
+    await deleteProductImage(imageUrl);
+    onImagesUpdate();
+    alert('Image deleted successfully');
+  } catch (error) {
+    console.error('Failed to delete image:', error);
+    alert(`Failed to delete image: ${error.message}`);
+  }
+};
 
   // Set primary image
   const handleSetPrimary = async (imageId: string) => {
@@ -233,7 +237,7 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
                     alt={image.alt_text}
                     className="w-full h-48 object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y3ZjdmNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+';
                     }}
                   />
                   
