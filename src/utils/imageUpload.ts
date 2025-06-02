@@ -132,59 +132,135 @@ export const uploadProductImages = async (
 /**
  * Delete an image from storage and database
  */
-export const deleteProductImage = async (
-  imageId: string,
-  imageUrl: string
-): Promise<{ success: boolean; error?: string }> => {
+// Enhanced deleteProductImage function with detailed error handling
+export const deleteProductImage = async (imageUrl: string): Promise<void> => {
+  console.log('Deleting image:', imageUrl);
+  
   try {
-    console.log('Deleting image:', imageId, imageUrl); // Debug log
-
-    // Extract file path from URL - FIXED: Better URL parsing
-    const url = new URL(imageUrl);
-    const pathSegments = url.pathname.split('/');
-    
-    // Find the bucket and path from Supabase URL structure
-    // URL format: https://[project].supabase.co/storage/v1/object/public/[bucket]/[path]
-    const publicIndex = pathSegments.indexOf('public');
-    if (publicIndex === -1 || publicIndex >= pathSegments.length - 2) {
-      console.error('Invalid Supabase storage URL format');
-      return { success: false, error: 'Invalid image URL format' };
+    // Extract bucket and file path from the URL
+    const urlParts = imageUrl.split('/storage/v1/object/public/');
+    if (urlParts.length !== 2) {
+      throw new Error(`Invalid Supabase URL format: ${imageUrl}`);
     }
     
-    const bucket = pathSegments[publicIndex + 1];
-    const filePath = pathSegments.slice(publicIndex + 2).join('/');
-
-    console.log('Extracted bucket:', bucket, 'path:', filePath); // Debug log
-
-    // Delete from storage
-    const { error: storageError } = await supabase.storage
+    const [bucket, ...pathParts] = urlParts[1].split('/');
+    const filePath = pathParts.join('/');
+    
+    console.log('Extracted bucket:', bucket, 'path:', filePath);
+    
+    // Step 1: Delete from Supabase Storage
+    console.log('Attempting to delete from storage...');
+    const { data: storageData, error: storageError } = await supabase.storage
       .from(bucket)
       .remove([filePath]);
-
+    
+    console.log('Storage deletion result:', { data: storageData, error: storageError });
+    
     if (storageError) {
-      console.error('Storage deletion error:', storageError);
-      // Don't return error here, continue with database deletion
+      console.error('Storage deletion failed:', storageError);
+      throw new Error(`Failed to delete from storage: ${storageError.message}`);
     }
-
-    // Delete from database - FIXED: Removed type assertion
-    const { error: dbError } = await supabase
+    
+    // Check if file was actually deleted
+    if (!storageData || storageData.length === 0) {
+      console.warn('Storage deletion returned empty data - file might not have existed');
+    } else {
+      console.log('Storage deletion successful:', storageData);
+    }
+    
+    // Step 2: Delete from database
+    console.log('Attempting to delete from database...');
+    const { data: dbData, error: dbError } = await supabase
       .from('product_images')
       .delete()
-      .eq('id', imageId);
-
+      .eq('image_url', imageUrl);
+    
+    console.log('Database deletion result:', { data: dbData, error: dbError });
+    
     if (dbError) {
-      console.error('Database deletion error:', dbError);
-      return { success: false, error: dbError.message };
+      console.error('Database deletion failed:', dbError);
+      throw new Error(`Failed to delete from database: ${dbError.message}`);
     }
-
-    console.log('Image deleted successfully'); // Debug log
-    return { success: true };
+    
+    console.log('Image deletion completed successfully');
+    
   } catch (error) {
-    console.error('Delete error:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error occurred' 
-    };
+    console.error('Error in deleteProductImage:', error);
+    throw error;
+  }
+};
+
+// Alternative approach: Check if the image exists first
+export const deleteProductImageWithCheck = async (imageUrl: string): Promise<void> => {
+  console.log('Deleting image with existence check:', imageUrl);
+  
+  try {
+    // Extract bucket and file path
+    const urlParts = imageUrl.split('/storage/v1/object/public/');
+    if (urlParts.length !== 2) {
+      throw new Error(`Invalid Supabase URL format: ${imageUrl}`);
+    }
+    
+    const [bucket, ...pathParts] = urlParts[1].split('/');
+    const filePath = pathParts.join('/');
+    
+    console.log('Extracted bucket:', bucket, 'path:', filePath);
+    
+    // Check if file exists in storage first
+    console.log('Checking if file exists in storage...');
+    const { data: listData, error: listError } = await supabase.storage
+      .from(bucket)
+      .list('images', { search: filePath.split('/').pop() });
+    
+    console.log('File existence check:', { data: listData, error: listError });
+    
+    // Check if record exists in database
+    console.log('Checking if record exists in database...');
+    const { data: existingRecord, error: fetchError } = await supabase
+      .from('product_images')
+      .select('*')
+      .eq('image_url', imageUrl)
+      .single();
+    
+    console.log('Database record check:', { data: existingRecord, error: fetchError });
+    
+    // Proceed with deletion
+    if (!listError && listData && listData.length > 0) {
+      console.log('File exists in storage, proceeding with storage deletion...');
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from(bucket)
+        .remove([filePath]);
+      
+      console.log('Storage deletion result:', { data: storageData, error: storageError });
+      
+      if (storageError) {
+        throw new Error(`Storage deletion failed: ${storageError.message}`);
+      }
+    } else {
+      console.log('File not found in storage or error checking existence');
+    }
+    
+    if (!fetchError && existingRecord) {
+      console.log('Record exists in database, proceeding with database deletion...');
+      const { data: dbData, error: dbError } = await supabase
+        .from('product_images')
+        .delete()
+        .eq('image_url', imageUrl);
+      
+      console.log('Database deletion result:', { data: dbData, error: dbError });
+      
+      if (dbError) {
+        throw new Error(`Database deletion failed: ${dbError.message}`);
+      }
+    } else {
+      console.log('Record not found in database or error checking existence');
+    }
+    
+    console.log('Image deletion process completed');
+    
+  } catch (error) {
+    console.error('Error in deleteProductImageWithCheck:', error);
+    throw error;
   }
 };
 
