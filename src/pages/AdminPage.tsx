@@ -48,7 +48,7 @@ import {
 
 const AdminPage = () => {
   const { user, isAdmin, loading } = useAuth();
-  const { data: products = [], isLoading: productsLoading } = useAllProducts();
+  const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = useAllProducts();
   const { data: stats } = useProductStats();
   const { 
     createProduct, 
@@ -80,6 +80,7 @@ const AdminPage = () => {
     images: "" // Dummy value - ProductImageManager handles images separately
   };
 };
+
 
   // Update your form state initialization
   const [productForm, setProductForm] = useState(initializeProductForm());
@@ -336,7 +337,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
         />
       </div>
 
-      {/* Product Image Management */}
+     {/* Product Image Management */}
 {editingProduct && (
   <div>
     <Label>Product Images</Label>
@@ -344,10 +345,14 @@ const handleProductSubmit = async (e: React.FormEvent) => {
       <ProductImageManager 
         productId={editingProduct.id}
         images={editingProduct.product_images || []}
-        onImagesUpdate={() => {
-          // Refetch products to update the list
-          window.location.reload(); // Simple solution
-          // OR use your query refetch if available
+        onImagesUpdate={async () => {
+          // Refetch products to get updated data
+          const result = await refetchProducts();
+          // Find and update the editing product with fresh data
+          const updatedProduct = result.data?.find(p => p.id === editingProduct.id);
+          if (updatedProduct) {
+            setEditingProduct(updatedProduct);
+          }
         }}
       />
     </div>
