@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -63,7 +64,10 @@ const ProductPage = () => {
     'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center'
   ];
 
-  const colors = Array.isArray(product?.colors) ? product.colors : [];
+  // Handle colors as Json type - filter to strings only
+  const colors = Array.isArray(product?.colors) 
+    ? product.colors.filter(color => typeof color === 'string') as string[]
+    : [];
 
   const features = brand === 'bhyross' 
     ? [

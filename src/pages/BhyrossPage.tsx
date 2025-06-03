@@ -110,7 +110,7 @@ const BhyrossPage = () => {
         </div>
       </section>
 
-      <Footer />
+      <Footer brand="bhyross" />
     </div>
   );
 };

@@ -110,7 +110,7 @@ const DeeCodesPage = () => {
         </div>
       </section>
 
-      <Footer />
+      <Footer brand="deecodes" />
     </div>
   );
 };
