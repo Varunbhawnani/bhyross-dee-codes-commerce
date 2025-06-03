@@ -17,7 +17,6 @@ const ProductPage = () => {
   const [selectedSize, setSelectedSize] = useState<number>(9);
   const [selectedImage, setSelectedImage] = useState(0);
   const [imageTransition, setImageTransition] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<string>('');
 
   const { data: product, isLoading } = useProduct(productId || '');
 
@@ -27,11 +26,6 @@ const ProductPage = () => {
     addToCart({
       productId: product.id,
       size: selectedSize,
-    });
-
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} (Size ${selectedSize}) has been added to your cart.`,
     });
   };
 
@@ -63,11 +57,6 @@ const ProductPage = () => {
     'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop&crop=center',
     'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center'
   ];
-
-  // Handle colors as Json type - filter to strings only
-  const colors = Array.isArray(product?.colors) 
-    ? product.colors.filter(color => typeof color === 'string') as string[]
-    : [];
 
   const features = brand === 'bhyross' 
     ? [
@@ -129,7 +118,7 @@ const ProductPage = () => {
               <img
                 src={images[selectedImage]}
                 alt={product.name}
-                className={`w-full h-full object-cover transition-opacity duration-500 ${
+                className={`w-full h-full object-cover transition-opacity duration-300 ${
                   imageTransition ? 'opacity-0' : 'opacity-100'
                 }`}
               />
@@ -204,28 +193,6 @@ const ProductPage = () => {
               </p>
             </div>
 
-            {/* Color Selection */}
-            {colors.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold text-neutral-900 mb-3">Color</h3>
-                <div className="flex gap-3">
-                  {colors.map((color, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-12 h-12 rounded-full border-2 transition-colors ${
-                        selectedColor === color
-                          ? 'border-neutral-900 scale-110'
-                          : 'border-neutral-300 hover:border-neutral-400'
-                      }`}
-                      style={{ backgroundColor: color.toLowerCase() }}
-                      title={color}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Size Selection */}
             <div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-3">Size</h3>
@@ -251,7 +218,7 @@ const ProductPage = () => {
               <Button
                 onClick={handleAddToCart}
                 size="lg"
-                className="w-full bg-neutral-900 hover:bg-neutral-800 text-white"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={product.stock_quantity === 0}
               >
                 {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}

@@ -1,13 +1,13 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
-import FilterDropdown from '@/components/FilterDropdown';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProducts } from '@/hooks/useProducts';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Filter } from 'lucide-react';
 
 // Helper function to get primary image or first image for a product
 const getPrimaryImage = (product: any): string => {
@@ -152,14 +152,49 @@ const CategoryPage = () => {
             </p>
           </div>
 
-          {/* Updated Filters */}
-          <div className="flex justify-between items-center mb-8">
-            <FilterDropdown
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-            />
+          {/* Filters and Sort */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium text-gray-700">Filters:</span>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              {/* Sort By */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 whitespace-nowrap">Sort by:</label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                    <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                    <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Price Range */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 whitespace-nowrap">Price range:</label>
+                <Select value={priceRange} onValueChange={setPriceRange}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Prices</SelectItem>
+                    <SelectItem value="0-5000">₹0 - ₹5,000</SelectItem>
+                    <SelectItem value="5000-10000">₹5,000 - ₹10,000</SelectItem>
+                    <SelectItem value="10000-20000">₹10,000 - ₹20,000</SelectItem>
+                    <SelectItem value="20000">₹20,000+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
 
           {/* Products Grid */}

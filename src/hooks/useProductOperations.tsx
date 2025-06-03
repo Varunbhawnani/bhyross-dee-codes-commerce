@@ -11,7 +11,6 @@ export interface CreateProductData {
   price: number;
   stock_quantity: number;
   sizes: number[];
-  colors?: string[];
   is_active?: boolean;
 }
 
@@ -27,7 +26,6 @@ export interface ProductFormData {
   price: string;
   stock_quantity: string;
   sizes: number[];
-  colors: string[];
   images: string;
 }
 
