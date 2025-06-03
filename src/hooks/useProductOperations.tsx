@@ -11,6 +11,7 @@ export interface CreateProductData {
   price: number;
   stock_quantity: number;
   sizes: number[];
+  colors?: string[];
   is_active?: boolean;
 }
 
@@ -26,6 +27,7 @@ export interface ProductFormData {
   price: string;
   stock_quantity: string;
   sizes: number[];
+  colors: string[];
   images: string;
 }
 
@@ -180,7 +182,6 @@ export const useProductOperations = () => {
     createProduct: createProductMutation.mutate,
     updateProduct: updateProductMutation.mutate,
     deleteProduct: deleteProductMutation.mutate,
-    uploadProductImage,
     isCreating: createProductMutation.isPending,
     isUpdating: updateProductMutation.isPending,
     isDeleting: deleteProductMutation.isPending,

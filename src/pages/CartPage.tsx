@@ -89,20 +89,20 @@ const CartPage = () => {
                 <Card key={item.id} className="p-6">
                   <div className="flex items-center space-x-4">
                     <img
-                      src={item.products.images[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center'}
-                      alt={item.products.name}
+                      src={item.products?.images?.[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center'}
+                      alt={item.products?.name || 'Product'}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
                     
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg text-neutral-900 mb-1">
-                        {item.products.name}
+                        {item.products?.name || 'Product'}
                       </h3>
                       <p className="text-sm text-neutral-600 mb-2">
-                        Brand: <span className="capitalize font-medium">{item.products.brand}</span> | Size: {item.size}
+                        Brand: <span className="capitalize font-medium">{item.products?.brand || 'Unknown'}</span> | Size: {item.size}
                       </p>
                       <p className="text-lg font-bold text-neutral-900">
-                        ₹{item.products.price.toLocaleString()}
+                        ₹{item.products?.price?.toLocaleString() || '0'}
                       </p>
                     </div>
                     
@@ -143,9 +143,18 @@ const CartPage = () => {
                 <Button variant="outline" onClick={() => clearCart()}>
                   Clear Cart
                 </Button>
-                <Link to="/">
-                  <Button variant="ghost">Continue Shopping</Button>
-                </Link>
+                <div className="space-x-4">
+                  <Link to="/bhyross">
+                    <Button variant="ghost" className="text-bhyross-600 hover:text-bhyross-700">
+                      Continue Shopping Bhyross
+                    </Button>
+                  </Link>
+                  <Link to="/deecodes">
+                    <Button variant="ghost" className="text-deecodes-600 hover:text-deecodes-700">
+                      Continue Shopping Dee Codes
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
             

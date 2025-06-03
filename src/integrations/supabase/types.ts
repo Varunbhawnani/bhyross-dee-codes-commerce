@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      banner_images: {
+        Row: {
+          brand: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string
+          is_active: boolean | null
+          sort_order: number | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          brand: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean | null
+          sort_order?: number | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+          sort_order?: number | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string | null
@@ -76,6 +112,36 @@ export type Database = {
           image_url?: string | null
           name?: string
           path?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      featured_products: {
+        Row: {
+          brand: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          product_id: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          brand: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          product_id: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          product_id?: string
+          sort_order?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -250,6 +316,7 @@ export type Database = {
         Row: {
           brand: Database["public"]["Enums"]["brand_type"]
           category: Database["public"]["Enums"]["shoe_category"]
+          colors: Json | null
           created_at: string | null
           description: string | null
           id: string
@@ -265,6 +332,7 @@ export type Database = {
         Insert: {
           brand: Database["public"]["Enums"]["brand_type"]
           category: Database["public"]["Enums"]["shoe_category"]
+          colors?: Json | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -280,6 +348,7 @@ export type Database = {
         Update: {
           brand?: Database["public"]["Enums"]["brand_type"]
           category?: Database["public"]["Enums"]["shoe_category"]
+          colors?: Json | null
           created_at?: string | null
           description?: string | null
           id?: string

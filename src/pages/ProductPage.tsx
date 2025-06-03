@@ -15,6 +15,7 @@ const ProductPage = () => {
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<number>(9);
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState(0);
   const [imageTransition, setImageTransition] = useState(false);
 
@@ -51,12 +52,17 @@ const ProductPage = () => {
     );
   }
 
-  const images = product.product_images.length > 0
-  ? product.product_images.map(img => img.image_url)
-  : [
-    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center'
-  ];
+  // Initialize selected color if not set and colors are available
+  if (!selectedColor && product.colors && Array.isArray(product.colors) && product.colors.length > 0) {
+    setSelectedColor(product.colors[0] as string);
+  }
+
+  const images = product.product_images?.length > 0
+    ? product.product_images.map(img => img.image_url)
+    : [
+      'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop&crop=center',
+      'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&h=600&fit=crop&crop=center'
+    ];
 
   const features = brand === 'bhyross' 
     ? [
@@ -91,6 +97,11 @@ const ProductPage = () => {
       setImageTransition(false);
     }, 150);
   };
+
+  // Handle colors - ensure it's an array of strings
+  const colors = product.colors && Array.isArray(product.colors) 
+    ? product.colors.filter(color => typeof color === 'string') as string[]
+    : [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -192,6 +203,28 @@ const ProductPage = () => {
                 {product.description}
               </p>
             </div>
+
+            {/* Color Selection */}
+            {colors.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-3">Color</h3>
+                <div className="flex flex-wrap gap-3">
+                  {colors.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 rounded-lg border-2 transition-colors capitalize ${
+                        selectedColor === color
+                          ? 'border-neutral-900 bg-neutral-900 text-white'
+                          : 'border-neutral-300 hover:border-neutral-400'
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Size Selection */}
             <div>
