@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -58,12 +57,12 @@ const CartPage = () => {
             </p>
             <div className="space-x-4">
               <Link to="/bhyross">
-                <Button className="bg-bhyross-500 hover:bg-bhyross-600">
+                <Button className="bg-blue-600 hover:bg-blue-700">
                   Shop Bhyross
                 </Button>
               </Link>
               <Link to="/deecodes">
-                <Button className="bg-deecodes-500 hover:bg-deecodes-600">
+                <Button className="bg-blue-600 hover:bg-blue-700">
                   Shop Dee Codes
                 </Button>
               </Link>
@@ -143,9 +142,14 @@ const CartPage = () => {
                 <Button variant="outline" onClick={() => clearCart()}>
                   Clear Cart
                 </Button>
-                <Link to="/">
-                  <Button variant="ghost">Continue Shopping</Button>
-                </Link>
+                <div className="space-x-4">
+                  <Link to="/bhyross">
+                    <Button variant="ghost">Continue Shopping - Bhyross</Button>
+                  </Link>
+                  <Link to="/deecodes">
+                    <Button variant="ghost">Continue Shopping - Dee Codes</Button>
+                  </Link>
+                </div>
               </div>
             </div>
             

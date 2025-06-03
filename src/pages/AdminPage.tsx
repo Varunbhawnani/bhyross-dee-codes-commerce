@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useAllProducts, useProductStats } from '@/hooks/useProducts';
+import { useAllBannerImages, useBannerOperations } from '@/hooks/useBannerImages';
+import { useAllFeaturedProducts, useFeaturedProductOperations } from '@/hooks/useFeaturedProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ProductImageManager from '@/components/ProductImageManager';
@@ -41,15 +42,16 @@ import {
   MapPin,
   Clock,
   AlertTriangle,
-  Loader2
+  Loader2,
+  Image as ImageIcon,
+  Star
 } from 'lucide-react';
-
-// Then use it in your product editing section
-
 
 const AdminPage = () => {
   const { user, isAdmin, loading } = useAuth();
   const { data: products = [], isLoading: productsLoading, refetch: refetchProducts } = useAllProducts();
+  const { data: banners = [] } = useAllBannerImages();
+  const { data: featuredProducts = [] } = useAllFeaturedProducts();
   const { data: stats } = useProductStats();
   const { 
     createProduct, 
@@ -60,13 +62,33 @@ const AdminPage = () => {
     isDeleting 
   } = useProductOperations();
   
+  const {
+    createBanner,
+    updateBanner,
+    deleteBanner,
+    isCreating: isCreatingBanner
+  } = useBannerOperations();
+
+  const {
+    addFeaturedProduct,
+    removeFeaturedProduct,
+    isAdding: isAddingFeatured,
+    isRemoving: isRemovingFeatured
+  } = useFeaturedProductOperations();
+  
   const [activeTab, setActiveTab] = useState('overview');
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [showAddBanner, setShowAddBanner] = useState(false);
+  const [bannerForm, setBannerForm] = useState({
+    brand: 'bhyross' as 'bhyross' | 'deecodes',
+    image_url: '',
+    title: '',
+    description: '',
+    sort_order: 0
+  });
   const navigate = useNavigate();
-
- 
 
   // Update your productForm state initialization to parse existing images
   const initializeProductForm = (product?: any) => {
@@ -220,6 +242,31 @@ const handleProductSubmit = async (e: React.FormEvent) => {
     setProductForm({
       ...productForm,
       sizes: productForm.sizes.filter(s => s !== size)
+    });
+  };
+
+  // Function to handle banner submission
+  const handleBannerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createBanner({
+      ...bannerForm,
+      is_active: true
+    });
+    setBannerForm({
+      brand: 'bhyross',
+      image_url: '',
+      title: '',
+      description: '',
+      sort_order: 0
+    });
+    setShowAddBanner(false);
+  };
+
+  const handleAddToFeatured = (productId: string, brand: 'bhyross' | 'deecodes') => {
+    addFeaturedProduct({
+      product_id: productId,
+      brand: brand,
+      sort_order: featuredProducts.filter(fp => fp.brand === brand).length
     });
   };
 
@@ -423,7 +470,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview" className="flex items-center space-x-2">
               <BarChart3 className="h-4 w-4" />
               <span>Overview</span>
@@ -431,6 +478,14 @@ const handleProductSubmit = async (e: React.FormEvent) => {
             <TabsTrigger value="products" className="flex items-center space-x-2">
               <Package className="h-4 w-4" />
               <span>Products</span>
+            </TabsTrigger>
+            <TabsTrigger value="banners" className="flex items-center space-x-2">
+              <ImageIcon className="h-4 w-4" />
+              <span>Banners</span>
+            </TabsTrigger>
+            <TabsTrigger value="featured" className="flex items-center space-x-2">
+              <Star className="h-4 w-4" />
+              <span>Featured</span>
             </TabsTrigger>
             <TabsTrigger value="orders" className="flex items-center space-x-2">
               <ShoppingCart className="h-4 w-4" />
@@ -624,6 +679,210 @@ const handleProductSubmit = async (e: React.FormEvent) => {
                 </Card>
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="banners" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-neutral-900">Banner Management</h2>
+              <Button 
+                onClick={() => setShowAddBanner(true)}
+                className="flex items-center space-x-2"
+                disabled={isCreatingBanner}
+              >
+                {isCreatingBanner ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                <span>Add Banner</span>
+              </Button>
+            </div>
+
+            {/* Add Banner Form */}
+            {showAddBanner && (
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Add New Banner</h3>
+                <form onSubmit={handleBannerSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="brand">Brand</Label>
+                      <Select 
+                        value={bannerForm.brand} 
+                        onValueChange={(value: 'bhyross' | 'deecodes') => 
+                          setBannerForm(prev => ({ ...prev, brand: value }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bhyross">Bhyross</SelectItem>
+                          <SelectItem value="deecodes">Dee Codes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="sort_order">Sort Order</Label>
+                      <Input
+                        id="sort_order"
+                        type="number"
+                        value={bannerForm.sort_order}
+                        onChange={(e) => setBannerForm(prev => ({ ...prev, sort_order: parseInt(e.target.value) }))}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="image_url">Image URL</Label>
+                    <Input
+                      id="image_url"
+                      value={bannerForm.image_url}
+                      onChange={(e) => setBannerForm(prev => ({ ...prev, image_url: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      value={bannerForm.title}
+                      onChange={(e) => setBannerForm(prev => ({ ...prev, title: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={bannerForm.description}
+                      onChange={(e) => setBannerForm(prev => ({ ...prev, description: e.target.value }))}
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-4">
+                    <Button type="button" variant="outline" onClick={() => setShowAddBanner(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={isCreatingBanner}>
+                      {isCreatingBanner ? 'Creating...' : 'Create Banner'}
+                    </Button>
+                  </div>
+                </form>
+              </Card>
+            )}
+
+            {/* Banners List */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {['bhyross', 'deecodes'].map((brand) => (
+                <Card key={brand} className="p-6">
+                  <h3 className="text-lg font-semibold mb-4 capitalize">{brand} Banners</h3>
+                  <div className="space-y-4">
+                    {banners
+                      .filter(banner => banner.brand === brand)
+                      .map((banner) => (
+                      <div key={banner.id} className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <img 
+                            src={banner.image_url} 
+                            alt={banner.title || 'Banner'}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                          <div>
+                            <h4 className="font-semibold">{banner.title || 'Untitled'}</h4>
+                            <p className="text-sm text-neutral-600">{banner.description}</p>
+                            <p className="text-xs text-neutral-500">Order: {banner.sort_order}</p>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => deleteBanner(banner.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="featured" className="space-y-6">
+            <h2 className="text-xl font-semibold text-neutral-900">Featured Products Management</h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {['bhyross', 'deecodes'].map((brand) => (
+                <Card key={brand} className="p-6">
+                  <h3 className="text-lg font-semibold mb-4 capitalize">{brand} Featured Products</h3>
+                  
+                  {/* Current Featured Products */}
+                  <div className="space-y-4 mb-6">
+                    {featuredProducts
+                      .filter(fp => fp.brand === brand)
+                      .map((item) => (
+                      <div key={item.id} className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-neutral-200 rounded overflow-hidden">
+                            {item.products?.product_images?.[0] && (
+                              <img 
+                                src={item.products.product_images[0].image_url}
+                                alt={item.products?.name}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-semibold">{item.products?.name}</h4>
+                            <p className="text-sm text-neutral-600">₹{item.products?.price?.toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => removeFeaturedProduct(item.id)}
+                          className="text-red-600 hover:text-red-700"
+                          disabled={isRemovingFeatured}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add Products to Featured */}
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium mb-3">Add Products to Featured</h4>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {products
+                        .filter(product => 
+                          product.brand === brand && 
+                          !featuredProducts.some(fp => fp.product_id === product.id)
+                        )
+                        .map((product) => (
+                        <div key={product.id} className="flex items-center justify-between p-2 border border-neutral-100 rounded">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-8 h-8 bg-neutral-200 rounded overflow-hidden">
+                              {product.product_images?.[0] && (
+                                <img 
+                                  src={product.product_images[0].image_url}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
+                            </div>
+                            <span className="text-sm">{product.name}</span>
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleAddToFeatured(product.id, brand as 'bhyross' | 'deecodes')}
+                            disabled={isAddingFeatured}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-6">
