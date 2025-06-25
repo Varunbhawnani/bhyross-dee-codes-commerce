@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { parseImageUrlsFromDatabase } from '@/utils/imageUploadUtils';
+import { parseImageUrlsFromDatabase } from '@/utils/imageUpload';
 
 interface ProductImageGalleryProps {
   images: string | string[]; // Can accept both database format or array

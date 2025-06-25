@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+// src/pages/BhyrossPage.tsx
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Award, Shield, Truck } from 'lucide-react';
+import { Star, Award, Shield, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
 
+// ─── NEW: import the banner‐fetch hook ─────────────────────────────────────────
+import { useBannerImages } from '@/hooks/useBannerImages';
 
 // Types for your data
 interface ProductImage {
@@ -40,7 +43,57 @@ const BhyrossPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch products with images
+  // ─── NEW: call the banner‐fetch hook for brand "bhyross" ─────────────────────
+  const {
+    data: bannerData,
+    isLoading: bannersLoading,
+    error: bannersError
+  } = useBannerImages('bhyross');
+
+  // ─── STATES FOR ROTATING BANNER (SIMPLIFIED) ───────────────────────────────
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ─── CLEAR INTERVAL HELPER ─────────────────────────────────────────────────
+  const clearAutoRotation = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  // ─── START AUTO ROTATION ───────────────────────────────────────────────────
+  const startAutoRotation = () => {
+    clearAutoRotation();
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % (bannerData?.length || 1));
+    }, 10000); // 10 seconds
+  };
+
+  // ─── EFFECT: START ROTATION WHEN BANNERS LOAD ──────────────────────────────
+  useEffect(() => {
+    if (!bannerData || bannerData.length <= 1) return;
+    
+    setCurrentIndex(0);
+    startAutoRotation();
+
+    return () => clearAutoRotation();
+  }, [bannerData]);
+
+  // ─── MANUAL NAVIGATION HANDLERS ────────────────────────────────────────────
+  const goToNext = () => {
+    if (!bannerData || bannerData.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % bannerData.length);
+    startAutoRotation(); // Restart auto rotation
+  };
+
+  const goToPrevious = () => {
+    if (!bannerData || bannerData.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + bannerData.length) % bannerData.length);
+    startAutoRotation(); // Restart auto rotation
+  };
+
+  // ─── FETCH PRODUCTS ─────────────────────────────────────────────────────────
   const fetchProducts = async () => {
     try {
       const { data: productsData, error: productsError } = await supabase
@@ -60,10 +113,9 @@ const BhyrossPage = () => {
 
       if (productsError) throw productsError;
 
-      // Transform the data to match our interface
-      const transformedProducts: Product[] = (productsData?.map(product => ({
+      const transformedProducts: Product[] = (productsData?.map((product: any) => ({
         ...product,
-        images: product.product_images?.map(img => ({
+        images: product.product_images?.map((img: any) => ({
           id: img.id,
           product_id: img.product_id,
           image_url: img.image_url,
@@ -79,7 +131,7 @@ const BhyrossPage = () => {
     }
   };
 
-  // Fetch categories
+  // ─── FETCH CATEGORIES ────────────────────────────────────────────────────────
   const fetchCategories = async () => {
     try {
       // @ts-ignore
@@ -87,7 +139,7 @@ const BhyrossPage = () => {
         .from('categories' as any)
         .select('*')
         .eq('brand', 'bhyross');
-      
+
       if (categoriesError) throw categoriesError;
       // @ts-ignore
       setCategories(categoriesData || []);
@@ -103,25 +155,24 @@ const BhyrossPage = () => {
       await Promise.all([fetchProducts(), fetchCategories()]);
       setLoading(false);
     };
-    
+
     loadData();
   }, []);
 
-  // Helper function to get primary image or first image for a product
+  // ─── HELPER: GET PRIMARY IMAGE FOR PRODUCT ──────────────────────────────────
   const getPrimaryImage = (product: Product): string => {
     if (!product.images || product.images.length === 0) {
-      return 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop'; // fallback
+      return 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop';
     }
-    
-    const primaryImage = product.images.find(img => img.is_primary);
+
+    const primaryImage = product.images.find((img) => img.is_primary);
     if (primaryImage) return primaryImage.image_url;
-    
-    // Sort by sort_order and get first image
+
     const sortedImages = [...product.images].sort((a, b) => a.sort_order - b.sort_order);
     return sortedImages[0]?.image_url || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop';
   };
 
-  // Static fallback categories (used if database categories are not available)
+  // ─── STATIC: FALLBACK CATEGORIES & PRODUCTS ─────────────────────────────────
   const fallbackCategories = [
     {
       id: 'oxford',
@@ -153,7 +204,6 @@ const BhyrossPage = () => {
     }
   ];
 
-  // Static fallback products (used if database products are not available)
   const fallbackProducts = [
     {
       id: '1',
@@ -205,7 +255,7 @@ const BhyrossPage = () => {
     }
   ];
 
-  // Static data
+  // ─── STATIC: features & testimonials (unchanged) ─────────────────────────────
   const features = [
     {
       icon: Award,
@@ -245,11 +295,12 @@ const BhyrossPage = () => {
     }
   ];
 
-  // Use database data if available, otherwise use fallback data
+  // ─── USE DATABASE OR FALLBACK DATA ───────────────────────────────────────────
   const displayProducts = products.length > 0 ? products : fallbackProducts;
   const displayCategories = categories.length > 0 ? categories : fallbackCategories;
 
-  if (loading) {
+  // ─── LOADING & ERROR HANDLING ───────────────────────────────────────────────
+  if (loading || bannersLoading) {
     return (
       <div className="min-h-screen bg-white">
         <Navigation brand="bhyross" />
@@ -260,12 +311,16 @@ const BhyrossPage = () => {
     );
   }
 
-  if (error) {
+  if (error || bannersError) {
     return (
       <div className="min-h-screen bg-white">
         <Navigation brand="bhyross" />
         <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="text-xl text-red-600">{error}</div>
+          <div className="text-xl text-red-600">
+            {error
+              ? error
+              : `Failed to load banners: ${(bannersError as Error).message}`}
+          </div>
         </div>
       </div>
     );
@@ -275,16 +330,90 @@ const BhyrossPage = () => {
     <div className="min-h-screen bg-white">
       <Navigation brand="bhyross" />
 
-      {/* hero section */}
-      <section className="hero">
-        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          <h1 className="hero-title">Crafted Excellence</h1>
-          <p className="hero-subtitle">Where luxury meets artisanal precision in every step</p>
-          <a href="#" className="cta-button bhyross">Shop Now</a>
-        </div>
-      </section>
+      {/* ─── ROTATING BANNER SECTION (FIXED WITH PROFESSIONAL FADE) ─────────────── */}
+      {bannerData && bannerData.length > 0 && (
+        <section className="relative h-[60vh] sm:h-[70vh] lg:h-[80vh] overflow-hidden">
+          {/* Banner Images */}
+          <div className="relative w-full h-full">
+            {bannerData.map((banner, index) => (
+              <div
+                key={banner.id}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                  index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                }`}
+              >
+                <img
+                  src={banner.image_url}
+                  alt={banner.title || 'Banner'}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1920&h=1080&fit=crop';
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/30" />
+                
+                {/* Content Overlay */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-20">
+                  {banner.title && (
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+                      {banner.title}
+                    </h1>
+                  )}
+                  {banner.description && (
+                    <p className="text-lg sm:text-xl lg:text-2xl text-white mb-8 max-w-3xl drop-shadow-md">
+                      {banner.description}
+                    </p>
+                  )}
+                  <button className="bg-white text-black font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-gray-100 transition-colors duration-300 transform hover:scale-105">
+                    Shop Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Navigation Arrows - Only show if more than 1 banner */}
+          {bannerData.length > 1 && (
+            <>
+              <button
+                onClick={goToPrevious}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/80 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110"
+                aria-label="Previous banner"
+              >
+                <ChevronLeft className="w-6 h-6 text-black" />
+              </button>
+              <button
+                onClick={goToNext}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/80 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110"
+                aria-label="Next banner"
+              >
+                <ChevronRight className="w-6 h-6 text-black" />
+              </button>
+            </>
+          )}
+
+          {/* Dots Indicator - Only show if more than 1 banner */}
+          {bannerData.length > 1 && (
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2">
+              {bannerData.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setCurrentIndex(index);
+                    startAutoRotation();
+                  }}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? 'bg-white scale-125'
+                      : 'bg-white/50 hover:bg-white/75'
+                  }`}
+                  aria-label={`Go to banner ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* product section */}
       <section className="products-section">
@@ -387,7 +516,7 @@ const BhyrossPage = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {displayCategories.map((category, index) => (
+            {displayCategories.map((category) => (
               <Link key={category.path} to={`/bhyross/${category.path}`}>
                 <Card className="group overflow-hidden hover-lift">
                   <div className="relative">

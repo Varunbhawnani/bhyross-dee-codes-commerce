@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -89,7 +88,11 @@ const CartPage = () => {
                 <Card key={item.id} className="p-6">
                   <div className="flex items-center space-x-4">
                     <img
-                      src={item.products.images[0] || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center'}
+                      src={
+                        (item.products.images && Array.isArray(item.products.images) && item.products.images.length > 0)
+                          ? item.products.images[0]
+                          : 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center'
+                      }
                       alt={item.products.name}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
