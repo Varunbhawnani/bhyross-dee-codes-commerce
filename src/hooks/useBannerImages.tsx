@@ -1,7 +1,6 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export interface BannerImage {
   id: string;
@@ -11,144 +10,222 @@ export interface BannerImage {
   description?: string;
   is_active: boolean;
   sort_order: number;
+  product_id?: string;
+  category_id?: string;
   created_at: string;
   updated_at: string;
+  // Optional joined data
+  products?: {
+    id: string;
+    name: string;
+    price: number;
+    brand: string;
+  };
+  categories?: {
+    id: string;
+    name: string;
+    path: string;
+  };
 }
 
-export const useBannerImages = (brand?: 'bhyross' | 'deecodes') => {
+export interface CreateBannerData {
+  brand: 'bhyross' | 'deecodes';
+  image_url: string;
+  title?: string;
+  description?: string;
+  is_active?: boolean;
+  sort_order?: number;
+  product_id?: string;
+  category_id?: string;
+}
+
+export interface UpdateBannerData extends Partial<CreateBannerData> {
+  id: string;
+}
+
+// Hook to get banners for a specific brand
+export const useBannerImages = (brand: 'bhyross' | 'deecodes') => {
   return useQuery({
-    queryKey: ['banner-images', brand],
-    queryFn: async () => {
-      let query = supabase
+    queryKey: ['bannerImages', brand],
+    queryFn: async (): Promise<BannerImage[]> => {
+      console.log('Fetching banner images for brand:', brand);
+
+      // Fixed query - use left joins to handle nullable foreign keys
+      const { data, error } = await (supabase as any)
         .from('banner_images')
-        .select('*')
+        .select(`
+          *,
+          products!left (
+            id,
+            name,
+            price,
+            brand
+          ),
+          categories!left (
+            id,
+            name,
+            path
+          )
+        `)
+        .eq('brand', brand)
         .eq('is_active', true)
         .order('sort_order');
 
-      if (brand) {
-        query = query.eq('brand', brand);
+      if (error) {
+        console.error('Banner images query error:', error);
+        throw error;
       }
-
-      const { data, error } = await query;
-      if (error) throw error;
+      
+      console.log('Fetched banner images:', data);
       return data as BannerImage[];
     },
   });
 };
 
+// Hook to get all banners (for admin)
 export const useAllBannerImages = () => {
   return useQuery({
-    queryKey: ['all-banner-images'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('banner_images')
-        .select('*')
-        .order('brand', { ascending: true })
-        .order('sort_order', { ascending: true });
+    queryKey: ['allBannerImages'],
+    queryFn: async (): Promise<BannerImage[]> => {
+      console.log('Fetching all banner images');
 
-      if (error) throw error;
+      // Fixed query with left joins
+      const { data, error } = await (supabase as any)
+        .from('banner_images')
+        .select(`
+          *,
+          products!left (
+            id,
+            name,
+            price,
+            brand
+          ),
+          categories!left (
+            id,
+            name,
+            path
+          )
+        `)
+        .order('brand')
+        .order('sort_order');
+
+      if (error) {
+        console.error('All banner images query error:', error);
+        throw error;
+      }
+      
+      console.log('Fetched all banner images:', data);
       return data as BannerImage[];
     },
   });
 };
 
+// Hook for banner CRUD operations
 export const useBannerOperations = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const createBanner = useMutation({
-    mutationFn: async (bannerData: Omit<BannerImage, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
+    mutationFn: async (bannerData: CreateBannerData): Promise<BannerImage> => {
+      console.log('Creating banner:', bannerData);
+
+      const { data, error } = await (supabase as any)
         .from('banner_images')
-        .insert([bannerData])
+        .insert([{
+          ...bannerData,
+          is_active: bannerData.is_active ?? true,
+          sort_order: bannerData.sort_order ?? 0
+        }])
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Create banner error:', error);
+        throw error;
+      }
+
+      console.log('Banner created:', data);
+      return data as BannerImage;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banner-images'] });
-      queryClient.invalidateQueries({ queryKey: ['all-banner-images'] });
-      toast({
-        title: "Success",
-        description: "Banner image created successfully",
-      });
+    onSuccess: (data) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['bannerImages'] });
+      queryClient.invalidateQueries({ queryKey: ['allBannerImages'] });
+      toast.success('Banner created successfully');
     },
     onError: (error) => {
-      console.error('Create banner error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create banner image",
-        variant: "destructive",
-      });
-    },
+      console.error('Create banner failed:', error);
+      toast.error('Failed to create banner: ' + (error as Error).message);
+    }
   });
 
   const updateBanner = useMutation({
-    mutationFn: async ({ id, ...updateData }: Partial<BannerImage> & { id: string }) => {
-      const { data, error } = await supabase
+    mutationFn: async (bannerData: UpdateBannerData): Promise<BannerImage> => {
+      console.log('Updating banner:', bannerData);
+
+      const { id, ...updateData } = bannerData;
+      
+      const { data, error } = await (supabase as any)
         .from('banner_images')
-        .update(updateData)
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Update banner error:', error);
+        throw error;
+      }
+
+      console.log('Banner updated:', data);
+      return data as BannerImage;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banner-images'] });
-      queryClient.invalidateQueries({ queryKey: ['all-banner-images'] });
-      toast({
-        title: "Success",
-        description: "Banner image updated successfully",
-      });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['bannerImages'] });
+      queryClient.invalidateQueries({ queryKey: ['allBannerImages'] });
+      toast.success('Banner updated successfully');
     },
     onError: (error) => {
-      console.error('Update banner error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update banner image",
-        variant: "destructive",
-      });
-    },
+      console.error('Update banner failed:', error);
+      toast.error('Failed to update banner: ' + (error as Error).message);
+    }
   });
 
   const deleteBanner = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
+    mutationFn: async (bannerId: string): Promise<void> => {
+      console.log('Deleting banner:', bannerId);
+
+      const { error } = await (supabase as any)
         .from('banner_images')
         .delete()
-        .eq('id', id);
+        .eq('id', bannerId);
 
-      if (error) throw error;
-      return id;
+      if (error) {
+        console.error('Delete banner error:', error);
+        throw error;
+      }
+
+      console.log('Banner deleted successfully');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banner-images'] });
-      queryClient.invalidateQueries({ queryKey: ['all-banner-images'] });
-      toast({
-        title: "Success",
-        description: "Banner image deleted successfully",
-      });
+      queryClient.invalidateQueries({ queryKey: ['bannerImages'] });
+      queryClient.invalidateQueries({ queryKey: ['allBannerImages'] });
+      toast.success('Banner deleted successfully');
     },
     onError: (error) => {
-      console.error('Delete banner error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete banner image",
-        variant: "destructive",
-      });
-    },
+      console.error('Delete banner failed:', error);
+      toast.error('Failed to delete banner: ' + (error as Error).message);
+    }
   });
 
   return {
     createBanner: createBanner.mutate,
     updateBanner: updateBanner.mutate,
     deleteBanner: deleteBanner.mutate,
-    isCreating: createBanner.isPending,
-    isUpdating: updateBanner.isPending,
-    isDeleting: deleteBanner.isPending,
+    isCreatingBanner: createBanner.isPending,
+    isUpdatingBanner: updateBanner.isPending,
+    isDeletingBanner: deleteBanner.isPending
   };
 };
