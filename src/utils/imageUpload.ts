@@ -16,6 +16,22 @@ export interface ProductImageData {
   sortOrder?: number;
 }
 
+export interface BannerUploadResult {
+  success: boolean;
+  url?: string;
+  error?: string;
+}
+
+export interface BannerImageData {
+  brand: 'bhyross' | 'deecodes';
+  file: File;
+  title?: string;
+  description?: string;
+  sortOrder?: number;
+  productId?: string;
+  categoryId?: string;
+}
+
 /**
  * Upload a single image to Supabase Storage
  */
@@ -65,6 +81,267 @@ export const uploadImage = async (
       error: error instanceof Error ? error.message : 'Unknown error occurred' 
     };
   }
+};
+/**
+ * Upload a banner image to Supabase Storage
+  */
+export const uploadBannerImage = async (
+  file: File, 
+  brand: 'bhyross' | 'deecodes',
+  bucket: string = 'products',
+  folder: string = 'banners'
+): Promise<BannerUploadResult> => {
+  try {
+    // Generate unique filename with brand prefix
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${brand}-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
+
+    console.log('Uploading banner to:', bucket, filePath);
+
+    // Upload file to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Banner upload error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Banner upload successful:', data);
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    console.log('Banner public URL:', urlData.publicUrl);
+
+    return { 
+      success: true, 
+      url: urlData.publicUrl 
+    };
+  } catch (error) {
+    console.error('Banner upload error:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    };
+  }
+};
+
+/**
+ * Upload and create banner in one operation
+ */
+export const uploadAndCreateBanner = async (
+  bannerData: BannerImageData
+): Promise<{ success: boolean; bannerId?: string; error?: string }> => {
+  try {
+    console.log('Starting banner upload and create:', bannerData.brand);
+
+    // First, upload the image
+    const uploadResult = await uploadBannerImage(
+      bannerData.file, 
+      bannerData.brand
+    );
+
+    if (!uploadResult.success || !uploadResult.url) {
+      return { 
+        success: false, 
+        error: uploadResult.error || 'Failed to upload image' 
+      };
+    }
+
+    console.log('Banner image uploaded, saving to database...');
+
+    // Then create the banner record
+    const { data, error: dbError } = await (supabase as any)
+      .from('banner_images')
+      .insert({
+        brand: bannerData.brand,
+        image_url: uploadResult.url,
+        title: bannerData.title,
+        description: bannerData.description,
+        sort_order: bannerData.sortOrder || 0,
+        product_id: bannerData.productId || null,
+        category_id: bannerData.categoryId || null,
+        is_active: true
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Banner database error:', dbError);
+      
+      // Try to clean up the uploaded file
+      try {
+        await deleteBannerImage(uploadResult.url);
+      } catch (cleanupError) {
+        console.error('Failed to cleanup uploaded file:', cleanupError);
+      }
+      
+      return { success: false, error: dbError.message };
+    }
+
+    console.log('Banner created successfully:', data);
+    return { success: true, bannerId: data.id };
+
+  } catch (error) {
+    console.error('Error in uploadAndCreateBanner:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    };
+  }
+};
+
+/**
+ * Delete a banner image from storage and database
+ */
+export const deleteBannerImage = async (imageUrl: string): Promise<void> => {
+  console.log('Deleting banner image:', imageUrl);
+  
+  try {
+    // Extract bucket and file path from the URL
+    const urlParts = imageUrl.split('/storage/v1/object/public/');
+    if (urlParts.length !== 2) {
+      throw new Error(`Invalid Supabase URL format: ${imageUrl}`);
+    }
+    
+    const [bucket, ...pathParts] = urlParts[1].split('/');
+    const filePath = pathParts.join('/');
+    
+    console.log('Extracted bucket:', bucket, 'path:', filePath);
+    
+    // Delete from Supabase Storage
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from(bucket)
+      .remove([filePath]);
+    
+    if (storageError) {
+      console.error('Banner storage deletion failed:', storageError);
+      throw new Error(`Failed to delete from storage: ${storageError.message}`);
+    }
+    
+    console.log('Banner storage deletion successful:', storageData);
+    
+    // Delete from database
+    const { error: dbError } = await (supabase as any) 
+      .from('banner_images')
+      .delete()
+      .eq('image_url', imageUrl);
+    
+    if (dbError) {
+      console.error('Banner database deletion failed:', dbError);
+      throw new Error(`Failed to delete from database: ${dbError.message}`);
+    }
+    
+    console.log('Banner deletion completed successfully');
+    
+  } catch (error) {
+    console.error('Error in deleteBannerImage:', error);
+    throw error;
+  }
+};
+
+/**
+ * Optimize banner image (banners often need different dimensions than products)
+ */
+export const optimizeBannerImage = (
+  file: File,
+  maxWidth: number = 1920,
+  maxHeight: number = 800,
+  quality: number = 0.85
+): Promise<File> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = () => {
+      // Calculate new dimensions maintaining aspect ratio
+      let { width, height } = img;
+      
+      const aspectRatio = width / height;
+      
+      if (width > maxWidth) {
+        width = maxWidth;
+        height = width / aspectRatio;
+      }
+      
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * aspectRatio;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw and compress
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const optimizedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(optimizedFile);
+          } else {
+            resolve(file); // Return original if optimization fails
+          }
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+/**
+ * Validate banner image file
+ */
+export const validateBannerImageFile = (
+  file: File,
+  options: {
+    maxSize?: number; // in MB
+    allowedTypes?: string[];
+    minWidth?: number;
+    minHeight?: number;
+  } = {}
+): { isValid: boolean; error?: string } => {
+  const {
+    maxSize = 10, // Banners can be larger than product images
+    allowedTypes = ['image/jpeg', 'image/png', 'image/webp'],
+    minWidth = 800,
+    minHeight = 400
+  } = options;
+
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      isValid: false,
+      error: `File type ${file.type} is not supported. Please use ${allowedTypes.join(', ')}.`
+    };
+  }
+
+  if (file.size > maxSize * 1024 * 1024) {
+    return {
+      isValid: false,
+      error: `File size must be less than ${maxSize}MB.`
+    };
+  }
+
+  // Additional validation for banner dimensions can be added here
+  // This would require loading the image to check dimensions
+
+  return { isValid: true };
 };
 
 /**
