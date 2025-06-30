@@ -191,7 +191,7 @@ const Index: React.FC = () => {
         </div>
       </main>
 
-      <Footer brand="imcolus" />
+      <Footer brand="bhyross" />
     </div>
   );
 };

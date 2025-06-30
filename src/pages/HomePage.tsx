@@ -736,7 +736,7 @@ const HomePage: React.FC = () => {
             
             
           <header className="header">
-            <Navigation brand="bhyross" />
+            <Navigation />
             <a href="#" className="logo bhyross">BHYROSS</a>
             <a className="home-button" onClick={() => setBrand('dual')}>Home</a>
           </header>

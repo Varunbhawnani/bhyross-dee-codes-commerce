@@ -37,7 +37,7 @@ const ImcolusPage: React.FC = () => {
             <p className="mt-4 text-neutral-600">Loading Imcolus Collection...</p>
           </div>
         </div>
-        <Footer brand="imcolus" />
+        <Footer brand="bhyross" />
       </div>
     );
   }
@@ -119,7 +119,7 @@ const ImcolusPage: React.FC = () => {
         </div>
       </main>
 
-      <Footer brand="imcolus" />
+      <Footer brand="bhyross" />
     </div>
   );
 };
