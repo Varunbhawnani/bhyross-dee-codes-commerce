@@ -17,13 +17,13 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
   
   const socialLinks = {
     bhyross: {
-      facebook: 'https://facebook.com/bhyross',
+      facebook: 'https://www.facebook.com/profile.php?id=61577605751349',
       instagram: 'https://instagram.com/bhyross',
       twitter: 'https://twitter.com/bhyross',
       linkedin: 'https://linkedin.com/company/bhyross'
     },
     deecodes: {
-      facebook: 'https://facebook.com/deecodes',
+      facebook: 'https://www.facebook.com/profile.php?id=61563305607460',
       instagram: 'https://instagram.com/deecodes',
       twitter: 'https://twitter.com/deecodes',
       linkedin: 'https://linkedin.com/company/deecodes'

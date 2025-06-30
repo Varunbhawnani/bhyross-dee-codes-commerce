@@ -98,7 +98,7 @@ const DeeCodesPage: React.FC = () => {
                   <p className="text-neutral-600 text-sm mb-2 capitalize">{product.category.replace('-', ' ')}</p>
                   <p className="font-bold text-deecodes-500">₹{product.price.toLocaleString()}</p>
                   <Button 
-                    className="w-full mt-3 bg-deecodes-500 hover:bg-deecodes-600"
+                    className="w-full mt-3 bg-black text-white hover:bg-deecodes-600"
                     onClick={() => window.location.href = `/deecodes/${product.category}/${product.id}`}
                   >
                     View Details

@@ -48,7 +48,7 @@ const ImcolusPage: React.FC = () => {
       
       <main className="pt-16">
         {/* Banner Carousel */}
-        <BannerCarousel brand="bhyross" />
+        <BannerCarousel brand="imcolus" />
 
         {/* Brand Header */}
         <div className="max-w-7xl mx-auto px-4 py-16">
@@ -98,7 +98,7 @@ const ImcolusPage: React.FC = () => {
                   <p className="text-neutral-600 text-sm mb-2 capitalize">{product.category.replace('-', ' ')}</p>
                   <p className="font-bold text-blue-600">₹{product.price.toLocaleString()}</p>
                   <Button 
-                    className="w-full mt-3 bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-black text-white hover:bg-blue-700"
                     onClick={() => window.location.href = `/imcolus/${product.category}/${product.id}`}
                   >
                     View Details

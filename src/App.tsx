@@ -10,7 +10,6 @@ import Index from "./pages/Index";
 import BhyrossPage from "./pages/BhyrossPage";
 import DeeCodesPage from "./pages/DeeCodesPage";
 import ImcolusPage from "./pages/ImcolusPage";
-import CategoryPage from "./pages/CategoryPage";
 import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
 import AuthPage from "./pages/AuthPage";
@@ -47,9 +46,6 @@ const App = () => {
                   <Route path="/imcolus" element={<ImcolusPage />} />
                   <Route path="/bhyross" element={<BhyrossPage />} />
                   <Route path="/deecodes" element={<DeeCodesPage />} />
-                  <Route path="/imcolus/:category" element={<CategoryPage />} />
-                  <Route path="/bhyross/:category" element={<CategoryPage />} />
-                  <Route path="/deecodes/:category" element={<CategoryPage />} />
                   <Route path="/imcolus/:category/:productId" element={<ProductPage />} />
                   <Route path="/bhyross/:category/:productId" element={<ProductPage />} />
                   <Route path="/deecodes/:category/:productId" element={<ProductPage />} />

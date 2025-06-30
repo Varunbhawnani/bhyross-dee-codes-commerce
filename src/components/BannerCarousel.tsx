@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useBannerImages } from '@/hooks/useBannerImages';
 
 interface BannerCarouselProps {
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus';
 }
 
 const BannerCarousel = ({ brand }: BannerCarouselProps) => {

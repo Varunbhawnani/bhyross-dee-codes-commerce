@@ -17,8 +17,10 @@ export interface CartItem {
     id: string;
     name: string;
     price: number;
-    images: string[];
     brand: string;
+    product_images: Array<{
+      image_url: string;
+    }>;
   };
 }
 
@@ -41,8 +43,10 @@ export const useCart = () => {
             id,
             name,
             price,
-            images,
-            brand
+            brand,
+            product_images (
+              image_url
+            )
           )
         `)
         .eq('user_id', user.id);

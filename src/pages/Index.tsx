@@ -73,35 +73,7 @@ const Index: React.FC = () => {
       <Navigation />
       
       <main className="pt-16">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-blue-50 to-neutral-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <div className="flex items-center justify-center mb-6">
-              <Sparkles className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-5xl md:text-6xl font-bold text-neutral-900">
-                <span className="text-blue-600">Imcolus</span> Collection
-              </h1>
-            </div>
-            <p className="text-xl text-neutral-600 max-w-4xl mx-auto mb-8">
-              Discover the perfect blend of tradition and innovation across our premium brands. 
-              From classic elegance to contemporary design, find your perfect pair.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="bg-white p-6 rounded-lg shadow-sm border">
-                <h3 className="text-xl font-semibold text-blue-600 mb-2">Imcolus</h3>
-                <p className="text-neutral-600">Premium flagship collection</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm border">
-                <h3 className="text-xl font-semibold brand-bhyross mb-2">Bhyross</h3>
-                <p className="text-neutral-600">Traditional craftsmanship</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm border">
-                <h3 className="text-xl font-semibold brand-deecodes mb-2">Dee Codes</h3>
-                <p className="text-neutral-600">Contemporary innovation</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Products Section */}
         <div className="max-w-7xl mx-auto px-4 py-16">
@@ -172,7 +144,8 @@ const Index: React.FC = () => {
                       ₹{product.price.toLocaleString()}
                     </p>
                     <Button 
-                      className={`w-full ${getBrandButtonColor(product.brand)}`}
+                      className="w-full bg-black text-white"
+
                       onClick={() => window.location.href = `/${product.brand}/${product.category}/${product.id}`}
                     >
                       View Details

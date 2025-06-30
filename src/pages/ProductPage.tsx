@@ -112,12 +112,10 @@ const ProductPage = () => {
       <div className="pt-20 pb-4 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="text-sm text-neutral-600 flex items-center">
-            <Link to={`/${brand}/${category}`} className="flex items-center hover:text-neutral-900">
+            <Link to={`/`} className="flex items-center hover:text-neutral-900">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to {category?.replace('-', ' ')}
+              Back to Collections
             </Link>
-            <span className="mx-2">/</span>
-            <span className="text-neutral-900">{product.name}</span>
           </nav>
         </div>
       </div>

@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Heart, Users, Award, Globe } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 const AboutPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
+      <Navigation />
+    <div className="min-h-screen bg-white">
+      
       {/* Header */}
       <div className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -146,7 +151,11 @@ const AboutPage: React.FC = () => {
         </div>
       </div>
     </div>
-  );
+     <Footer brand="bhyross" />
+        
+      
+    </div>
+    );
 };
 
 export default AboutPage;

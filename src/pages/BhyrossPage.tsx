@@ -98,7 +98,7 @@ const BhyrossPage: React.FC = () => {
                   <p className="text-neutral-600 text-sm mb-2 capitalize">{product.category.replace('-', ' ')}</p>
                   <p className="font-bold text-bhyross-500">₹{product.price.toLocaleString()}</p>
                   <Button 
-                    className="w-full mt-3 bg-bhyross-500 hover:bg-bhyross-600"
+                    className="w-full bg-black text-white hover:bg-bhyross-600"
                     onClick={() => window.location.href = `/bhyross/${product.category}/${product.id}`}
                   >
                     View Details
