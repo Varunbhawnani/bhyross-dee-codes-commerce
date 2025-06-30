@@ -28,20 +28,21 @@ const CategoryPage = () => {
   const searchQuery = searchParams.get('search') || '';
   
   // Determine brand from the current path
-  const brand = window.location.pathname.includes('/bhyross/') ? 'bhyross' : 'deecodes';
+  const brand = window.location.pathname.includes('/bhyross/') ? 'bhyross' : 
+               window.location.pathname.includes('/deecodes/') ? 'deecodes' : 'imcolus';
   
   const [sortBy, setSortBy] = useState<string>('name-asc');
   const [priceRange, setPriceRange] = useState<string>('all');
 
   // Get products from all categories for search, or specific category when not searching
-  const { data: oxfordProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'oxford');
-  const { data: derbyProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'derby');
-  const { data: monkStrapProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'monk-strap');
-  const { data: loaferProducts } = useProducts(brand as 'bhyross' | 'deecodes', 'loafer');
+  const { data: oxfordProducts } = useProducts(brand as 'bhyross' | 'deecodes' | 'imcolus', 'oxford');
+  const { data: derbyProducts } = useProducts(brand as 'bhyross' | 'deecodes' | 'imcolus', 'derby');
+  const { data: monkStrapProducts } = useProducts(brand as 'bhyross' | 'deecodes' | 'imcolus', 'monk-strap');
+  const { data: loaferProducts } = useProducts(brand as 'bhyross' | 'deecodes' | 'imcolus', 'loafer');
   
   // Get category specific products
   const { data: categoryProducts, isLoading, error } = useProducts(
-    brand as 'bhyross' | 'deecodes',
+    brand as 'bhyross' | 'deecodes' | 'imcolus',
     category as 'oxford' | 'derby' | 'monk-strap' | 'loafer'
   );
 
@@ -106,7 +107,7 @@ const CategoryPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation brand={brand} />
+        <Navigation />
         <div className="pt-16 min-h-screen flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
@@ -120,7 +121,7 @@ const CategoryPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation brand={brand} />
+        <Navigation />
         <div className="pt-16 min-h-screen flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-600 text-lg">Error loading products</p>
@@ -133,7 +134,7 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation brand={brand} />
+      <Navigation />
       
       <div className="pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -37,7 +37,7 @@ const DeeCodesPage: React.FC = () => {
             <p className="mt-4 text-neutral-600">Loading Dee Codes Collection...</p>
           </div>
         </div>
-        <Footer />
+        <Footer brand="deecodes" />
       </div>
     );
   }
@@ -48,9 +48,7 @@ const DeeCodesPage: React.FC = () => {
       
       <main className="pt-16">
         {/* Banner Carousel */}
-        {banners && banners.length > 0 && (
-          <BannerCarousel banners={banners} />
-        )}
+        <BannerCarousel brand="deecodes" />
 
         {/* Brand Header */}
         <div className="max-w-7xl mx-auto px-4 py-16">
@@ -91,7 +89,7 @@ const DeeCodesPage: React.FC = () => {
                 <div key={product.id} className="group cursor-pointer">
                   <div className="relative overflow-hidden rounded-lg bg-neutral-100 aspect-square mb-4">
                     <ProductImageGallery
-                      images={product.product_images}
+                      images={product.product_images.map(img => img.image_url)}
                       productName={product.name}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
@@ -121,7 +119,7 @@ const DeeCodesPage: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer brand="deecodes" />
     </div>
   );
 };

@@ -155,7 +155,7 @@ const Index: React.FC = () => {
                 <div key={product.id} className="group cursor-pointer bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
                   <div className="relative overflow-hidden rounded-t-lg bg-neutral-100 aspect-square">
                     <ProductImageGallery
-                      images={product.product_images}
+                      images={product.product_images.map(img => img.image_url)}
                       productName={product.name}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
@@ -191,7 +191,7 @@ const Index: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer brand="imcolus" />
     </div>
   );
 };

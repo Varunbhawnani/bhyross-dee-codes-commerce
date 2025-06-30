@@ -11,7 +11,8 @@ import { Star, Truck, Shield, ArrowLeft, ChevronLeft, ChevronRight } from 'lucid
 
 const ProductPage = () => {
   const { category, productId } = useParams();
-  const brand = location.pathname.includes('/bhyross/') ? 'bhyross' : 'deecodes';
+  const brand = location.pathname.includes('/bhyross/') ? 'bhyross' : 
+               location.pathname.includes('/deecodes/') ? 'deecodes' : 'imcolus';
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<number>(9);
@@ -33,7 +34,7 @@ const ProductPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation brand={brand} />
+        <Navigation />
         <div className="pt-24 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900"></div>
         </div>
@@ -44,7 +45,7 @@ const ProductPage = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation brand={brand} />
+        <Navigation />
         <div className="pt-24 text-center">
           <h1 className="text-2xl font-bold text-neutral-900">Product not found</h1>
         </div>
@@ -105,7 +106,7 @@ const ProductPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation brand={brand} />
+      <Navigation />
       
       {/* Breadcrumb */}
       <div className="pt-20 pb-4 bg-neutral-50">
