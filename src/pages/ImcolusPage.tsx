@@ -48,7 +48,7 @@ const ImcolusPage: React.FC = () => {
       
       <main className="pt-16">
         {/* Banner Carousel */}
-        <BannerCarousel brand="imcolus" />
+        <BannerCarousel brand="bhyross" />
 
         {/* Brand Header */}
         <div className="max-w-7xl mx-auto px-4 py-16">
