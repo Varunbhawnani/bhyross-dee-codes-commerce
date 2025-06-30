@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogIn, LogOut, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, LogIn, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,29 +14,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface NavigationProps {
-  brand?: 'bhyross' | 'deecodes';
-}
-
-const Navigation: React.FC<NavigationProps> = ({ brand }) => {
+const Navigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
   const { user, signOut, isAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const totalItems = getTotalItems();
-
-  const brandColors = {
-    bhyross: 'text-bhyross-500 hover:text-bhyross-600',
-    deecodes: 'text-deecodes-500 hover:text-deecodes-600'
-  };
-
-  const categories = [
-    { name: 'Oxford', path: 'oxford' },
-    { name: 'Derby', path: 'derby' },
-    { name: 'Monk Strap', path: 'monk-strap' },
-    { name: 'Loafer', path: 'loafer' }
-  ];
 
   const handleSignOut = async () => {
     await signOut();
@@ -51,15 +35,17 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleDashboardClick = () => {
-    if (brand) {
-      // If we're on a brand page, go to that brand's main page
-      navigate(`/${brand}`);
-    } else {
-      // If we're on the landing page, go to landing page
-      navigate('/');
-    }
-  };
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Collections', path: '/collections' },
+    { name: 'About', path: '/about' }
+  ];
+
+  const brands = [
+    { name: 'Imcolus', path: '/imcolus' },
+    { name: 'Bhyross', path: '/bhyross' },
+    { name: 'Dee Codes', path: '/deecodes' }
+  ];
 
   return (
     <>
@@ -69,49 +55,50 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 z-10">
               <span className="text-2xl font-bold text-neutral-900">
-                {brand ? (
-                  <span className={brand === 'bhyross' ? 'brand-bhyross' : 'brand-deecodes'}>
-                    {brand === 'bhyross' ? 'Bhyross' : 'Dee Codes'}
-                  </span>
-                ) : (
-                  <>
-                    <span className="brand-bhyross">Bhyross</span>
-                    <span className="text-neutral-400 mx-1">&</span>
-                    <span className="brand-deecodes">Dee Codes</span>
-                  </>
-                )}
+                <span className="text-blue-600">Imcolus</span>
               </span>
             </Link>
 
-            {/* Desktop Category Navigation */}
-            {brand && (
-              <div className="hidden md:flex items-center space-x-8">
-                <button
-                  onClick={handleDashboardClick}
-                  className="text-sm font-medium text-neutral-600 hover:text-neutral-900 px-3 py-1 border border-neutral-300 rounded-md transition-colors duration-200 hover:border-neutral-400"
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`text-sm font-medium transition-colors duration-200 ${
+                    location.pathname === link.path
+                      ? 'text-blue-600'
+                      : 'text-neutral-600 hover:text-neutral-900'
+                  }`}
                 >
-                  Dashboard
-                </button> 
-                {categories.map((category) => (
-                  <Link
-                    key={category.path}
-                    to={`/${brand}/${category.path}`}
-                    className={`text-sm font-medium transition-colors duration-200 ${
-                      location.pathname.includes(category.path)
-                        ? brandColors[brand]
-                        : 'text-neutral-600 hover:text-neutral-900'
-                    }`}
-                  >
-                    {category.name}
-                  </Link>
-                ))}
-              </div>
-            )}
+                  {link.name}
+                </Link>
+              ))}
+              
+              {/* Brands Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-sm font-medium text-neutral-600 hover:text-neutral-900">
+                    Brands
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="bg-white border border-neutral-200 shadow-lg">
+                  {brands.map((brand) => (
+                    <DropdownMenuItem key={brand.path} asChild>
+                      <Link to={brand.path} className="w-full cursor-pointer hover:bg-neutral-50">
+                        {brand.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center space-x-4">
               {/* Search Dropdown */}
-              <SearchDropdown brand={brand} />
+              <SearchDropdown />
               
               {/* User Menu */}
               {user ? (
@@ -201,38 +188,41 @@ const Navigation: React.FC<NavigationProps> = ({ brand }) => {
         <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {/* Mobile Search */}
           <div className="pb-4 border-b border-neutral-200">
-            <SearchDropdown brand={brand} onSelect={() => setIsMobileMenuOpen(false)} />
+            <SearchDropdown onSelect={() => setIsMobileMenuOpen(false)} />
           </div>
 
-          {/* Mobile Categories */}
-          {brand && (
-            <div className="space-y-2">
-              <h3 className="font-semibold text-neutral-900 mb-3">Categories</h3>
-              {categories.map((category) => (
+          {/* Mobile Navigation Links */}
+          <div className="space-y-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block py-2 px-3 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  location.pathname === link.path
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+            
+            {/* Mobile Brands */}
+            <div className="pt-2">
+              <h3 className="font-semibold text-neutral-900 mb-3 px-3">Brands</h3>
+              {brands.map((brand) => (
                 <Link
-                  key={category.path}
-                  to={`/${brand}/${category.path}`}
+                  key={brand.path}
+                  to={brand.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block py-2 px-3 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    location.pathname.includes(category.path)
-                      ? `${brandColors[brand]} bg-neutral-100`
-                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
-                  }`}
+                  className="block py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
                 >
-                  {category.name}
+                  {brand.name}
                 </Link>
               ))}
-              <button
-                onClick={() => {
-                  handleDashboardClick();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="block w-full text-left py-2 px-3 rounded-md text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border border-neutral-300 mt-3"
-              >
-                Dashboard
-              </button>
             </div>
-          )}
+          </div>
 
           {/* Mobile Actions */}
           <div className="pt-4 border-t border-neutral-200 space-y-2">

@@ -10,10 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Filter } from 'lucide-react';
 
-const DeeCodesPage: React.FC = () => {
+const ImcolusPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const { data: banners, isLoading: bannersLoading } = useBannerImages('deecodes');
-  const { data: products, isLoading: productsLoading } = useProducts('deecodes');
+  const { data: banners, isLoading: bannersLoading } = useBannerImages('imcolus');
+  const { data: products, isLoading: productsLoading } = useProducts('imcolus');
 
   const categories = [
     { value: 'all', label: 'All Categories' },
@@ -33,8 +33,8 @@ const DeeCodesPage: React.FC = () => {
         <Navigation />
         <div className="pt-16 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-deecodes-500 mx-auto"></div>
-            <p className="mt-4 text-neutral-600">Loading Dee Codes Collection...</p>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-neutral-600">Loading Imcolus Collection...</p>
           </div>
         </div>
         <Footer />
@@ -55,12 +55,12 @@ const DeeCodesPage: React.FC = () => {
         {/* Brand Header */}
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold brand-deecodes mb-6">
-              Dee Codes
+            <h1 className="text-4xl md:text-5xl font-bold text-blue-600 mb-6">
+              Imcolus
             </h1>
             <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
-              Contemporary design with a digital edge. Explore our modern collection that bridges 
-              the gap between technology and craftsmanship for the next generation.
+              Premium craftsmanship meets contemporary design. Discover our flagship collection 
+              of handcrafted footwear that defines sophistication and comfort.
             </p>
           </div>
 
@@ -98,10 +98,10 @@ const DeeCodesPage: React.FC = () => {
                   </div>
                   <h3 className="font-semibold text-neutral-900 mb-2">{product.name}</h3>
                   <p className="text-neutral-600 text-sm mb-2 capitalize">{product.category.replace('-', ' ')}</p>
-                  <p className="font-bold text-deecodes-500">₹{product.price.toLocaleString()}</p>
+                  <p className="font-bold text-blue-600">₹{product.price.toLocaleString()}</p>
                   <Button 
-                    className="w-full mt-3 bg-deecodes-500 hover:bg-deecodes-600"
-                    onClick={() => window.location.href = `/deecodes/${product.category}/${product.id}`}
+                    className="w-full mt-3 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => window.location.href = `/imcolus/${product.category}/${product.id}`}
                   >
                     View Details
                   </Button>
@@ -126,4 +126,4 @@ const DeeCodesPage: React.FC = () => {
   );
 };
 
-export default DeeCodesPage;
+export default ImcolusPage;

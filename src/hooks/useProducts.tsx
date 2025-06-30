@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -15,7 +16,7 @@ export interface Product {
   id: string;
   name: string;
   description: string | null;
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus';
   category: 'oxford' | 'derby' | 'monk-strap' | 'loafer';
   price: number;
   stock_quantity: number;
@@ -45,7 +46,7 @@ const parseJsonArray = (jsonString: any): number[] => {
 };
 
 // Original hook for public use (only active products)
-export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
+export const useProducts = (brand?: 'bhyross' | 'deecodes' | 'imcolus', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
   return useQuery({
     queryKey: ['products', brand, category],
     queryFn: async () => {
@@ -63,7 +64,7 @@ export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' 
         `)
         .eq('is_active', true);
 
-      if (brand && (brand === 'bhyross' || brand === 'deecodes')) {
+      if (brand && ['bhyross', 'deecodes', 'imcolus'].includes(brand)) {
         query = query.eq('brand', brand);
       }
 
@@ -95,7 +96,7 @@ export const useProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' 
 };
 
 // New hook for admin use (all products including inactive)
-export const useAllProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
+export const useAllProducts = (brand?: 'bhyross' | 'deecodes' | 'imcolus', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
   return useQuery({
     queryKey: ['admin-products', brand, category],
     queryFn: async () => {
@@ -112,7 +113,7 @@ export const useAllProducts = (brand?: 'bhyross' | 'deecodes', category?: 'oxfor
           )
         `);
 
-      if (brand && (brand === 'bhyross' || brand === 'deecodes')) {
+      if (brand && ['bhyross', 'deecodes', 'imcolus'].includes(brand)) {
         query = query.eq('brand', brand);
       }
 

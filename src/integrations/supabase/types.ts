@@ -12,38 +12,59 @@ export type Database = {
       banner_images: {
         Row: {
           brand: string
+          category_id: string | null
           created_at: string | null
           description: string | null
           id: string
           image_url: string
           is_active: boolean | null
+          product_id: string | null
           sort_order: number | null
           title: string | null
           updated_at: string | null
         }
         Insert: {
           brand: string
+          category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           image_url: string
           is_active?: boolean | null
+          product_id?: string | null
           sort_order?: number | null
           title?: string | null
           updated_at?: string | null
         }
         Update: {
           brand?: string
+          category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           image_url?: string
           is_active?: boolean | null
+          product_id?: string | null
           sort_order?: number | null
           title?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "banner_images_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "banner_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cart_items: {
         Row: {
@@ -428,7 +449,7 @@ export type Database = {
       }
     }
     Enums: {
-      brand_type: "bhyross" | "deecodes"
+      brand_type: "bhyross" | "deecodes" | "imcolus"
       order_status:
         | "pending"
         | "confirmed"
@@ -553,7 +574,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      brand_type: ["bhyross", "deecodes"],
+      brand_type: ["bhyross", "deecodes", "imcolus"],
       order_status: [
         "pending",
         "confirmed",

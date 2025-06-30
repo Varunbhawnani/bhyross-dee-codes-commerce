@@ -1,3 +1,4 @@
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { deleteProductImage } from '@/utils/imageUpload';
@@ -6,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 export interface ProductFormData {
   name: string;
   description: string;
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus';
   category: 'oxford' | 'derby' | 'monk-strap' | 'loafer';
   price: number;
   stock_quantity: number;

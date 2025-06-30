@@ -1,10 +1,11 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface BannerImage {
   id: string;
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus';
   image_url: string;
   title?: string;
   description?: string;
@@ -29,7 +30,7 @@ export interface BannerImage {
 }
 
 export interface CreateBannerData {
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus';
   image_url: string;
   title?: string;
   description?: string;
@@ -44,7 +45,7 @@ export interface UpdateBannerData extends Partial<CreateBannerData> {
 }
 
 // Hook to get banners for a specific brand
-export const useBannerImages = (brand: 'bhyross' | 'deecodes') => {
+export const useBannerImages = (brand: 'bhyross' | 'deecodes' | 'imcolus') => {
   return useQuery({
     queryKey: ['bannerImages', brand],
     queryFn: async (): Promise<BannerImage[]> => {
