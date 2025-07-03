@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 export interface BannerImage {
   id: string;
-  brand: 'bhyross' | 'deecodes' | 'imcolus';
+  brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
   image_url: string;
   title?: string;
   description?: string;
@@ -30,7 +30,7 @@ export interface BannerImage {
 }
 
 export interface CreateBannerData {
-  brand: 'bhyross' | 'deecodes' | 'imcolus';
+  brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
   image_url: string;
   title?: string;
   description?: string;
@@ -45,7 +45,7 @@ export interface UpdateBannerData extends Partial<CreateBannerData> {
 }
 
 // Hook to get banners for a specific brand
-export const useBannerImages = (brand: 'bhyross' | 'deecodes' | 'imcolus') => {
+export const useBannerImages = (brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections') => {
   return useQuery({
     queryKey: ['bannerImages', brand],
     queryFn: async (): Promise<BannerImage[]> => {

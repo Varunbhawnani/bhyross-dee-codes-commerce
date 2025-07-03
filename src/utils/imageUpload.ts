@@ -22,14 +22,28 @@ export interface BannerUploadResult {
   error?: string;
 }
 
+// Updated to include imcolus
+export type SupportedBrand =  'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
+
 export interface BannerImageData {
-  brand: 'bhyross' | 'deecodes';
+  brand: SupportedBrand; // Updated to use SupportedBrand type
   file: File;
   title?: string;
   description?: string;
   sortOrder?: number;
   productId?: string;
   categoryId?: string;
+}
+
+export interface ValidationResult {
+  isValid: boolean;
+  error?: string;
+}
+
+export interface UploadResult {
+  success: boolean;
+  url?: string;
+  error?: string;
 }
 
 /**
@@ -82,12 +96,13 @@ export const uploadImage = async (
     };
   }
 };
+
 /**
  * Upload a banner image to Supabase Storage
-  */
+ */
 export const uploadBannerImage = async (
   file: File, 
-  brand: 'bhyross' | 'deecodes',
+  brand: SupportedBrand, // Updated to use SupportedBrand type
   bucket: string = 'products',
   folder: string = 'banners'
 ): Promise<BannerUploadResult> => {
@@ -249,40 +264,69 @@ export const deleteBannerImage = async (imageUrl: string): Promise<void> => {
 };
 
 /**
+ * Validate banner image file
+ */
+export const validateBannerImageFile = (file: File): ValidationResult => {
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    return {
+      isValid: false,
+      error: 'Please select an image file (JPEG, PNG, WebP)'
+    };
+  }
+
+  // Updated file size validation (increased to 15MB for higher quality)
+  if (file.size > 15 * 1024 * 1024) {
+    return {
+      isValid: false,
+      error: 'Image size must be less than 15MB'
+    };
+  }
+
+  // Validate specific image formats
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type.toLowerCase())) {
+    return {
+      isValid: false,
+      error: 'Only JPEG, PNG, and WebP formats are supported'
+    };
+  }
+
+  return { isValid: true };
+};
+
+/**
  * Optimize banner image (banners often need different dimensions than products)
  */
-export const optimizeBannerImage = (
-  file: File,
-  maxWidth: number = 1920,
-  maxHeight: number = 800,
-  quality: number = 0.85
-): Promise<File> => {
-  return new Promise((resolve) => {
+export const optimizeBannerImage = async (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
 
     img.onload = () => {
-      // Calculate new dimensions maintaining aspect ratio
+      // Updated max dimensions for higher quality banners
+      const maxWidth = 2560;  // Increased from 1920
+      const maxHeight = 1080; // Maintained aspect ratio
+      
       let { width, height } = img;
       
-      const aspectRatio = width / height;
-      
-      if (width > maxWidth) {
-        width = maxWidth;
-        height = width / aspectRatio;
-      }
-      
-      if (height > maxHeight) {
-        height = maxHeight;
-        width = height * aspectRatio;
+      // Only resize if image is larger than max dimensions
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
       }
 
       canvas.width = width;
       canvas.height = height;
 
-      // Draw and compress
-      ctx?.drawImage(img, 0, 0, width, height);
+      // Enable high-quality rendering
+      if (ctx) {
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+      }
       
       canvas.toBlob(
         (blob) => {
@@ -293,55 +337,52 @@ export const optimizeBannerImage = (
             });
             resolve(optimizedFile);
           } else {
-            resolve(file); // Return original if optimization fails
+            reject(new Error('Failed to optimize image'));
           }
         },
         'image/jpeg',
-        quality
+        0.95 // Increased quality from 0.85 to 0.95 for maximum quality
       );
     };
 
+    img.onerror = () => reject(new Error('Failed to load image'));
     img.src = URL.createObjectURL(file);
   });
 };
 
 /**
- * Validate banner image file
+ * Get brand-specific configuration
  */
-export const validateBannerImageFile = (
-  file: File,
-  options: {
-    maxSize?: number; // in MB
-    allowedTypes?: string[];
-    minWidth?: number;
-    minHeight?: number;
-  } = {}
-): { isValid: boolean; error?: string } => {
-  const {
-    maxSize = 10, // Banners can be larger than product images
-    allowedTypes = ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth = 800,
-    minHeight = 400
-  } = options;
+export const getBrandConfig = (brand: SupportedBrand) => {
+  const configs = {
+    bhyross: {
+      maxFileSize: 15 * 1024 * 1024, // Increased to 15MB for higher quality
+      recommendedDimensions: '2560x1080', // Updated to wider format
+      storageFolder: 'banners/bhyross'
+    },
+    deecodes: {
+      maxFileSize: 15 * 1024 * 1024, // Increased to 15MB
+      recommendedDimensions: '2560x1080', // Updated to wider format
+      storageFolder: 'banners/deecodes'
+    },
+    imcolus: {
+      maxFileSize: 15 * 1024 * 1024, // Increased to 15MB
+      recommendedDimensions: '2560x1080', // Updated to wider format
+      storageFolder: 'banners/imcolus'
+    },
+    home: {
+      maxFileSize: 15 * 1024 * 1024, // Increased to 15MB
+      recommendedDimensions: '2560x1080', // Updated to wider format
+      storageFolder: 'banners/home'
+    },
+    collections: {
+      maxFileSize: 15 * 1024 * 1024, // Increased to 15MB
+      recommendedDimensions: '2560x1080', // Updated to wider format
+      storageFolder: 'banners/collections'
+    }
+  };
 
-  if (!allowedTypes.includes(file.type)) {
-    return {
-      isValid: false,
-      error: `File type ${file.type} is not supported. Please use ${allowedTypes.join(', ')}.`
-    };
-  }
-
-  if (file.size > maxSize * 1024 * 1024) {
-    return {
-      isValid: false,
-      error: `File size must be less than ${maxSize}MB.`
-    };
-  }
-
-  // Additional validation for banner dimensions can be added here
-  // This would require loading the image to check dimensions
-
-  return { isValid: true };
+  return configs[brand];
 };
 
 /**
@@ -410,53 +451,118 @@ export const uploadProductImages = async (
  * Delete an image from storage and database
  */
 // Enhanced deleteProductImage function with detailed error handling
+/**
+ * Delete an image from storage and database - FIXED VERSION
+ */
+/**
+ * Debug version - Delete function with URL matching
+ */
 export const deleteProductImage = async (imageUrl: string): Promise<void> => {
   console.log('Deleting image:', imageUrl);
   
   try {
-    // Extract bucket and file path from the URL
-    const urlParts = imageUrl.split('/storage/v1/object/public/');
-    if (urlParts.length !== 2) {
-      throw new Error(`Invalid Supabase URL format: ${imageUrl}`);
+    // Step 1: Check what URLs are actually in the database
+    console.log('Checking all image URLs in database...');
+    const { data: allImages, error: fetchAllError } = await supabase
+      .from('product_images')
+      .select('*');
+    
+    if (fetchAllError) {
+      console.error('Error fetching all images:', fetchAllError);
+    } else {
+      console.log('All image URLs in database:', allImages?.map(img => img.image_url));
     }
     
-    const [bucket, ...pathParts] = urlParts[1].split('/');
-    const filePath = pathParts.join('/');
+    // Step 2: Try to find exact match first
+    console.log('Looking for exact URL match...');
+    const { data: exactMatch, error: exactError } = await supabase
+      .from('product_images')
+      .select('*')
+      .eq('image_url', imageUrl);
     
-    console.log('Extracted bucket:', bucket, 'path:', filePath);
+    console.log('Exact match result:', { data: exactMatch, error: exactError });
     
-    // Step 1: Delete from Supabase Storage
-    console.log('Attempting to delete from storage...');
+    // Step 3: If no exact match, try to find by partial URL matching
+    let recordToDelete = null;
+    if (!exactMatch || exactMatch.length === 0) {
+      console.log('No exact match found, trying partial matching...');
+      
+      // Extract filename from the URL
+      const filename = imageUrl.split('/').pop();
+      console.log('Extracted filename:', filename);
+      
+      if (filename && allImages) {
+        // Look for any record that contains this filename
+        recordToDelete = allImages.find(img => img.image_url.includes(filename));
+        console.log('Found by filename:', recordToDelete);
+      }
+    } else {
+      recordToDelete = exactMatch[0];
+    }
+    
+    if (!recordToDelete) {
+      throw new Error('Image record not found in database with exact or partial URL matching');
+    }
+    
+    console.log('Record to delete:', recordToDelete);
+    
+    // Step 4: Delete from database using the found record
+    console.log('Deleting from database using record ID...');
+    const { data: dbData, error: dbError } = await supabase
+      .from('product_images')
+      .delete()
+      .eq('id', recordToDelete.id)
+      .select();
+    
+    console.log('Database deletion result:', { data: dbData, error: dbError });
+    
+    if (dbError) {
+      throw new Error(`Database deletion failed: ${dbError.message}`);
+    }
+    
+    if (!dbData || dbData.length === 0) {
+      throw new Error('No database records were deleted');
+    }
+    
+    console.log('Database deletion successful:', dbData);
+    
+    // Step 5: Extract file path and delete from storage
+    let filePath: string;
+    const urlToUse = recordToDelete.image_url; // Use the URL from database
+    
+    if (urlToUse.includes('/storage/v1/object/public/products/')) {
+      const urlParts = urlToUse.split('/storage/v1/object/public/products/');
+      filePath = urlParts[1];
+    } else if (urlToUse.includes('/products/')) {
+      const urlParts = urlToUse.split('/products/');
+      filePath = urlParts[urlParts.length - 1];
+    } else {
+      // Fallback: try extracting from the passed imageUrl
+      if (imageUrl.includes('/storage/v1/object/public/products/')) {
+        const urlParts = imageUrl.split('/storage/v1/object/public/products/');
+        filePath = urlParts[1];
+      } else {
+        throw new Error(`Cannot extract file path from URL: ${urlToUse}`);
+      }
+    }
+    
+    console.log('Extracted file path for storage deletion:', filePath);
+    
+    // Step 6: Delete from storage
+    console.log('Deleting from storage...');
     const { data: storageData, error: storageError } = await supabase.storage
-      .from(bucket)
+      .from('products')
       .remove([filePath]);
     
     console.log('Storage deletion result:', { data: storageData, error: storageError });
     
     if (storageError) {
       console.error('Storage deletion failed:', storageError);
-      throw new Error(`Failed to delete from storage: ${storageError.message}`);
-    }
-    
-    // Check if file was actually deleted
-    if (!storageData || storageData.length === 0) {
+      console.warn('Database was cleaned up but storage deletion failed');
+    } else if (!storageData || storageData.length === 0) {
       console.warn('Storage deletion returned empty data - file might not have existed');
     } else {
       console.log('Storage deletion successful:', storageData);
-    }
-    
-    // Step 2: Delete from database
-    console.log('Attempting to delete from database...');
-    const { data: dbData, error: dbError } = await supabase
-      .from('product_images')
-      .delete()
-      .eq('image_url', imageUrl);
-    
-    console.log('Database deletion result:', { data: dbData, error: dbError });
-    
-    if (dbError) {
-      console.error('Database deletion failed:', dbError);
-      throw new Error(`Failed to delete from database: ${dbError.message}`);
     }
     
     console.log('Image deletion completed successfully');
@@ -466,81 +572,6 @@ export const deleteProductImage = async (imageUrl: string): Promise<void> => {
     throw error;
   }
 };
-
-// Alternative approach: Check if the image exists first
-export const deleteProductImageWithCheck = async (imageUrl: string): Promise<void> => {
-  console.log('Deleting image with existence check:', imageUrl);
-  
-  try {
-    // Extract bucket and file path
-    const urlParts = imageUrl.split('/storage/v1/object/public/');
-    if (urlParts.length !== 2) {
-      throw new Error(`Invalid Supabase URL format: ${imageUrl}`);
-    }
-    
-    const [bucket, ...pathParts] = urlParts[1].split('/');
-    const filePath = pathParts.join('/');
-    
-    console.log('Extracted bucket:', bucket, 'path:', filePath);
-    
-    // Check if file exists in storage first
-    console.log('Checking if file exists in storage...');
-    const { data: listData, error: listError } = await supabase.storage
-      .from(bucket)
-      .list('images', { search: filePath.split('/').pop() });
-    
-    console.log('File existence check:', { data: listData, error: listError });
-    
-    // Check if record exists in database
-    console.log('Checking if record exists in database...');
-    const { data: existingRecord, error: fetchError } = await supabase
-      .from('product_images')
-      .select('*')
-      .eq('image_url', imageUrl)
-      .single();
-    
-    console.log('Database record check:', { data: existingRecord, error: fetchError });
-    
-    // Proceed with deletion
-    if (!listError && listData && listData.length > 0) {
-      console.log('File exists in storage, proceeding with storage deletion...');
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from(bucket)
-        .remove([filePath]);
-      
-      console.log('Storage deletion result:', { data: storageData, error: storageError });
-      
-      if (storageError) {
-        throw new Error(`Storage deletion failed: ${storageError.message}`);
-      }
-    } else {
-      console.log('File not found in storage or error checking existence');
-    }
-    
-    if (!fetchError && existingRecord) {
-      console.log('Record exists in database, proceeding with database deletion...');
-      const { data: dbData, error: dbError } = await supabase
-        .from('product_images')
-        .delete()
-        .eq('image_url', imageUrl);
-      
-      console.log('Database deletion result:', { data: dbData, error: dbError });
-      
-      if (dbError) {
-        throw new Error(`Database deletion failed: ${dbError.message}`);
-      }
-    } else {
-      console.log('Record not found in database or error checking existence');
-    }
-    
-    console.log('Image deletion process completed');
-    
-  } catch (error) {
-    console.error('Error in deleteProductImageWithCheck:', error);
-    throw error;
-  }
-};
-
 /**
  * Update image order for a product
  */
@@ -726,8 +757,6 @@ export const useProductImages = () => {
     uploadMultipleImages
   };
 };
-
-// Add these functions to the end of your imageUpload.ts file
 
 /**
  * Parse image URLs from database

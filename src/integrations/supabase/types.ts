@@ -414,6 +414,63 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          address: string | null
+          allow_registration: boolean | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          currency: string | null
+          email_notifications: boolean | null
+          id: string
+          low_stock_threshold: number | null
+          maintenance_mode: boolean | null
+          order_notifications: boolean | null
+          site_description: string | null
+          site_name: string | null
+          social_media: Json | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          allow_registration?: boolean | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          currency?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          low_stock_threshold?: number | null
+          maintenance_mode?: boolean | null
+          order_notifications?: boolean | null
+          site_description?: string | null
+          site_name?: string | null
+          social_media?: Json | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          allow_registration?: boolean | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          currency?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          low_stock_threshold?: number | null
+          maintenance_mode?: boolean | null
+          order_notifications?: boolean | null
+          site_description?: string | null
+          site_name?: string | null
+          social_media?: Json | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null

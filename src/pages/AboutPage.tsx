@@ -1,152 +1,162 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Users, Award, Globe } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Award, Users, Globe, Heart } from "lucide-react";
 
-const AboutPage: React.FC = () => {
+const About = () => {
+  const milestones = [
+    { year: "1985", event: "Founded with a vision to craft exceptional formal footwear" },
+    { year: "1995", event: "Launched our first international collection" },
+    { year: "2010", event: "Introduced sustainable leather sourcing practices" },
+    { year: "2018", event: "Expanded to three distinctive brand collections" },
+    { year: "2024", event: "Serving professionals worldwide with premium footwear" }
+  ];
+
+  const values = [
+    {
+      icon: Award,
+      title: "Craftsmanship Excellence",
+      description: "Every pair is meticulously crafted using traditional techniques passed down through generations."
+    },
+    {
+      icon: Users,
+      title: "Customer First",
+      description: "We believe in building lasting relationships with our customers through exceptional service."
+    },
+    {
+      icon: Globe,
+      title: "Global Vision",
+      description: "Bringing premium formal footwear to professionals around the world."
+    },
+    {
+      icon: Heart,
+      title: "Passion Driven",
+      description: "Our love for fine footwear drives everything we do, from design to delivery."
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-gray-50 border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link 
-            to="/" 
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Link>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            About Our Story
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Two distinct brands, one shared vision of creating exceptional fashion 
-            that speaks to diverse lifestyles and personal expressions.
-          </p>
-        </div>
-
-        {/* Brand Stories */}
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
-          {/* Bhyross */}
-          <div className="bg-gray-50 rounded-lg p-8">
-            <h2 className="text-2xl font-semibold mb-4">Bhyross</h2>
-            <p className="text-gray-600 mb-4">
-              Born from a passion for timeless elegance, Bhyross represents the 
-              perfect fusion of contemporary design and classic sophistication. 
-              Our collections are crafted for those who appreciate refined aesthetics 
-              and quality that endures.
-            </p>
-            <p className="text-gray-600">
-              Every piece in our collection tells a story of meticulous attention 
-              to detail, from the selection of premium materials to the final 
-              finishing touches that make each garment truly special.
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <main className="pt-20">
+        {/* Hero Section */}
+        <section className="relative bg-muted/30 py-12 md:py-16 lg:py-20">
+          <div className="container mx-auto px-4 lg:px-8 text-center">
+            <h1 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 animate-fade-in">
+              Crafting Excellence Since 1985
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-fade-in">
+              For nearly four decades, Imcolus has been synonymous with premium formal footwear. 
+              We've built our reputation on uncompromising quality, timeless design, and the belief 
+              that the right pair of shoes can transform how you feel and perform.
             </p>
           </div>
+        </section>
 
-          {/* DeeCodes */}
-          <div className="bg-gray-50 rounded-lg p-8">
-            <h2 className="text-2xl font-semibold mb-4">DeeCodes</h2>
-            <p className="text-gray-600 mb-4">
-              DeeCodes embodies the spirit of modern innovation and bold expression. 
-              We create fashion for the digitally native generation that values 
-              authenticity, sustainability, and cutting-edge design.
+        {/* Our Story */}
+        <section className="py-12 md:py-16 lg:py-20">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+              <div>
+                <h2 className="font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">Our Story</h2>
+                <div className="space-y-4 md:space-y-6 text-muted-foreground text-sm sm:text-base">
+                  <p>
+                    Founded in 1985 by master craftsman Alessandro Imcolus, our company began as a small 
+                    workshop in Milan with a simple yet ambitious goal: to create the finest formal shoes 
+                    that would stand the test of time.
+                  </p>
+                  <p>
+                    What started as a passion project has evolved into three distinct collections, each 
+                    representing a different aspect of the modern professional's lifestyle. From the 
+                    timeless elegance of Imcolus Classics to the contemporary sophistication of Dee Codes 
+                    Modern and the luxurious craftsmanship of Bhyross Signature.
+                  </p>
+                  <p>
+                    Today, we continue to honor our founder's vision while embracing innovation, 
+                    ensuring that every pair of Imcolus shoes delivers both style and substance to 
+                    discerning professionals worldwide.
+                  </p>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                  <div className="text-center p-4 md:p-6 lg:p-8">
+                    <h3 className="font-playfair text-lg sm:text-xl lg:text-2xl font-bold mb-2 md:mb-4">Heritage Craftsmanship</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base">
+                      Every pair tells a story of dedication, skill, and passion for excellence.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Timeline */}
+        <section className="py-12 md:py-16 lg:py-20 bg-muted/30">
+          <div className="container mx-auto px-4 lg:px-8">
+            <h2 className="font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 lg:mb-16">Our Journey</h2>
+            <div className="max-w-4xl mx-auto">
+              {milestones.map((milestone, index) => (
+                <div key={index} className="flex gap-4 md:gap-6 lg:gap-8 mb-8 md:mb-10 lg:mb-12 last:mb-0 animate-fade-in">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-montserrat font-bold text-sm md:text-base">
+                      {milestone.year.slice(-2)}
+                    </div>
+                  </div>
+                  <div className="pt-1 md:pt-2">
+                    <h3 className="font-montserrat font-bold text-base md:text-lg mb-1 md:mb-2">{milestone.year}</h3>
+                    <p className="text-muted-foreground text-sm md:text-base">{milestone.event}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Our Values */}
+        <section className="py-12 md:py-16 lg:py-20">
+          <div className="container mx-auto px-4 lg:px-8">
+            <h2 className="font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 lg:mb-16">Our Values</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {values.map((value, index) => (
+                <div key={index} className="text-center p-4 md:p-6 rounded-lg hover:bg-muted/30 transition-colors animate-fade-in">
+                  <value.icon className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 mx-auto mb-3 md:mb-4 text-primary" />
+                  <h3 className="font-montserrat font-bold text-base md:text-lg mb-2 md:mb-3">{value.title}</h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm">{value.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-12 md:py-16 lg:py-20 bg-primary text-primary-foreground">
+          <div className="container mx-auto px-4 lg:px-8 text-center">
+            <h2 className="font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">
+              Experience the Imcolus Difference
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl mb-6 md:mb-8 max-w-2xl mx-auto opacity-90">
+              Discover why professionals worldwide trust Imcolus for their most important moments.
             </p>
-            <p className="text-gray-600">
-              Our designs decode the language of contemporary culture, translating 
-              trends into wearable art that resonates with creative minds and 
-              forward-thinking individuals.
-            </p>
-          </div>
-        </div>
+            <Button variant="secondary" size="lg" className="font-montserrat font-semibold" onClick={() => window.location.href = `/`}>
+              
+              Explore Collections
+            </Button>
 
-        {/* Values Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Values</h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Quality First</h3>
-              <p className="text-gray-600 text-sm">
-                We never compromise on quality, ensuring every piece meets our 
-                highest standards of craftsmanship and durability.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Customer Centric</h3>
-              <p className="text-gray-600 text-sm">
-                Our customers are at the heart of everything we do. We listen, 
-                adapt, and continuously improve based on your feedback.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Innovation</h3>
-              <p className="text-gray-600 text-sm">
-                We embrace new technologies and sustainable practices to create 
-                fashion that's both beautiful and responsible.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Globe className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Global Vision</h3>
-              <p className="text-gray-600 text-sm">
-                We design for a global audience while celebrating local craftsmanship 
-                and cultural diversity in our creations.
-              </p>
-            </div>
-          </div>
-        </div>
 
-        {/* Mission Statement */}
-        <div className="bg-gray-900 text-white rounded-lg p-8 md:p-12 text-center">
-          <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
-          <p className="text-xl leading-relaxed max-w-4xl mx-auto">
-            To create fashion that empowers individuals to express their unique 
-            identity while building a more sustainable and inclusive industry. 
-            We believe that great design should be accessible, responsible, and 
-            inspiring for generations to come.
-          </p>
-        </div>
+          </div>
+        </section>
+      </main>
 
-        {/* Statistics */}
-        <div className="grid md:grid-cols-4 gap-8 mt-16 text-center">
-          <div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">2019</div>
-            <div className="text-gray-600">Founded</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">50,000+</div>
-            <div className="text-gray-600">Happy Customers</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">500+</div>
-            <div className="text-gray-600">Unique Designs</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">25+</div>
-            <div className="text-gray-600">Countries Served</div>
-          </div>
-        </div>
-      </div>
+      
+    
+     <Footer brand="bhyross" />
+        
+      
     </div>
-  );
+    );
 };
 
-export default AboutPage;
+export default About;

@@ -8,7 +8,7 @@ import { validateBannerImageFile, optimizeBannerImage, uploadBannerImage } from 
 
 export interface BannerImageUploadProps {
   onImageUploaded: (url: string) => void;
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections'; // Added 'imcolus' here
   currentImageUrl?: string;
   disabled?: boolean;
   className?: string;

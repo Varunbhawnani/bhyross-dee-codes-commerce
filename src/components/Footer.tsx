@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin, Truck, RotateCcw, Heart } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface FooterProps {
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus';
 }
 
 const Footer: React.FC<FooterProps> = ({ brand }) => {
@@ -13,24 +14,16 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
   const [isReturnsOpen, setIsReturnsOpen] = useState(false);
   const [isCareGuideOpen, setIsCareGuideOpen] = useState(false);
 
-  const brandName = brand === 'bhyross' ? 'Bhyross' : 'DeeCodes';
-  
-  const socialLinks = {
-    bhyross: {
-      facebook: 'https://facebook.com/bhyross',
-      instagram: 'https://instagram.com/bhyross',
-      twitter: 'https://twitter.com/bhyross',
-      linkedin: 'https://linkedin.com/company/bhyross'
-    },
-    deecodes: {
-      facebook: 'https://facebook.com/deecodes',
-      instagram: 'https://instagram.com/deecodes',
-      twitter: 'https://twitter.com/deecodes',
-      linkedin: 'https://linkedin.com/company/deecodes'
-    }
-  };
+  const { settings } = useSettings();
 
-  const currentSocials = socialLinks[brand];
+  const brandName = brand === 'bhyross' ? 'Bhyross' : brand === 'deecodes' ? 'DeeCodes' : 'Imcolus';
+  
+  // Get social links from settings for the current brand
+  const currentSocials = settings.socialMedia[brand];
+
+  const handleLinkClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const ContactModal = () => (
     <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
@@ -46,24 +39,22 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
             <Phone className="w-4 h-4 text-gray-600" />
             <div>
               <p className="font-medium">Phone</p>
-              <p className="text-sm text-gray-600">+91 98765 43210</p>
+              <p className="text-sm text-gray-600">{settings.contactPhone}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Mail className="w-4 h-4 text-gray-600" />
             <div>
               <p className="font-medium">Email</p>
-              <p className="text-sm text-gray-600">support@{brand}.com</p>
+              <p className="text-sm text-gray-600">{settings.contactEmail}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-gray-600" />
             <div>
               <p className="font-medium">Address</p>
-              <p className="text-sm text-gray-600">
-                123 Fashion Street<br />
-                Mumbai, Maharashtra 400001<br />
-                India
+              <p className="text-sm text-gray-600 whitespace-pre-line">
+                {settings.address}
               </p>
             </div>
           </div>
@@ -213,49 +204,52 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
     <>
       <footer className="bg-gray-50 border-t">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Brand Section */}
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Brand Section - Full width on mobile, single column on desktop */}
+            <div className="md:col-span-1">
               <h3 className="text-lg font-semibold mb-4">{brandName}</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Premium formal footwear crafted for the modern professional. Step into your best with our three distinctive collections.
+              </p>
+            </div>
+
+            {/* Collections Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Collections</h3>
               <ul className="space-y-2">
                 <li>
                   <Link 
-                    to="/about" 
+                    to="/imcolus" 
+                    onClick={handleLinkClick}
                     className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    About Us
+                    Imcolus Classics
                   </Link>
                 </li>
                 <li>
                   <Link 
-                    to="/craftsmanship" 
+                    to="/deecodes" 
+                    onClick={handleLinkClick}
                     className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    Craftsmanship
+                    Dee Codes Modern
                   </Link>
                 </li>
                 <li>
                   <Link 
-                    to="/collections" 
+                    to="/bhyross" 
+                    onClick={handleLinkClick}
                     className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    Collections
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/size-guide" 
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    Size Guide
+                    Bhyross Signature
                   </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Customer Service Section */}
+            {/* Customer Care Section */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
+              <h3 className="text-lg font-semibold mb-4">Customer Care</h3>
               <ul className="space-y-2">
                 <li>
                   <button 
@@ -278,56 +272,82 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
                     onClick={() => setIsReturnsOpen(true)}
                     className="text-gray-600 hover:text-gray-900 transition-colors text-left"
                   >
-                    Returns
+                    Returns & Exchanges
                   </button>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => setIsCareGuideOpen(true)}
-                    className="text-gray-600 hover:text-gray-900 transition-colors text-left"
+                  <Link 
+                    to="/size-guide" 
+                    onClick={handleLinkClick}
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    Care Guide
-                  </button>
+                    Size Guide
+                  </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Connect Section */}
+            {/* Company/Social Section */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Connect</h3>
-              <div className="flex space-x-4">
-                <a 
-                  href={currentSocials.facebook} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <Facebook className="w-5 h-5 text-blue-600" />
-                </a>
-                <a 
-                  href={currentSocials.instagram} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <Instagram className="w-5 h-5 text-pink-600" />
-                </a>
-                <a 
-                  href={currentSocials.twitter} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <Twitter className="w-5 h-5 text-gray-700" />
-                </a>
-                <a 
-                  href={currentSocials.linkedin} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <Linkedin className="w-5 h-5 text-blue-700" />
-                </a>
+              <h3 className="text-lg font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 mb-6">
+                <li>
+                   <Link to="/privacy" onClick={handleLinkClick} className="text-gray-600 hover:text-gray-900 transition-colors">
+                Privacy Policy
+              </Link>
+                  
+                </li>
+                <li>
+                  <Link 
+                    to="/terms" 
+                    onClick={handleLinkClick}
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+              <div className="flex space-x-3">
+                {currentSocials.instagram && (
+                  <a 
+                    href={currentSocials.instagram} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <Instagram className="w-4 h-4 text-pink-600" />
+                  </a>
+                )}
+                {currentSocials.facebook && (
+                  <a 
+                    href={currentSocials.facebook} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <Facebook className="w-4 h-4 text-blue-600" />
+                  </a>
+                )}
+                {currentSocials.twitter && (
+                  <a 
+                    href={currentSocials.twitter} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <Twitter className="w-4 h-4 text-gray-700" />
+                  </a>
+                )}
+                {currentSocials.linkedin && (
+                  <a 
+                    href={currentSocials.linkedin} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <Linkedin className="w-4 h-4 text-blue-700" />
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -335,9 +355,7 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
           {/* Footer Bottom */}
           <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600">
             <p>
-              &copy; 2024 {brandName}. All rights reserved. | 
-              <button className="ml-1 hover:text-gray-900 transition-colors">Privacy Policy</button> | 
-              <button className="ml-1 hover:text-gray-900 transition-colors">Terms of Service</button>
+              &copy; 2024 {brandName}. All rights reserved. Crafted with precision and care.
             </p>
           </div>
         </div>

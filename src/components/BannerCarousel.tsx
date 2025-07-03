@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useBannerImages } from '@/hooks/useBannerImages';
 
 interface BannerCarouselProps {
-  brand: 'bhyross' | 'deecodes';
+  brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
 }
 
 const BannerCarousel = ({ brand }: BannerCarouselProps) => {
@@ -20,20 +19,34 @@ const BannerCarousel = ({ brand }: BannerCarouselProps) => {
     return () => clearInterval(interval);
   }, [banners.length]);
 
+  // Get dimensions based on brand/page type
+  const getBannerDimensions = () => {
+    switch (brand) {
+      case 'bhyross':
+        return 'h-[250px] md:h-[350px] lg:h-[450px]';
+      case 'deecodes':
+        return 'h-[280px] md:h-[380px] lg:h-[480px]';
+      case 'imcolus':
+        return 'h-[320px] md:h-[420px] lg:h-[520px]';
+      case 'home':
+        return 'h-[300px] md:h-[400px] lg:h-[500px]';
+      case 'collections':
+        return 'h-[200px] md:h-[300px] lg:h-[400px]';
+      default:
+        return 'h-[300px] md:h-[400px] lg:h-[500px]';
+    }
+  };
+
+  // If loading or no banners, return null (no banner section)
   if (isLoading || banners.length === 0) {
-    return (
-      <div className="relative h-[400px] bg-neutral-100 animate-pulse">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-neutral-400">Loading banners...</div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const currentBanner = banners[currentIndex];
+  const dimensions = getBannerDimensions();
 
   return (
-    <div className="relative h-[400px] overflow-hidden">
+    <div className={`relative ${dimensions} overflow-hidden`}>
       <img
         src={currentBanner.image_url}
         alt={currentBanner.title || `${brand} banner`}
@@ -42,17 +55,21 @@ const BannerCarousel = ({ brand }: BannerCarouselProps) => {
       
       {/* Overlay with content if title or description exists */}
       {(currentBanner.title || currentBanner.description) && (
-        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-          <div className="text-center text-white px-4">
-            {currentBanner.title && (
-              <h2 className="text-4xl font-bold mb-2">{currentBanner.title}</h2>
-            )}
-            {currentBanner.description && (
-              <p className="text-xl">{currentBanner.description}</p>
-            )}
-          </div>
-        </div>
+  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+    <div className="text-center text-white px-4 font-serif [text-shadow:_2px_2px_4px_rgb(0_0_0_/_0.8)]">
+      {currentBanner.title && (
+        <h2 className="text-5xl font-sans mb-2 drop-shadow-lg">
+          {currentBanner.title}
+        </h2>
       )}
+      {currentBanner.description && (
+        <p className="text-2xl drop-shadow-md">
+          {currentBanner.description}
+        </p>
+      )}
+    </div>
+  </div>
+)}
 
       {/* Dots indicator */}
       {banners.length > 1 && (
