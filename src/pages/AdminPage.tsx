@@ -16,10 +16,9 @@ import {
   ArrowLeft,
   Home,
   ChevronRight,
-  Loader2
+  Loader2,
+  Building2
 } from 'lucide-react';
-// Remove this import - we don't need to wrap the page again
-// import { SettingsProvider } from '@/contexts/SettingsContext';
 
 // Import admin components
 import AdminBannerSection from '@/components/admin/AdminBannerSection';
@@ -30,6 +29,7 @@ import OrdersTab from '@/components/admin/OrdersTab';
 import CustomersTab from '@/components/admin/CustomersTab';
 import SettingsTab from '@/components/admin/SettingsTab';
 import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
+import BulkInquiriesTab from '@/components/admin/BulkInquiriesTab';
 
 const AdminPage = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -72,7 +72,7 @@ const AdminPage = () => {
     }));
   };
 
-  // Form submit handler - FIXED
+  // Form submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -88,7 +88,6 @@ const AdminPage = () => {
     };
 
     if (editingProduct) {
-      // Update existing product - FIXED: Pass id and productData as an object
       updateProduct({ id: editingProduct.id, productData }, {
         onSuccess: async () => {
           await refetchProducts();
@@ -110,7 +109,6 @@ const AdminPage = () => {
         }
       });
     } else {
-      // Create new product
       createProduct(productData, {
         onSuccess: async () => {
           await refetchProducts();
@@ -252,7 +250,7 @@ const AdminPage = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview" className="flex items-center space-x-2">
               <BarChart3 className="h-4 w-4" />
               <span>Overview</span>
@@ -272,6 +270,10 @@ const AdminPage = () => {
             <TabsTrigger value="customers" className="flex items-center space-x-2">
               <Users className="h-4 w-4" />
               <span>Customers</span>
+            </TabsTrigger>
+            <TabsTrigger value="bulk-inquiries" className="flex items-center space-x-2">
+              <Building2 className="h-4 w-4" />
+              <span>Bulk Inquiries</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center space-x-2">
               <Settings className="h-4 w-4" />
@@ -328,6 +330,10 @@ const AdminPage = () => {
 
           <TabsContent value="customers" className="space-y-6">
             <CustomersTab />
+          </TabsContent>
+
+          <TabsContent value="bulk-inquiries" className="space-y-6">
+            <BulkInquiriesTab />
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">

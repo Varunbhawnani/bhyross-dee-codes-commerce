@@ -6,9 +6,64 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+  export interface BulkInquiryFormData {
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  estimatedQuantity: string;
+  message: string;
+}
+
+export type BulkInquiryStatus = 'pending' | 'contacted' | 'quoted' | 'completed' | 'cancelled';
+
 export type Database = {
   public: {
     Tables: {
+
+      bulk_inquiries: {
+  Row: {
+    id: string
+    company_name: string
+    contact_name: string
+    email: string
+    phone: string
+    estimated_quantity: string
+    message: string | null
+    status: string
+    created_at: string
+    updated_at: string
+    admin_notes: string | null
+  }
+  Insert: {
+    id?: string
+    company_name: string
+    contact_name: string
+    email: string
+    phone: string
+    estimated_quantity: string
+    message?: string | null
+    status?: string
+    created_at?: string
+    updated_at?: string
+    admin_notes?: string | null
+  }
+  Update: {
+    id?: string
+    company_name?: string
+    contact_name?: string
+    email?: string
+    phone?: string
+    estimated_quantity?: string
+    message?: string | null
+    status?: string
+    created_at?: string
+    updated_at?: string
+    admin_notes?: string | null
+  }
+  Relationships: []
+}
+
       banner_images: {
         Row: {
           brand: string

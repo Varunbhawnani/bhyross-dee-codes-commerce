@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Star, Shield, Award, Clock, Eye, Sparkles, Crown, Target } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import FormalShoesHero from '../components/FormalShoesHero';
+import InteractiveBrandShowcase from '../components/InteractiveBrandShowcase';
 
 const Real_Home: React.FC = () => {
   const { data: bhyrossProducts } = useProducts('bhyross');
@@ -88,6 +90,8 @@ if (bannersLoading ) {
     <div className="min-h-screen bg-white">
       <Navigation />
         <main className="pt-16">
+
+          {/* <FormalShoesHero /> */}
       
       {/* Hero Section */}
       <section 
@@ -258,6 +262,7 @@ if (bannersLoading ) {
         </div>
       </section>
 
+
       {/* Mixed Featured Collections */}
       <section className="py-12 md:py-16 bg-gradient-to-br from-slate-50 to-white">
         <div className="container mx-auto px-4">
@@ -274,58 +279,56 @@ if (bannersLoading ) {
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-7xl mx-auto">
             {allFeaturedProducts.length > 0 ? (
               allFeaturedProducts.map((product) => (
-                <div key={`${product.brand}-${product.id}`} className="product-card">
-                  <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-50 to-white">
-                      {product.product_images[0] ? (
-                        <img
-                          src={product.product_images[0].image_url}
-                          alt={product.product_images[0].alt_text || product.name}
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                          <div className="text-slate-400 font-signika text-xs md:text-sm">No Image Available</div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2.5 md:p-3">
-                      <div className="flex items-center justify-between mb-1.5 md:mb-2">
-                        <span 
-                          className="text-xs font-bold font-argent uppercase"
-                          style={{ color: product.brandInfo.color }}
-                        >
-                          {product.brandInfo.name}
-                        </span>
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-2 w-2 md:h-2.5 md:w-2.5 fill-yellow-400 text-yellow-400" />
-                          ))}
-                        </div>
+                <div key={`${product.brand}-${product.id}`} className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                  <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-50 to-white">
+                    {product.product_images[0] ? (
+                      <img
+                        src={product.product_images[0].image_url}
+                        alt={product.product_images[0].alt_text || product.name}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                        <div className="text-slate-400 font-signika text-xs md:text-sm">No Image Available</div>
                       </div>
-                      <h4 className="font-semibold mb-1 text-slate-900 font-signika text-xs md:text-sm leading-tight">
-                        {product.name}
-                      </h4>
-                      <p className="text-slate-600 text-xs mb-2 font-signika">
-                        {categoryDisplayNames[product.category]}
-                      </p>
-                      <div className="flex items-center justify-between mb-2">
-                        <span 
-                          className="text-sm md:text-base font-bold font-signika"
-                          style={{ color: product.brandInfo.color }}
-                        >
-                          {formatPrice(product.price)}
-                        </span>
-                      </div>
-                      <Button
-                        className="w-full font-semibold font-argent text-xs py-1.5 md:py-2"
-                        style={{ backgroundColor: product.brandInfo.color }}
-                        onClick={() => window.location.href = `/${product.brand}/${product.category}/${product.id}`}
+                    )}
+                  </div>
+                  <div className="p-2.5 md:p-3">
+                    <div className="flex items-center justify-between mb-1.5 md:mb-2">
+                      <span 
+                        className="text-xs font-bold font-argent uppercase"
+                        style={{ color: product.brandInfo.color }}
                       >
-                        <Eye className="mr-1 h-3 w-3" />
-                        VIEW
-                      </Button>
+                        {product.brandInfo.name}
+                      </span>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-2 w-2 md:h-2.5 md:w-2.5 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
                     </div>
+                    <h4 className="font-semibold mb-1 text-slate-900 font-signika text-xs md:text-sm leading-tight">
+                      {product.name}
+                    </h4>
+                    <p className="text-slate-600 text-xs mb-2 font-signika">
+                      {categoryDisplayNames[product.category]}
+                    </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <span 
+                        className="text-sm md:text-base font-bold font-signika"
+                        style={{ color: product.brandInfo.color }}
+                      >
+                        {formatPrice(product.price)}
+                      </span>
+                    </div>
+                    <Button
+                      className="w-full font-semibold font-argent text-xs py-1.5 md:py-2"
+                      style={{ backgroundColor: product.brandInfo.color }}
+                      onClick={() => window.location.href = `/${product.brand}/${product.category}/${product.id}`}
+                    >
+                      <Eye className="mr-1 h-3 w-3" />
+                      VIEW
+                    </Button>
                   </div>
                 </div>
               ))

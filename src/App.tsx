@@ -21,6 +21,7 @@ import AboutPage from "./pages/AboutPage";
 import SizeGuidePage from "./pages/SizeGuidePage";
 import Home from "./pages/Real_Home";
 
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -55,7 +56,8 @@ const App = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
-                    
+              
+
                     {/* Shared brand pages */}
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/size-guide" element={<SizeGuidePage />} />

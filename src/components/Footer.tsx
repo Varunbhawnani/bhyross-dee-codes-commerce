@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin, Truck, RotateCcw, Heart } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin, Truck, RotateCcw, Heart, Building2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useSettings } from '@/contexts/SettingsContext';
+import BulkInquiryModal from './BulkInquiryModal';
 
 interface FooterProps {
   brand: 'bhyross' | 'deecodes' | 'imcolus';
@@ -13,6 +14,7 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [isReturnsOpen, setIsReturnsOpen] = useState(false);
   const [isCareGuideOpen, setIsCareGuideOpen] = useState(false);
+  const [isBulkInquiryOpen, setIsBulkInquiryOpen] = useState(false);
 
   const { settings } = useSettings();
 
@@ -284,6 +286,15 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
                     Size Guide
                   </Link>
                 </li>
+                <li>
+                  <button 
+                    onClick={() => setIsBulkInquiryOpen(true)}
+                    className="text-gray-600 hover:text-gray-900 transition-colors text-left flex items-center gap-2"
+                  >
+                    <Building2 className="w-4 h-4" />
+                    For Bulk Purchases
+                  </button>
+                </li>
               </ul>
             </div>
 
@@ -366,6 +377,10 @@ const Footer: React.FC<FooterProps> = ({ brand }) => {
       <ShippingModal />
       <ReturnsModal />
       <CareGuideModal />
+      <BulkInquiryModal 
+        isOpen={isBulkInquiryOpen} 
+        onClose={() => setIsBulkInquiryOpen(false)} 
+      />
     </>
   );
 };
