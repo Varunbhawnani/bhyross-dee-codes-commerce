@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import * as THREE from 'three';
 
 interface MousePosition {
   x: number;
@@ -12,10 +13,241 @@ const FormalShoesHero: React.FC = () => {
   const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
   const [buttonState, setButtonState] = useState<string>('Shop Collection');
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [modelLoaded, setModelLoaded] = useState<boolean>(false);
   
   const heroRef = useRef<HTMLElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const shoeModelRef = useRef<THREE.Group | null>(null);
+  const frameIdRef = useRef<number | null>(null);
   const lastScrollY = useRef<number>(0);
 
+  // Initialize Three.js Scene
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true,
+      powerPreference: "high-performance"
+    });
+    
+    renderer.setSize(500, 400);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1;
+    
+    mountRef.current.appendChild(renderer.domElement);
+    
+    // Camera position
+    camera.position.set(0, 0, 5);
+    
+    // Lighting setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 5, 5);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    scene.add(directionalLight);
+    
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
+    directionalLight2.position.set(-5, -5, 5);
+    scene.add(directionalLight2);
+    
+    const spotLight = new THREE.SpotLight(0xffffff, 0.5);
+    spotLight.position.set(0, 5, 0);
+    spotLight.angle = 0.6;
+    spotLight.penumbra = 1;
+    spotLight.castShadow = true;
+    scene.add(spotLight);
+    
+    // Store references
+    sceneRef.current = scene;
+    rendererRef.current = renderer;
+    cameraRef.current = camera;
+    
+    // Create 3D shoe model
+    createShoeModel(scene);
+    
+    // Animation loop
+    const animate = () => {
+      frameIdRef.current = requestAnimationFrame(animate);
+      
+      if (shoeModelRef.current) {
+        // Smooth rotation based on mouse position
+        const targetRotationY = mousePosition.x * 0.5;
+        const targetRotationX = mousePosition.y * 0.3;
+        
+        shoeModelRef.current.rotation.y += (targetRotationY - shoeModelRef.current.rotation.y) * 0.1;
+        shoeModelRef.current.rotation.x += (targetRotationX - shoeModelRef.current.rotation.x) * 0.1;
+        
+        // Floating animation
+        shoeModelRef.current.position.y = Math.sin(Date.now() * 0.0005) * 0.1;
+        
+        // Scale based on activation
+        const targetScale = isActive ? 1 : 0.8;
+        const currentScale = shoeModelRef.current.scale.x;
+        const newScale = currentScale + (targetScale - currentScale) * 0.1;
+        shoeModelRef.current.scale.setScalar(newScale);
+      }
+      
+      renderer.render(scene, camera);
+    };
+    
+    animate();
+    
+    // Cleanup
+    return () => {
+      if (frameIdRef.current) {
+        cancelAnimationFrame(frameIdRef.current);
+      }
+      if (mountRef.current && renderer.domElement) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+      renderer.dispose();
+    };
+  }, [mousePosition, isActive]);
+
+  // Create detailed shoe model using basic geometries
+  const createShoeModel = (scene: THREE.Scene) => {
+    const shoeGroup = new THREE.Group();
+    
+    // Main shoe sole
+    const soleGeometry = new THREE.CylinderGeometry(0.8, 1.0, 0.2, 16);
+    const soleMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x2c1810,
+      shininess: 30,
+      specular: 0x111111
+    });
+    const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+    sole.position.y = -0.5;
+    sole.scale.set(1.5, 1, 2.2);
+    sole.castShadow = true;
+    sole.receiveShadow = true;
+    shoeGroup.add(sole);
+    
+    // Shoe upper - main body
+    const upperGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.6);
+    const upperMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x1a1a1a,
+      shininess: 80,
+      specular: 0x444444
+    });
+    const upper = new THREE.Mesh(upperGeometry, upperMaterial);
+    upper.position.y = -0.1;
+    upper.scale.set(1.3, 0.8, 2.0);
+    upper.castShadow = true;
+    upper.receiveShadow = true;
+    shoeGroup.add(upper);
+    
+    // Shoe toe cap
+    const toeCapGeometry = new THREE.SphereGeometry(0.6, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5);
+    const toeCapMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x0f0f0f,
+      shininess: 100,
+      specular: 0x666666
+    });
+    const toeCap = new THREE.Mesh(toeCapGeometry, toeCapMaterial);
+    toeCap.position.set(0, 0.1, 1.2);
+    toeCap.scale.set(1.1, 0.6, 1.0);
+    toeCap.castShadow = true;
+    toeCap.receiveShadow = true;
+    shoeGroup.add(toeCap);
+    
+    // Shoe heel
+    const heelGeometry = new THREE.CylinderGeometry(0.4, 0.5, 0.8, 8);
+    const heelMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x2c1810,
+      shininess: 40,
+      specular: 0x222222
+    });
+    const heel = new THREE.Mesh(heelGeometry, heelMaterial);
+    heel.position.set(0, -0.7, -1.2);
+    heel.scale.set(1.2, 1, 1);
+    heel.castShadow = true;
+    heel.receiveShadow = true;
+    shoeGroup.add(heel);
+    
+    // Shoe laces area
+    const lacesGeometry = new THREE.BoxGeometry(0.8, 0.3, 1.2);
+    const lacesMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x0a0a0a,
+      shininess: 60,
+      specular: 0x333333
+    });
+    const laces = new THREE.Mesh(lacesGeometry, lacesMaterial);
+    laces.position.set(0, 0.3, 0.2);
+    laces.castShadow = true;
+    laces.receiveShadow = true;
+    shoeGroup.add(laces);
+    
+    // Decorative stitching lines
+    for (let i = 0; i < 8; i++) {
+      const stitchGeometry = new THREE.CylinderGeometry(0.02, 0.02, 1.8, 4);
+      const stitchMaterial = new THREE.MeshBasicMaterial({ color: 0x444444 });
+      const stitch = new THREE.Mesh(stitchGeometry, stitchMaterial);
+      stitch.position.set(0.6 * Math.cos(i * 0.3), 0.1, 0.6 * Math.sin(i * 0.3));
+      stitch.rotation.x = Math.PI / 2;
+      stitch.scale.set(0.5, 0.5, 0.5);
+      shoeGroup.add(stitch);
+    }
+    
+    // Shoe eyelets
+    for (let i = 0; i < 6; i++) {
+      const eyeletGeometry = new THREE.RingGeometry(0.05, 0.08, 8);
+      const eyeletMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0x666666,
+        shininess: 100,
+        specular: 0x888888
+      });
+      const eyelet = new THREE.Mesh(eyeletGeometry, eyeletMaterial);
+      eyelet.position.set(
+        0.4 * (i % 2 === 0 ? 1 : -1),
+        0.4 - (i * 0.1),
+        0.3 - (i * 0.1)
+      );
+      eyelet.rotation.y = Math.PI / 2;
+      shoeGroup.add(eyelet);
+    }
+    
+    // Position and rotate the entire shoe
+    shoeGroup.position.set(0, 0, 0);
+    shoeGroup.rotation.y = Math.PI / 6;
+    shoeGroup.rotation.x = -Math.PI / 12;
+    shoeGroup.scale.setScalar(0.8);
+    
+    scene.add(shoeGroup);
+    shoeModelRef.current = shoeGroup;
+    setModelLoaded(true);
+  };
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (rendererRef.current && cameraRef.current && mountRef.current) {
+        const width = mountRef.current.clientWidth;
+        const height = mountRef.current.clientHeight;
+        
+        cameraRef.current.aspect = width / height;
+        cameraRef.current.updateProjectionMatrix();
+        rendererRef.current.setSize(width, height);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Scroll and mouse handling
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -27,21 +259,17 @@ const FormalShoesHero: React.FC = () => {
       const heroBottom = heroTop + heroSection.offsetHeight;
       const viewportHeight = window.innerHeight;
       
-      // Calculate scroll progress within the hero section
       const scrollIntoHero = Math.max(0, currentScrollY - heroTop);
       const progressPercent = Math.min(100, (scrollIntoHero / viewportHeight) * 100);
       
       setScrollProgress(progressPercent);
       
-      // Determine scroll direction
       const direction = currentScrollY > lastScrollY.current ? 'down' : 'up';
       setScrollDirection(direction);
       lastScrollY.current = currentScrollY;
       
-      // Check if hero section is in viewport
       if (currentScrollY + viewportHeight > heroTop && currentScrollY < heroBottom) {
         const scrollProgressNormalized = scrollIntoHero / viewportHeight;
-        
         if (scrollProgressNormalized > 0.1) {
           setIsActive(true);
         }
@@ -65,7 +293,6 @@ const FormalShoesHero: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('mousemove', handleMouseMove);
     
-    // Initial check
     handleScroll();
 
     return () => {
@@ -78,8 +305,8 @@ const FormalShoesHero: React.FC = () => {
     setButtonState('Loading...');
     setTimeout(() => {
       setButtonState('Shop Collection');
-      // Add your navigation logic here
-      window.location.href = '/';
+      // Replace with actual navigation logic
+      console.log('Navigate to shop collection');
     }, 600);
   };
 
@@ -101,7 +328,7 @@ const FormalShoesHero: React.FC = () => {
         ))}
       </div>
 
-      {/* Main interactive section - Reduced height */}
+      {/* Main interactive section */}
       <section ref={heroRef} className="relative h-[120vh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-gray-100">
         <div className="sticky top-0 h-screen flex items-center justify-center">
           {/* Enhanced scroll progress bar */}
@@ -179,102 +406,16 @@ const FormalShoesHero: React.FC = () => {
               </button>
             </div>
             
-            {/* Enhanced Shoe Display */}
-            <div className="flex-1 relative h-full flex items-center justify-center" style={{ perspective: '1200px' }}>
-              {/* Dynamic floating elements */}
-              <div className="absolute inset-0 pointer-events-none">
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`absolute w-16 h-px bg-gradient-to-r from-black to-transparent opacity-20 transition-all duration-1000 ${
-                      isActive ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-24'
-                    }`}
-                    style={{
-                      top: `${20 + i * 15}%`,
-                      left: i % 2 === 0 ? '-10%' : 'auto',
-                      right: i % 2 === 1 ? '-10%' : 'auto',
-                      transform: `translateX(${mousePosition.x * (12 + i * 6)}px) translateY(${mousePosition.y * 5}px)`,
-                      transitionDelay: `${500 + i * 100}ms`
-                    }}
-                  />
-                ))}
-              </div>
-              
-              {/* Enhanced 3D Shoe Container */}
-              <div 
-                className={`relative w-[500px] h-[300px] transition-all duration-1000 ${
-                  isActive ? 'scale-100' : 'scale-75'
-                } ${scrollDirection === 'up' ? 'scale-110' : ''}`}
-                style={{ 
-                  transformStyle: 'preserve-3d',
-                  transform: `scale(${isActive ? 1 : 0.8}) rotateY(${isActive ? 0 : -30}deg) rotateX(${isActive ? 0 : 10}deg) translateX(${mousePosition.x * 20}px) translateY(${mousePosition.y * 15}px)`
-                }}
-              >
-                {/* Glow effect */}
+            {/* 3D Shoe Display */}
+            <div className="flex-1 relative h-full">
+              <div className={`h-full w-full transition-all duration-1000 ${
+                isActive ? 'scale-100 opacity-100' : 'scale-75 opacity-60'
+              }`}>
                 <div 
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-2xl"
-                  style={{ transform: 'translateZ(-50px)' }}
+                  ref={mountRef}
+                  className="w-full h-full flex items-center justify-center"
+                  style={{ minHeight: '400px' }}
                 />
-                
-                <div className={`absolute inset-0 transition-all duration-1200 ${isActive ? 'animate-pulse' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
-                  {/* Enhanced Shoe Shadow */}
-                  <div 
-                    className="absolute inset-0 border-2 border-gray-400 opacity-20 rounded-full shadow-2xl"
-                    style={{ 
-                      borderRadius: '150px 40px 40px 150px',
-                      transform: 'translateZ(-20px) translateX(15px) translateY(15px)'
-                    }}
-                  />
-                  
-                  {/* Main Shoe Outline with gradient */}
-                  <div 
-                    className="absolute inset-0 border-2 border-black bg-gradient-to-br from-white to-gray-100 relative shadow-xl"
-                    style={{ 
-                      borderRadius: '150px 40px 40px 150px',
-                      transformStyle: 'preserve-3d'
-                    }}
-                  >
-                    {/* Enhanced inner shoe detail */}
-                    <div 
-                      className="absolute top-[20%] left-[20%] w-[60%] h-[60%] border-2 border-gray-700 bg-gradient-to-br from-gray-50 to-gray-200"
-                      style={{ borderRadius: '100px 20px 20px 100px' }}
-                    />
-                    
-                    {/* Enhanced Sole */}
-                    <div 
-                      className="absolute bottom-0 left-0 w-full h-[12%] border-2 border-black border-t-0 bg-gradient-to-r from-gray-800 to-black"
-                      style={{ borderRadius: '0 0 40px 150px' }}
-                    />
-                    
-                    {/* Enhanced Shoe Details */}
-                    <div className="absolute top-[30%] left-[25%] w-[50%] h-[40%]">
-                      {/* Animated Eyelets */}
-                      {[...Array(8)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-2 h-2 bg-white border-2 border-black rounded-full transition-all duration-300 hover:scale-110"
-                          style={{
-                            top: `${Math.floor(i / 2) * 25}%`,
-                            left: i % 2 === 0 ? '20%' : 'auto',
-                            right: i % 2 === 1 ? '20%' : 'auto',
-                            animationDelay: `${i * 100}ms`
-                          }}
-                        />
-                      ))}
-                      
-                      {/* Enhanced Laces */}
-                      <div className="absolute top-[12.5%] left-[20%] right-[20%] h-px bg-gradient-to-r from-gray-600 to-gray-800 transform rotate-[10deg]" />
-                      <div className="absolute top-[37.5%] left-[25%] right-[25%] h-px bg-gradient-to-r from-gray-600 to-gray-800 transform -rotate-[10deg]" />
-                      <div className="absolute top-[62.5%] left-[30%] right-[30%] h-px bg-gradient-to-r from-gray-600 to-gray-800 transform rotate-[10deg]" />
-                    </div>
-                    
-                    {/* Shine effect */}
-                    <div 
-                      className="absolute top-[10%] left-[15%] w-[20%] h-[20%] bg-gradient-to-br from-white/40 to-transparent rounded-full blur-sm"
-                      style={{ transform: 'translateZ(1px)' }}
-                    />
-                  </div>
-                </div>
               </div>
               
               {/* Enhanced Price Tag */}
@@ -286,6 +427,16 @@ const FormalShoesHero: React.FC = () => {
                   <span className="bg-gradient-to-r from-black to-gray-600 bg-clip-text text-transparent">$395</span>
                 </div>
               </div>
+              
+              {/* Model Loading Indicator */}
+              {!modelLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded-lg">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading 3D Model...</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
@@ -297,6 +448,26 @@ const FormalShoesHero: React.FC = () => {
               Scroll to Explore
             </div>
             <div className="w-px h-8 bg-gradient-to-b from-black to-transparent animate-pulse" />
+          </div>
+        </div>
+      </section>
+      
+      {/* Additional content section for scroll demonstration */}
+      <section className="min-h-screen bg-white p-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl font-light mb-8 text-center text-black">Our Collection</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { name: 'Oxford Classic', price: '$395', image: '👞' },
+              { name: 'Derby Deluxe', price: '$445', image: '👞' },
+              { name: 'Brogue Premium', price: '$495', image: '👞' }
+            ].map((shoe, index) => (
+              <div key={index} className="bg-gray-50 p-8 rounded-lg text-center hover:shadow-lg transition-shadow duration-300">
+                <div className="text-6xl mb-4">{shoe.image}</div>
+                <h3 className="text-xl font-light mb-2 text-black">{shoe.name}</h3>
+                <p className="text-gray-600 text-lg">{shoe.price}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

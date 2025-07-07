@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { useCart } from '@/hooks/useCart';
 import Footer from "@/components/Footer";
 import { useProduct } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { Star, Truck, Shield, ArrowLeft, ChevronLeft, ChevronRight, ZoomIn, Heart, Minus, Plus } from 'lucide-react';
 
 const ProductPage = () => {
@@ -15,6 +16,7 @@ const ProductPage = () => {
                location.pathname.includes('/deecodes/') ? 'deecodes' : 'imcolus';
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const analytics = useAnalytics();
   const [selectedSize, setSelectedSize] = useState<number>(9);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState(0);
@@ -23,13 +25,56 @@ const ProductPage = () => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isFavorited, setIsFavorited] = useState(false);
+  const [hasTrackedView, setHasTrackedView] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
 
   const { data: product, isLoading } = useProduct(productId || '');
 
+  // Track page view when component mounts
+  useEffect(() => {
+    if (product && !hasTrackedView) {
+      analytics.trackCustomEvent('page_view', { page: `/product/${productId}`, title: `Product: ${product.name}` });
+      setHasTrackedView(true);
+    }
+  }, [product, productId, analytics, hasTrackedView]);
+
+  // Track view_item event when product loads
+  useEffect(() => {
+    if (product && !hasTrackedView) {
+      analytics.trackCustomEvent('view_item', {
+        currency: 'INR',
+        value: product.price,
+        items: [{
+          item_id: product.id,
+          item_name: product.name,
+          item_category: product.category || 'Unknown',
+          item_brand: product.brand || brand,
+          price: product.price,
+          quantity: 1,
+          item_variant: selectedColor || 'default'
+        }]
+      });
+    }
+  }, [product, brand, selectedColor, analytics, hasTrackedView]);
+
   const handleAddToCart = () => {
     if (!product) return;
     
+    // Track add_to_cart event
+    analytics.trackCustomEvent('add_to_cart', {
+      currency: 'INR',
+      value: product.price * quantity,
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        item_category: product.category || 'Unknown',
+        item_brand: product.brand || brand,
+        price: product.price,
+        quantity: quantity,
+        item_variant: `${selectedColor || 'default'} - Size ${selectedSize}`
+      }]
+    });
+
     // Pass the quantity directly instead of calling addToCart multiple times
     addToCart({
       productId: product.id,
@@ -40,6 +85,56 @@ const ProductPage = () => {
     toast({
       title: "Added to cart",
       description: `${quantity} item(s) added successfully`,
+    });
+  };
+
+  const handleSizeChange = (size: number) => {
+    setSelectedSize(size);
+    
+    // Track size selection
+    analytics.trackCustomEvent('select_item', {
+      item_list_id: 'product_sizes',
+      item_list_name: 'Product Sizes',
+      items: [{
+        item_id: product?.id || '',
+        item_name: product?.name || '',
+        item_category: product?.category || 'Unknown',
+        item_brand: product?.brand || brand,
+        price: product?.price || 0,
+        quantity: 1,
+        item_variant: `Size ${size}`
+      }]
+    });
+  };
+
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+    
+    // Track color selection
+    analytics.trackCustomEvent('select_item', {
+      item_list_id: 'product_colors',
+      item_list_name: 'Product Colors',
+      items: [{
+        item_id: product?.id || '',
+        item_name: product?.name || '',
+        item_category: product?.category || 'Unknown',
+        item_brand: product?.brand || brand,
+        price: product?.price || 0,
+        quantity: 1,
+        item_variant: color
+      }]
+    });
+  };
+
+  const handleImageChange = (index: number) => {
+    setSelectedImage(index);
+    
+    // Track image view
+    analytics.trackCustomEvent('view_item_image', {
+      item_id: product?.id || '',
+      item_name: product?.name || '',
+      image_index: index,
+      total_images: images.length
     });
   };
 
@@ -55,10 +150,33 @@ const ProductPage = () => {
 
   const toggleZoom = () => {
     setIsZoomed(!isZoomed);
+    
+    // Track zoom interaction
+    analytics.trackCustomEvent('product_interaction', {
+      interaction_type: isZoomed ? 'zoom_out' : 'zoom_in',
+      item_id: product?.id || '',
+      item_name: product?.name || ''
+    });
   };
 
   const toggleFavorite = () => {
     setIsFavorited(!isFavorited);
+    
+    // Track favorite toggle
+    analytics.trackCustomEvent('add_to_wishlist', {
+      currency: 'INR',
+      value: product?.price || 0,
+      items: [{
+        item_id: product?.id || '',
+        item_name: product?.name || '',
+        item_category: product?.category || 'Unknown',
+        item_brand: product?.brand || brand,
+        price: product?.price || 0,
+        quantity: 1,
+        item_variant: `${selectedColor || 'default'} - Size ${selectedSize}`
+      }]
+    });
+    
     toast({
       title: isFavorited ? "Removed from favorites" : "Added to favorites",
       description: isFavorited ? "Item removed from your wishlist" : "Item added to your wishlist",
@@ -120,7 +238,9 @@ const ProductPage = () => {
   const nextImage = () => {
     setImageTransition(true);
     setTimeout(() => {
-      setSelectedImage((prev) => (prev + 1) % images.length);
+      const newIndex = (selectedImage + 1) % images.length;
+      setSelectedImage(newIndex);
+      handleImageChange(newIndex);
       setImageTransition(false);
     }, 150);
   };
@@ -128,7 +248,9 @@ const ProductPage = () => {
   const prevImage = () => {
     setImageTransition(true);
     setTimeout(() => {
-      setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
+      const newIndex = (selectedImage - 1 + images.length) % images.length;
+      setSelectedImage(newIndex);
+      handleImageChange(newIndex);
       setImageTransition(false);
     }, 150);
   };
@@ -142,7 +264,16 @@ const ProductPage = () => {
   const sortedSizes = [...product.sizes].sort((a, b) => a - b);
 
   const adjustQuantity = (delta: number) => {
-    setQuantity(prev => Math.max(1, Math.min(10, prev + delta)));
+    const newQuantity = Math.max(1, Math.min(10, quantity + delta));
+    setQuantity(newQuantity);
+    
+    // Track quantity change
+    analytics.trackCustomEvent('quantity_change', {
+      item_id: product.id,
+      item_name: product.name,
+      previous_quantity: quantity,
+      new_quantity: newQuantity
+    });
   };
 
   return (
@@ -233,7 +364,10 @@ const ProductPage = () => {
                 {images.map((image, index) => (
                   <button
                     key={index}
-                    onClick={() => setSelectedImage(index)}
+                    onClick={() => {
+                      setSelectedImage(index);
+                      handleImageChange(index);
+                    }}
                     className={`aspect-square bg-neutral-100 rounded-md overflow-hidden border-2 transition-all hover:shadow-md ${
                       selectedImage === index 
                         ? 'border-neutral-900 shadow-md' 
@@ -292,7 +426,7 @@ const ProductPage = () => {
                   {colors.map((color) => (
                     <button
                       key={color}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => handleColorChange(color)}
                       className={`px-4 py-2 rounded-lg border-2 transition-all capitalize ${
                         selectedColor === color
                           ? 'border-neutral-900 bg-neutral-900 text-white'
@@ -315,7 +449,7 @@ const ProductPage = () => {
                 {sortedSizes.map((size) => (
                   <button
                     key={size}
-                    onClick={() => setSelectedSize(size)}
+                    onClick={() => handleSizeChange(size)}
                     className={`py-2 text-center border-2 rounded-lg transition-all ${
                       selectedSize === size
                         ? 'border-neutral-900 bg-neutral-900 text-white'

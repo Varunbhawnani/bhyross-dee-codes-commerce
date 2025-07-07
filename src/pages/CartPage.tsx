@@ -1,15 +1,89 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 
 const CartPage = () => {
   const { cartItems, updateQuantity, removeFromCart, clearCart, getTotalPrice, isLoading } = useCart();
   const { user } = useAuth();
+  const analytics = useAnalytics();
+
+  // Track page view
+  useEffect(() => {
+    analytics.trackCustomEvent('page_view', {
+      page: '/cart',
+      title: 'Cart Page'
+    });
+  }, [analytics]);
+
+  // Track view_cart event when cart page loads with items
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      analytics.trackCustomEvent('view_cart', {
+        currency: 'INR',
+        value: getTotalPrice(),
+        items: cartItems.map(item => ({
+          item_id: item.products?.id || item.id,
+          item_name: item.products?.name || 'Product',
+          item_category: 'Unknown', // Remove category reference since it doesn't exist
+          item_brand: item.products?.brand || 'Unknown',
+          price: item.products?.price || 0,
+          quantity: item.quantity,
+          item_variant: `Size ${item.size}`
+        }))
+      });
+    }
+  }, [cartItems, getTotalPrice, analytics]);
+
+  // Handle checkout button click
+  const handleCheckout = () => {
+    if (cartItems.length > 0) {
+      const totalValue = Math.round(getTotalPrice() * 1.18); // Including tax
+      
+      analytics.trackBeginCheckout(cartItems.map(item => ({
+        productId: item.products?.id || item.id,
+        name: item.products?.name || 'Product',
+        category: 'Unknown', // Remove category reference since it doesn't exist
+        brand: item.products?.brand || 'Unknown',
+        price: item.products?.price || 0,
+        quantity: item.quantity
+      })), totalValue);
+
+      // Here you would typically redirect to checkout or open checkout modal
+      // For now, we'll just track the event
+      console.log('Proceeding to checkout...');
+      
+      // Simulate purchase completion for demonstration
+      // In real implementation, this would happen after successful payment
+      setTimeout(() => {
+        analytics.trackPurchase(
+          `txn_${Date.now()}`, // Generate unique transaction ID
+          cartItems.map(item => ({
+            productId: item.products?.id || item.id,
+            name: item.products?.name || 'Product',
+            category: 'Unknown', // Remove category reference since it doesn't exist
+            brand: item.products?.brand || 'Unknown',
+            price: item.products?.price || 0,
+            quantity: item.quantity
+          })),
+          totalValue
+        );
+      }, 2000); // Simulate 2-second checkout process
+    }
+  };
+
+  // Handle continue shopping clicks
+  const handleContinueShopping = (brand: string) => {
+    analytics.trackCustomEvent('continue_shopping', {
+      source: 'cart_page',
+      brand: brand
+    });
+  };
 
   if (!user) {
     return (
@@ -57,12 +131,18 @@ const CartPage = () => {
             </p>
             <div className="space-x-4">
               <Link to="/bhyross">
-                <Button className="bg-bhyross-500 hover:bg-bhyross-600">
+                <Button 
+                  className="bg-bhyross-500 hover:bg-bhyross-600"
+                  onClick={() => handleContinueShopping('bhyross')}
+                >
                   Shop Bhyross
                 </Button>
               </Link>
               <Link to="/deecodes">
-                <Button className="bg-deecodes-500 hover:bg-deecodes-600">
+                <Button 
+                  className="bg-deecodes-500 hover:bg-deecodes-600"
+                  onClick={() => handleContinueShopping('deecodes')}
+                >
                   Shop Dee Codes
                 </Button>
               </Link>
@@ -146,7 +226,11 @@ const CartPage = () => {
                 </Button>
                 <div className="space-x-4">
                   <Link to="/">
-                    <Button variant="ghost" className="text-bhyross-600 hover:text-bhyross-700">
+                    <Button 
+                      variant="ghost" 
+                      className="text-bhyross-600 hover:text-bhyross-700"
+                      onClick={() => handleContinueShopping('general')}
+                    >
                       Continue Shopping
                     </Button>
                   </Link>
@@ -180,7 +264,10 @@ const CartPage = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full bg-neutral-900 hover:bg-neutral-800 mb-3">
+                <Button 
+                  className="w-full bg-neutral-900 hover:bg-neutral-800 mb-3"
+                  onClick={handleCheckout}
+                >
                   Proceed to Checkout
                 </Button>
                 

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, LogIn, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import SearchDropdown from '@/components/SearchDropdown';
+import { captureUTMParameters } from '@/utils/utmTracking';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,20 +20,87 @@ const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const { getTotalItems } = useCart();
   const { user, signOut, isAdmin } = useAuth();
+  const { trackEvent } = useAnalytics();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const totalItems = getTotalItems();
 
+  // Track UTM parameters and page views
+  useEffect(() => {
+    // Capture UTM parameters from the current URL
+    captureUTMParameters();
+    
+    // Track page view with analytics
+    trackEvent('page_view', {
+      page_location: window.location.href,
+      page_path: location.pathname,
+      page_title: document.title,
+    });
+  }, [location.pathname, trackEvent]);
+
   const handleSignOut = async () => {
+    // Track sign out event
+    trackEvent('logout', {
+      method: 'manual',
+      page_location: window.location.href,
+    });
+    
     await signOut();
     navigate('/');
   };
 
   const handleCartClick = () => {
+    // Track cart view event
+    trackEvent('view_cart', {
+      items_in_cart: totalItems,
+      page_location: window.location.href,
+    });
+    
     navigate('/cart');
   };
 
+  const handleBrandClick = (brandName: string, brandPath: string) => {
+    // Track brand navigation
+    trackEvent('select_content', {
+      content_type: 'brand',
+      content_id: brandName.toLowerCase().replace(/\s+/g, '_'),
+      content_name: brandName,
+      page_location: window.location.href,
+    });
+    
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleNavigationClick = (linkName: string, linkPath: string) => {
+    // Track navigation clicks
+    trackEvent('select_content', {
+      content_type: 'navigation',
+      content_id: linkName.toLowerCase().replace(/\s+/g, '_'),
+      content_name: linkName,
+      link_url: linkPath,
+      page_location: window.location.href,
+    });
+  };
+
+  const handleAuthClick = () => {
+    // Track auth page navigation
+    trackEvent('select_content', {
+      content_type: 'auth',
+      content_id: 'sign_in_button',
+      content_name: 'Sign In',
+      page_location: window.location.href,
+    });
+  };
+
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    const newState = !isMobileMenuOpen;
+    setIsMobileMenuOpen(newState);
+    
+    // Track mobile menu interactions
+    trackEvent('mobile_menu_toggle', {
+      action: newState ? 'open' : 'close',
+      page_location: window.location.href,
+    });
   };
 
   // Navigation paths - Update these paths as needed
@@ -93,7 +162,11 @@ const Navigation: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 z-10">
+            <Link 
+              to="/" 
+              className="flex items-center space-x-2 z-10"
+              onClick={() => handleNavigationClick('Logo', '/')}
+            >
               <span className="text-2xl font-bold text-black drop-shadow-sm" style={fontStyles.heading}>
                 Imcolus
               </span>
@@ -106,6 +179,7 @@ const Navigation: React.FC = () => {
                 to={HOME_PATH}
                 className={getActiveLinkClasses(location.pathname === HOME_PATH, HOME_PATH)}
                 style={{...fontStyles.body, ...getActiveLinkStyle(location.pathname === HOME_PATH)}}
+                onClick={() => handleNavigationClick('Home', HOME_PATH)}
               >
                 Home
               </Link>
@@ -115,6 +189,7 @@ const Navigation: React.FC = () => {
                 to={COLLECTIONS_PATH}
                 className={getActiveLinkClasses(location.pathname === COLLECTIONS_PATH, COLLECTIONS_PATH)}
                 style={{...fontStyles.body, ...getActiveLinkStyle(location.pathname === COLLECTIONS_PATH)}}
+                onClick={() => handleNavigationClick('Collections', COLLECTIONS_PATH)}
               >
                 Collections
               </Link>
@@ -122,7 +197,13 @@ const Navigation: React.FC = () => {
               {/* Brands Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 drop-shadow-sm" style={fontStyles.body}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 drop-shadow-sm" 
+                    style={fontStyles.body}
+                    onClick={() => trackEvent('brands_dropdown_open', { page_location: window.location.href })}
+                  >
                     Brands
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </Button>
@@ -134,6 +215,7 @@ const Navigation: React.FC = () => {
                         <Link 
                           to={brand.path} 
                           className="cursor-pointer md:hover:bg-white/20 hover:bg-gray-50 transition-all duration-300 rounded-xl flex flex-col items-center justify-center text-center px-4 py-6 group w-[180px] h-[120px] sm:hover:bg-gray-50"
+                          onClick={() => handleBrandClick(brand.name, brand.path)}
                         >
                           <span className="text-base font-semibold text-neutral-900 mb-2 leading-tight" style={fontStyles.heading}>
                             {brand.name}
@@ -157,6 +239,7 @@ const Navigation: React.FC = () => {
                 to={ABOUT_PATH}
                 className={getActiveLinkClasses(location.pathname === ABOUT_PATH, ABOUT_PATH)}
                 style={{...fontStyles.body, ...getActiveLinkStyle(location.pathname === ABOUT_PATH)}}
+                onClick={() => handleNavigationClick('About', ABOUT_PATH)}
               >
                 About
               </Link>
@@ -171,7 +254,12 @@ const Navigation: React.FC = () => {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                      onClick={() => trackEvent('user_menu_open', { page_location: window.location.href })}
+                    >
                       <User className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -189,7 +277,12 @@ const Navigation: React.FC = () => {
                     {isAdmin && (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link to="/admin" className="w-full cursor-pointer hover:bg-white/50 backdrop-blur-sm transition-all duration-200 rounded-lg" style={fontStyles.body}>
+                          <Link 
+                            to="/admin" 
+                            className="w-full cursor-pointer hover:bg-white/50 backdrop-blur-sm transition-all duration-200 rounded-lg" 
+                            style={fontStyles.body}
+                            onClick={() => handleNavigationClick('Admin Dashboard', '/admin')}
+                          >
                             Admin Dashboard
                           </Link>
                         </DropdownMenuItem>
@@ -208,7 +301,11 @@ const Navigation: React.FC = () => {
                 </DropdownMenu>
               ) : (
                 <Button variant="ghost" size="sm" asChild className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105">
-                  <Link to="/auth" style={fontStyles.accent}>
+                  <Link 
+                    to="/auth" 
+                    style={fontStyles.accent}
+                    onClick={handleAuthClick}
+                  >
                     <LogIn className="h-4 w-4 mr-2" />
                     Sign In
                   </Link>
@@ -264,7 +361,10 @@ const Navigation: React.FC = () => {
             {/* Home */}
             <Link
               to={HOME_PATH}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => {
+                handleNavigationClick('Home', HOME_PATH);
+                setIsMobileMenuOpen(false);
+              }}
               className={getMobileActiveLinkClasses(location.pathname === HOME_PATH)}
               style={{...fontStyles.body, ...getMobileActiveLinkStyle(location.pathname === HOME_PATH)}}
             >
@@ -274,7 +374,10 @@ const Navigation: React.FC = () => {
             {/* Collections */}
             <Link
               to={COLLECTIONS_PATH}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => {
+                handleNavigationClick('Collections', COLLECTIONS_PATH);
+                setIsMobileMenuOpen(false);
+              }}
               className={getMobileActiveLinkClasses(location.pathname === COLLECTIONS_PATH)}
               style={{...fontStyles.body, ...getMobileActiveLinkStyle(location.pathname === COLLECTIONS_PATH)}}
             >
@@ -289,7 +392,7 @@ const Navigation: React.FC = () => {
                   <Link
                     key={brand.path}
                     to={brand.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => handleBrandClick(brand.name, brand.path)}
                     className="flex flex-col items-center text-center py-3 px-3 mx-2 rounded-xl text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
                   >
                     <span className="text-sm font-semibold mb-1" style={fontStyles.heading}>{brand.name}</span>
@@ -306,7 +409,10 @@ const Navigation: React.FC = () => {
             {/* About */}
             <Link
               to={ABOUT_PATH}
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => {
+                handleNavigationClick('About', ABOUT_PATH);
+                setIsMobileMenuOpen(false);
+              }}
               className={getMobileActiveLinkClasses(location.pathname === ABOUT_PATH)}
               style={{...fontStyles.body, ...getMobileActiveLinkStyle(location.pathname === ABOUT_PATH)}}
             >
@@ -324,7 +430,10 @@ const Navigation: React.FC = () => {
                 {isAdmin && (
                   <Link
                     to="/admin"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      handleNavigationClick('Admin Dashboard', '/admin');
+                      setIsMobileMenuOpen(false);
+                    }}
                     className="block py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
                     style={fontStyles.body}
                   >
@@ -346,7 +455,10 @@ const Navigation: React.FC = () => {
             ) : (
               <Link
                 to="/auth"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  handleAuthClick();
+                  setIsMobileMenuOpen(false);
+                }}
                 className="flex items-center py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
                 style={fontStyles.accent}
               >
