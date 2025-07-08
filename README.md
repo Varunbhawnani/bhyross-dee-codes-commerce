@@ -1,57 +1,3 @@
-# Welcome to your Lovable project
-
-## Project info
-
-**URL**: https://lovable.dev/projects/ff0da0e6-36d8-44ca-9f0f-556149056eab
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/ff0da0e6-36d8-44ca-9f0f-556149056eab) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
 This project is built with:
 
 - Vite
@@ -60,14 +6,109 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+This is the file and folder structure of the project:
 
-Simply open [Lovable](https://lovable.dev/projects/ff0da0e6-36d8-44ca-9f0f-556149056eab) and click on Share -> Publish.
+## 📁 Project Folder Structure
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```
+bhyross-dee-codes-commerce-main/
+├── .gitignore
+├── .npmrc
+├── README.md
+├── bun.lockb
+├── components.json
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── tailwind.config.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── public/
+│   ├── favicon.ico
+│   ├── placeholder.svg
+│   └── robots.txt
+├── src/
+│   ├── App.css
+│   ├── App.tsx
+│   ├── index.css
+│   ├── main.tsx
+│   ├── vite-env.d.ts
+│   ├── components/
+│   │   ├──admin/
+│   │   ├   ├── AdminBannerSection.tsx
+│   │   ├   ├── ProductForm.tsx
+│   │   ├   ├── ProductList.tsx
+│   │   ├   ├── OverviewStats.tsx
+│   │   ├   ├── OrdersTab.tsx
+│   │   ├   ├── CustomersTab.tsx
+│   │   ├   ├── SettingsTab.tsx
+│   │   ├   └── DeleteConfirmModal.tsx
+│   │   ├── Footer.tsx
+│   │   ├── MultiImageUploader.tsx
+│   │   ├── Navigation.tsx
+│   │   ├── ProductImageGallery.tsx
+│   │   ├── ProductImageManager.tsx
+│   │   ├── BannerCarousel.tsx
+│   │   ├── SearchDropdown.tsx
+│   │   └── ui/
+│   ├── contexts/
+│   │   └── CartContext.tsx
+│   │   └── SettingsContext.tsx
+│   ├── hooks/
+│   │   ├── useRazorpayCheckout.tsx
+│   │   ├── useAnalytics.tsx
+│   │   ├── useAdminStats.tsx
+│   │   ├── use-mobile.tsx
+│   │   ├── use-toast.ts
+│   │   ├── useAuth.tsx
+│   │   ├── useCart.tsx
+│   │   ├── useBannerImages.tsx
+│   │   ├── useProductOperations.tsx
+│   │   └── useProducts.tsx
+│   ├── integrations/
+│   │   └── supabase/
+│   │       ├── client.ts
+│   │       └── types.ts
+│   ├── lib/
+│   │   └── utils.ts
+│   ├── pages/
+│   │   ├── OrderSuccessPage.tsx
+│   │   ├── CheckoutPage.tsx
+│   │   ├── AboutPage.tsx
+│   │   ├── AdminPage.tsx
+│   │   ├── AuthPage.tsx
+│   │   ├── BhyrossPage.tsx
+│   │   ├── CartPage.tsx
+│   │   ├── CategoryPage.tsx
+│   │   ├── DeeCodesPage.tsx
+│   │   ├── HomePage.css
+│   │   ├── HomePage.tsx
+│   │   ├── Index.tsx
+│   │   ├── LandingPage.tsx
+│   │   ├── NotFound.tsx
+│   │   ├── ProductPage.tsx
+│   │   ├── Real_Home.tsx
+│   │   ├── Terms.tsx
+│   │   ├── Privacy.tsx
+│   │   ├── CollectionsPage.tsx 
+│   │   ├── CraftsmanshipPage.tsx
+│   │   └── SizeGuidePage.tsx
+│   ├── styles/
+│   │   └── brands.css
+│   └── utils/
+│   │   ├── utmTracking.ts
+│   │   ├── facebookPixel.ts
+│   │   ├── analytics.ts
+│   │   ├── imageUpload.ts
+│   │   └── webhookService.ts
+└── supabase/
+    ├── config.toml
+    └── functions/
+        ├── create-razorpay-order/
+        │   └── index.ts
+        └── verify-razorpay-payment/
+            └── index.ts
