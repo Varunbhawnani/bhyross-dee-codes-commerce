@@ -20,7 +20,8 @@ import Terms from "./pages/Terms";
 import AboutPage from "./pages/AboutPage";
 import SizeGuidePage from "./pages/SizeGuidePage";
 import Home from "./pages/Real_Home";
-
+import OrderSuccessPage from "./pages/OrderSuccessPage.tsx";
+import CheckoutPage from './pages/CheckoutPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +47,7 @@ const App = () => {
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/admin" element={<AdminPage />} />
+                    <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
                     <Route path="/imcolus" element={<ImcolusPage />} />
                     <Route path="/bhyross" element={<BhyrossPage />} />
                     <Route path="/deecodes" element={<DeeCodesPage />} />
@@ -56,6 +58,7 @@ const App = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
               
 
                     {/* Shared brand pages */}

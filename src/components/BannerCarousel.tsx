@@ -46,24 +46,25 @@ const BannerCarousel = ({ brand }: BannerCarouselProps) => {
   const dimensions = getBannerDimensions();
 
   return (
-    <div className={`relative ${dimensions} overflow-hidden`}>
+    <div className={`relative ${dimensions} overflow-hidden bg-gray-100`}>
       <img
         src={currentBanner.image_url}
         alt={currentBanner.title || `${brand} banner`}
-        className="w-full h-full object-cover transition-opacity duration-1000"
+        className="w-full h-full object-cover object-center transition-opacity duration-1000"
+        style={{ objectPosition: 'center center' }}
       />
       
       {/* Overlay with content if title or description exists */}
       {(currentBanner.title || currentBanner.description) && (
-  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
     <div className="text-center text-white px-4 font-serif [text-shadow:_2px_2px_4px_rgb(0_0_0_/_0.8)]">
       {currentBanner.title && (
-        <h2 className="text-5xl font-sans mb-2 drop-shadow-lg">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-sans mb-1 sm:mb-2 drop-shadow-lg">
           {currentBanner.title}
         </h2>
       )}
       {currentBanner.description && (
-        <p className="text-2xl drop-shadow-md">
+        <p className="text-sm sm:text-base md:text-lg lg:text-2xl drop-shadow-md">
           {currentBanner.description}
         </p>
       )}

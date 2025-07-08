@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 
 const CartPage = () => {
+  const navigate = useNavigate();
   const { cartItems, updateQuantity, removeFromCart, clearCart, getTotalPrice, isLoading } = useCart();
   const { user } = useAuth();
   const analytics = useAnalytics();
@@ -30,7 +31,7 @@ const CartPage = () => {
         items: cartItems.map(item => ({
           item_id: item.products?.id || item.id,
           item_name: item.products?.name || 'Product',
-          item_category: 'Unknown', // Remove category reference since it doesn't exist
+          item_category: 'Unknown',
           item_brand: item.products?.brand || 'Unknown',
           price: item.products?.price || 0,
           quantity: item.quantity,
@@ -40,7 +41,7 @@ const CartPage = () => {
     }
   }, [cartItems, getTotalPrice, analytics]);
 
-  // Handle checkout button click
+  // Handle checkout button click - Navigate to checkout page
   const handleCheckout = () => {
     if (cartItems.length > 0) {
       const totalValue = Math.round(getTotalPrice() * 1.18); // Including tax
@@ -48,32 +49,14 @@ const CartPage = () => {
       analytics.trackBeginCheckout(cartItems.map(item => ({
         productId: item.products?.id || item.id,
         name: item.products?.name || 'Product',
-        category: 'Unknown', // Remove category reference since it doesn't exist
+        category: 'Unknown',
         brand: item.products?.brand || 'Unknown',
         price: item.products?.price || 0,
         quantity: item.quantity
       })), totalValue);
 
-      // Here you would typically redirect to checkout or open checkout modal
-      // For now, we'll just track the event
-      console.log('Proceeding to checkout...');
-      
-      // Simulate purchase completion for demonstration
-      // In real implementation, this would happen after successful payment
-      setTimeout(() => {
-        analytics.trackPurchase(
-          `txn_${Date.now()}`, // Generate unique transaction ID
-          cartItems.map(item => ({
-            productId: item.products?.id || item.id,
-            name: item.products?.name || 'Product',
-            category: 'Unknown', // Remove category reference since it doesn't exist
-            brand: item.products?.brand || 'Unknown',
-            price: item.products?.price || 0,
-            quantity: item.quantity
-          })),
-          totalValue
-        );
-      }, 2000); // Simulate 2-second checkout process
+      // Navigate to checkout page
+      navigate('/checkout');
     }
   };
 
@@ -271,6 +254,7 @@ const CartPage = () => {
                 <Button 
                   className="w-full bg-neutral-900 hover:bg-neutral-800 mb-3"
                   onClick={handleCheckout}
+                  disabled={cartItems.length === 0}
                 >
                   Proceed to Checkout
                 </Button>
