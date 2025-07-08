@@ -79,7 +79,7 @@ if (bannersLoading ) {
         <div className="pt-16 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-neutral-900 mx-auto"></div>
-            <p className="mt-4 text-neutral-600" style={{ fontFamily: 'Signika' }}>Loading Dee Codes Collection...</p>
+            <p className="mt-4 text-neutral-600" style={{ fontFamily: 'Signika' }}>Loading Home Page...</p>
           </div>
         </div>
         <Footer brand="deecodes" />
