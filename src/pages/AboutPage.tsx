@@ -5,11 +5,14 @@ import { Award, Users, Globe, Heart } from "lucide-react";
 
 const About = () => {
   const milestones = [
-    { year: "1985", event: "Founded with a vision to craft exceptional formal footwear" },
-    { year: "1995", event: "Launched our first international collection" },
-    { year: "2010", event: "Introduced sustainable leather sourcing practices" },
-    { year: "2018", event: "Expanded to three distinctive brand collections" },
-    { year: "2024", event: "Serving professionals worldwide with premium footwear" }
+    { year: "2024", event: "Aditya International established in Agra with a vision to craft exceptional formal footwear" },
+    { year: "2024", event: "Built production facilities with skilled local artisans" },
+    { year: "2024", event: "Launched first collection of premium formal shoes" },
+    { year: "2024", event: "Introduced sustainable leather sourcing and quality control processes" },
+    { year: "2024", event: "Expanded product range to include diverse formal shoe styles" },
+    { year: "2025", event: "Developed distinctive collections - Imcolus, Dee Codes, and Bhyross" },
+    { year: "2025", event: "Launched comprehensive online platform for direct customer access" },
+    { year: "2025", event: "Expanding reach to serve professionals across India" }
   ];
 
   const values = [
@@ -25,8 +28,8 @@ const About = () => {
     },
     {
       icon: Globe,
-      title: "Global Vision",
-      description: "Bringing premium formal footwear to professionals around the world."
+      title: "National Vision",
+      description: "Bringing premium formal footwear to professionals across India from Aditya International's base in Agra."
     },
     {
       icon: Heart,
@@ -44,12 +47,12 @@ const About = () => {
         <section className="relative bg-muted/30 py-12 md:py-16 lg:py-20">
           <div className="container mx-auto px-4 lg:px-8 text-center">
             <h1 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 animate-fade-in">
-              Crafting Excellence Since 1985
+              Crafting Excellence Since 2024
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-fade-in">
-              For nearly four decades, Imcolus has been synonymous with premium formal footwear. 
-              We've built our reputation on uncompromising quality, timeless design, and the belief 
-              that the right pair of shoes can transform how you feel and perform.
+              Based in the historic city of Agra, Aditya International specializes in creating 
+              premium formal footwear that combines traditional Indian craftsmanship with modern design. 
+              We believe that the right pair of shoes can transform how you feel and perform.
             </p>
           </div>
         </section>
@@ -62,31 +65,30 @@ const About = () => {
                 <h2 className="font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">Our Story</h2>
                 <div className="space-y-4 md:space-y-6 text-muted-foreground text-sm sm:text-base">
                   <p>
-                    Founded in 1985 by master craftsman Alessandro Imcolus, our company began as a small 
-                    workshop in Milan with a simple yet ambitious goal: to create the finest formal shoes 
-                    that would stand the test of time.
+                    Founded in 2024 by visionary entrepreneur Murlidhar Bhawnani, Aditya International 
+                    was established in Agra, Uttar Pradesh, with a mission to create the finest formal 
+                    footwear that would stand the test of time.
                   </p>
                   <p>
-                    What started as a passion project has evolved into three distinct collections, each 
-                    representing a different aspect of the modern professional's lifestyle. From the 
-                    timeless elegance of Imcolus Classics to the contemporary sophistication of Dee Codes 
-                    Modern and the luxurious craftsmanship of Bhyross Signature.
+                    Drawing inspiration from Agra's rich heritage of craftsmanship - the same city that 
+                    gave birth to the magnificent Taj Mahal - Aditya International has developed 
+                    distinctive collections including Imcolus, Dee Codes, and Bhyross, each catering to 
+                    different aspects of the modern Indian professional's lifestyle.
                   </p>
                   <p>
-                    Today, we continue to honor our founder's vision while embracing innovation, 
-                    ensuring that every pair of Imcolus shoes delivers both style and substance to 
-                    discerning professionals worldwide.
+                    Today, Aditya International continues to honor our founder's vision while embracing 
+                    innovation, ensuring that every pair of shoes delivers both style and substance to 
+                    discerning professionals across India.
                   </p>
                 </div>
               </div>
               <div className="relative">
-                <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center p-4 md:p-6 lg:p-8">
-                    <h3 className="font-playfair text-lg sm:text-xl lg:text-2xl font-bold mb-2 md:mb-4">Heritage Craftsmanship</h3>
-                    <p className="text-muted-foreground text-sm sm:text-base">
-                      Every pair tells a story of dedication, skill, and passion for excellence.
-                    </p>
-                  </div>
+                <div className="aspect-square bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="https://rfssuewzrvhatnwolmnp.supabase.co/storage/v1/object/public/products//ChatGPT%20Image%20Jul%202,%202025,%2006_05_00%20PM.png"
+                    alt="Heritage Craftsmanship"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -135,10 +137,10 @@ const About = () => {
         <section className="py-12 md:py-16 lg:py-20 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 lg:px-8 text-center">
             <h2 className="font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">
-              Experience the Imcolus Difference
+              Experience the Aditya International Difference
             </h2>
             <p className="text-base sm:text-lg lg:text-xl mb-6 md:mb-8 max-w-2xl mx-auto opacity-90">
-              Discover why professionals worldwide trust Imcolus for their most important moments.
+              Discover why professionals across India trust Aditya International for their most important moments.
             </p>
             <Button variant="secondary" size="lg" className="font-montserrat font-semibold" onClick={() => window.location.href = `/`}>
               
