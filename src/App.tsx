@@ -22,6 +22,7 @@ import SizeGuidePage from "./pages/SizeGuidePage";
 import Home from "./pages/Real_Home";
 import OrderSuccessPage from "./pages/OrderSuccessPage.tsx";
 import CheckoutPage from './pages/CheckoutPage';
+import AuthCallback from '@/pages/AuthCallback';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +60,7 @@ const App = () => {
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
+<Route path="/auth/callback" element={<AuthCallback />} />
               
 
                     {/* Shared brand pages */}
