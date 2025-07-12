@@ -19,6 +19,8 @@ const Index: React.FC = () => {
   const [selectedRating, setSelectedRating] = useState<string>('all');
   const [gridColumns, setGridColumns] = useState<number>(3);
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [touchedCard, setTouchedCard] = useState<string | null>(null);
+const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: string]: number }>({});
 
    const { data: banners, isLoading: bannersLoading } = useBannerImages('home');
   
@@ -168,22 +170,22 @@ const Index: React.FC = () => {
   });
 
   const getBrandColor = (brand: string) => {
-    switch (brand) {
-      case 'bhyross': return 'text-bhyross-500';
-      case 'deecodes': return 'text-deecodes-500';
-      case 'imcolus': return 'text-blue-600';
-      default: return 'text-neutral-600';
-    }
-  };
+  switch (brand) {
+    case 'bhyross': return 'text-bhyross-500';
+    case 'deecodes': return 'text-deecodes-500';
+    case 'imcolus': return 'text-black'; // Change from 'text-blue-600' to 'text-black'
+    default: return 'text-neutral-600';
+  }
+};
 
   const getBrandAccent = (brand: string) => {
-    switch (brand) {
-      case 'bhyross': return 'border-bhyross-500';
-      case 'deecodes': return 'border-deecodes-500';
-      case 'imcolus': return 'border-blue-600';
-      default: return 'border-neutral-300';
-    }
-  };
+  switch (brand) {
+    case 'bhyross': return 'border-bhyross-500';
+    case 'deecodes': return 'border-deecodes-500';
+    case 'imcolus': return 'border-black'; // Change from 'border-blue-600' to 'border-black'
+    default: return 'border-neutral-300';
+  }
+};
 
   const getGridClasses = () => {
     switch (gridColumns) {
@@ -193,6 +195,36 @@ const Index: React.FC = () => {
       default: return 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3';
     }
   };
+
+  const handleCardClick = (product: any) => {
+  window.location.href = `/${product.brand}/${product.category}/${product.id}`;
+};
+
+const handleCardTouch = (productId: string) => {
+  setTouchedCard(productId);
+  setTimeout(() => setTouchedCard(null), 200);
+};
+
+const handleSwipe = (productId: string, direction: 'left' | 'right', imageCount: number) => {
+  const currentIndex = currentImageIndex[productId] || 0;
+  let newIndex;
+  
+  if (direction === 'right') {
+    newIndex = currentIndex === imageCount - 1 ? 0 : currentIndex + 1;
+  } else {
+    newIndex = currentIndex === 0 ? imageCount - 1 : currentIndex - 1;
+  }
+  
+  setCurrentImageIndex(prev => ({
+    ...prev,
+    [productId]: newIndex
+  }));
+};
+
+const getCurrentImage = (product: any) => {
+  const index = currentImageIndex[product.id] || 0;
+  return product.product_images[index]?.image_url || product.product_images[0]?.image_url;
+};
 
   const resetFilters = () => {
     setSelectedBrand('all');
@@ -641,36 +673,94 @@ const Index: React.FC = () => {
                 <div className={`grid ${getGridClasses()} gap-4 md:gap-6`}>
                   {sortedProducts.map((product) => (
                     <div 
-                      key={product.id} 
-                      className="group cursor-pointer bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
-                    >
-                      <div className="relative overflow-hidden rounded-t-lg bg-gray-50 aspect-square">
-                        <ProductImageGallery
-                          images={product.product_images.map(img => img.image_url)}
-                          productName={product.name}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute top-3 left-3">
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full bg-white/90 backdrop-blur-sm ${getBrandColor(product.brand)} capitalize border ${getBrandAccent(product.brand)}`}>
-                            {product.brand}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="p-3 md:p-4">
-                        <h3 className="font-semibold text-neutral-900 mb-2 text-sm md:text-base line-clamp-2">{product.name}</h3>
-                        <p className="text-neutral-600 text-xs md:text-sm mb-2 capitalize">{product.category.replace('-', ' ')}</p>
-                        <p className={`font-bold text-base md:text-lg ${getBrandColor(product.brand)} mb-3`}>
-                          ₹{product.price.toLocaleString()}
-                        </p>
-                        <Button 
-                          className="w-full bg-black text-white hover:bg-gray-800 text-sm md:text-base py-2"
-                          onClick={() => window.location.href = `/${product.brand}/${product.category}/${product.id}`}
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    </div>
+  key={product.id} 
+  className={`group cursor-pointer bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-neutral-300 lg:cursor-default ${
+    touchedCard === product.id ? 'scale-95 shadow-sm' : ''
+  }`}
+  onClick={() => window.innerWidth < 1024 && handleCardClick(product)}
+  onTouchStart={() => handleCardTouch(product.id)}
+>
+  <div className="relative overflow-hidden bg-neutral-50 aspect-square">
+    {/* Desktop Version - with ProductImageGallery */}
+    <div className="hidden lg:block">
+      <ProductImageGallery
+        images={product.product_images.map(img => img.image_url)}
+        productName={product.name}
+        className="object-cover w-full h-full group-hover:scale-105 transition-all duration-500 ease-out"
+      />
+    </div>
+    
+    {/* Mobile Version - simple image with swipe functionality */}
+    <div className="lg:hidden relative">
+      <div 
+        className="relative touch-pan-x"
+        onTouchStart={(e) => {
+          const touch = e.touches[0];
+          e.currentTarget.dataset.startX = touch.clientX.toString();
+        }}
+        onTouchEnd={(e) => {
+          const startX = parseFloat(e.currentTarget.dataset.startX || '0');
+          const endX = e.changedTouches[0].clientX;
+          const diff = startX - endX;
+          
+          if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+              handleSwipe(product.id, 'right', product.product_images.length);
+            } else {
+              handleSwipe(product.id, 'left', product.product_images.length);
+            }
+          }
+        }}
+      >
+        <img 
+          src={getCurrentImage(product)} 
+          alt={product.name}
+          className="object-cover w-full h-full transition-all duration-300"
+        />
+        {/* Image indicators */}
+        {product.product_images.length > 1 && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+            {product.product_images.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  index === (currentImageIndex[product.id] || 0) 
+                    ? 'bg-white' 
+                    : 'bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      {/* Mobile interactive overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    </div>
+    
+    <div className="absolute top-3 left-3">
+      <span className={`px-3 py-1 text-xs font-medium rounded-full bg-white/90 backdrop-blur-sm ${getBrandColor(product.brand)} capitalize border ${getBrandAccent(product.brand)}`}>
+        {product.brand}
+      </span>
+    </div>
+  </div>
+  
+  {/* Visual separator */}
+  <div className="h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent lg:hidden"></div>
+  
+  <div className="p-3 md:p-4">
+    <h3 className="font-semibold text-neutral-900 mb-2 text-sm md:text-base line-clamp-2">{product.name}</h3>
+    <p className="text-neutral-600 text-xs md:text-sm mb-2 capitalize">{product.category.replace('-', ' ')}</p>
+    <p className={`font-bold text-base md:text-lg ${getBrandColor(product.brand)} mb-3`}>
+      ₹{product.price.toLocaleString()}
+    </p>
+    <Button 
+      className="w-full bg-black text-white hover:bg-gray-800 text-sm md:text-base py-2 lg:block hidden"
+      onClick={() => window.location.href = `/${product.brand}/${product.category}/${product.id}`}
+    >
+      View Details
+    </Button>
+  </div>
+</div>
                   ))}
                 </div>
               ) : (
@@ -699,3 +789,9 @@ const Index: React.FC = () => {
 };
 
 export default Index;
+
+
+
+
+
+

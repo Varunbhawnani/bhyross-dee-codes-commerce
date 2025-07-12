@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogIn, LogOut, Menu, X, ChevronDown } from 'lucide-react';
+import { ShoppingCart, User, LogIn, LogOut, Menu, X, ChevronDown, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useWishlist } from '@/hooks/useWishlist';
 import SearchDropdown from '@/components/SearchDropdown';
 import { captureUTMParameters } from '@/utils/utmTracking';
 import {
@@ -23,6 +24,10 @@ const Navigation: React.FC = () => {
   const { trackEvent } = useAnalytics();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const totalItems = getTotalItems();
+
+  // Mock wishlist count - replace with actual wishlist hook
+  const { getWishlistCount } = useWishlist();
+const wishlistCount = getWishlistCount();
 
   // Track UTM parameters and page views
   useEffect(() => {
@@ -56,6 +61,16 @@ const Navigation: React.FC = () => {
     });
     
     navigate('/cart');
+  };
+
+  const handleWishlistClick = () => {
+    // Track wishlist view event
+    trackEvent('view_wishlist', {
+      items_in_wishlist: wishlistCount,
+      page_location: window.location.href,
+    });
+    
+    navigate('/wishlist');
   };
 
   const handleBrandClick = (brandName: string, brandPath: string) => {
@@ -316,9 +331,29 @@ const Navigation: React.FC = () => {
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-3">
               {/* Search Dropdown */}
               <SearchDropdown />
+              
+              {/* Wishlist */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleWishlistClick}
+                className="relative backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                style={{
+                  '--hover-bg': brandColors.hoverBg
+                } as React.CSSProperties}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <Heart className="h-4 w-4" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-pink-500/90 backdrop-blur-sm text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg" style={fontStyles.accent}>
+                    {wishlistCount}
+                  </span>
+                )}
+              </Button>
               
               {/* User Menu */}
               {user ? (
@@ -594,6 +629,32 @@ const Navigation: React.FC = () => {
                 Sign In
               </Link>
             )}
+            
+            {/* Mobile Wishlist */}
+            <button
+              onClick={() => {
+                handleWishlistClick();
+                setIsMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-between w-full py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 backdrop-blur-sm transition-all duration-300"
+              style={{
+                ...fontStyles.body,
+                '--hover-bg': brandColors.hoverBg
+              } as React.CSSProperties}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <span className="flex items-center">
+                <Heart className="h-4 w-4 mr-2" />
+                Wishlist
+              </span>
+              {wishlistCount > 0 && (
+                <span className="bg-pink-500/90 backdrop-blur-sm text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg" style={fontStyles.accent}>
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+            
             
             <button
               onClick={() => {

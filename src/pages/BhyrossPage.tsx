@@ -15,6 +15,8 @@ const BhyrossPage: React.FC = () => {
   const [priceRange, setPriceRange] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('featured');
   const [gridSize, setGridSize] = useState<string>('4');
+  const [touchedCard, setTouchedCard] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: string]: number }>({});
   const { data: banners, isLoading: bannersLoading } = useBannerImages('bhyross');
   const { data: products, isLoading: productsLoading } = useProducts('bhyross');
 
@@ -99,6 +101,36 @@ const BhyrossPage: React.FC = () => {
     }
   };
 
+  const handleCardClick = (product: any) => {
+    window.location.href = `/bhyross/${product.category}/${product.id}`;
+  };
+
+  const handleCardTouch = (productId: string) => {
+    setTouchedCard(productId);
+    setTimeout(() => setTouchedCard(null), 200);
+  };
+
+  const handleSwipe = (productId: string, direction: 'left' | 'right', imageCount: number) => {
+    const currentIndex = currentImageIndex[productId] || 0;
+    let newIndex;
+    
+    if (direction === 'right') { // Swipe right = next image
+      newIndex = currentIndex === imageCount - 1 ? 0 : currentIndex + 1;
+    } else { // Swipe left = previous image
+      newIndex = currentIndex === 0 ? imageCount - 1 : currentIndex - 1;
+    }
+    
+    setCurrentImageIndex(prev => ({
+      ...prev,
+      [productId]: newIndex
+    }));
+  };
+
+  const getCurrentImage = (product: any) => {
+    const index = currentImageIndex[product.id] || 0;
+    return product.product_images[index]?.image_url || product.product_images[0]?.image_url;
+  };
+
   if (bannersLoading || productsLoading) {
     return (
       <div className="min-h-screen bg-white">
@@ -141,135 +173,140 @@ const BhyrossPage: React.FC = () => {
           <div className="flex gap-8">
             {/* Left Sidebar - Filters */}
             <div className="w-80 flex-shrink-0 hidden lg:block">
-              <div className="sticky top-24 space-y-6">
-                {/* Filter Header */}
-                <div className="bg-white border border-neutral-200 rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <Filter className="h-5 w-5 text-neutral-600" />
-                    <h3 className="text-lg font-semibold text-neutral-800" style={{ fontFamily: 'Cornerstone' }}>Filters</h3>
+              <div className="sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto">
+                <div className="space-y-6 pr-2">
+                  {/* Filter Header */}
+                  <div className="bg-white border border-neutral-200 rounded-lg p-6 shadow-sm">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Filter className="h-5 w-5 text-neutral-600" />
+                      <h3 className="text-lg font-semibold text-neutral-800" style={{ fontFamily: 'Cornerstone' }}>Filters</h3>
+                    </div>
+
+                    {/* Price Range Filter */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
+                        Price Range
+                      </label>
+                      <Select value={priceRange} onValueChange={setPriceRange}>
+                        <SelectTrigger className="w-full" style={{ fontFamily: 'Signika' }}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {priceRanges.map((range) => (
+                            <SelectItem key={range.value} value={range.value} style={{ fontFamily: 'Signika' }}>
+                              {range.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sizes Filter */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
+                        Sizes
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {['6', '7', '8', '9', '10', '11', '12'].map((size) => (
+                          <button
+                            key={size}
+                            className="px-3 py-2 border border-neutral-200 rounded text-sm hover:border-neutral-900 hover:text-neutral-900 transition-colors"
+                            style={{ fontFamily: 'Signika' }}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Colors Filter */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
+                        Colors
+                      </label>
+                      <div className="space-y-2">
+                        {[
+                          { name: 'Black', checked: false },
+                          { name: 'Brown', checked: true },
+                          { name: 'Tan', checked: false }
+                        ].map((color) => (
+                          <label key={color.name} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              defaultChecked={color.checked}
+                              className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                              style={{ accentColor: '#6F2232' }}
+                            />
+                            <span className="text-sm text-neutral-700" style={{ fontFamily: 'Signika' }}>
+                              {color.name}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Category Filter */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
+                        Category
+                      </label>
+                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                        <SelectTrigger className="w-full" style={{ fontFamily: 'Signika' }}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category.value} value={category.value} style={{ fontFamily: 'Signika' }}>
+                              {category.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort Options */}
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
+                        Sort By
+                      </label>
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="w-full" style={{ fontFamily: 'Signika' }}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {sortOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value} style={{ fontFamily: 'Signika' }}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  {/* Price Range Filter */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
-                      Price Range
-                    </label>
-                    <Select value={priceRange} onValueChange={setPriceRange}>
-  <SelectTrigger className="w-full" style={{ fontFamily: 'Signika' }}>
-    <SelectValue />
-  </SelectTrigger>
-  <SelectContent>
-    {priceRanges.map((range) => (
-      <SelectItem key={range.value} value={range.value} style={{ fontFamily: 'Signika' }}>
-        {range.label}
-      </SelectItem>
-    ))}
-  </SelectContent>
-</Select>
-                  </div>
-
-                  {/* Sizes Filter */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
-                      Sizes
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {['6', '7', '8', '9', '10', '11', '12'].map((size) => (
+                  {/* Featured Categories */}
+                  <div className="bg-white border border-neutral-200 rounded-lg p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold text-neutral-800 mb-4" style={{ fontFamily: 'Cornerstone' }}>Popular Styles</h3>
+                    <div className="space-y-2">
+                      {['Oxford', 'Derby', 'Loafer'].map((style) => (
                         <button
-                          key={size}
-                          className="px-3 py-2 border border-neutral-200 rounded text-sm hover:border-neutral-900 hover:text-neutral-900 transition-colors"
-                          style={{ fontFamily: 'Signika' }}
+                          key={style}
+                          onClick={() => setSelectedCategory(style.toLowerCase())}
+                          className="w-full text-left p-3 rounded-lg hover:bg-neutral-50 transition-colors group border border-transparent hover:border-neutral-200"
                         >
-                          {size}
+                          <div className="flex items-center justify-between">
+                            <span className="text-neutral-700 group-hover:text-neutral-900" style={{ fontFamily: 'Signika' }}>
+                              {style}
+                            </span>
+                            <Sparkles className="h-4 w-4 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#6F2232' }} />
+                          </div>
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Colors Filter */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
-                      Colors
-                    </label>
-                    <div className="space-y-2">
-                      {[
-                        { name: 'Black', checked: false },
-                        { name: 'Brown', checked: true },
-                        { name: 'Tan', checked: false }
-                      ].map((color) => (
-                        <label key={color.name} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            defaultChecked={color.checked}
-                            className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-                            style={{ accentColor: '#6F2232' }}
-                          />
-                          <span className="text-sm text-neutral-700" style={{ fontFamily: 'Signika' }}>
-                            {color.name}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Category Filter */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
-                      Category
-                    </label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="w-full" style={{ fontFamily: 'Signika' }}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.value} value={category.value} style={{ fontFamily: 'Signika' }}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Sort Options */}
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-3" style={{ fontFamily: 'Argent CF' }}>
-                      Sort By
-                    </label>
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-full" style={{ fontFamily: 'Signika' }}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {sortOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value} style={{ fontFamily: 'Signika' }}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Featured Categories */}
-                <div className="bg-white border border-neutral-200 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-neutral-800 mb-4" style={{ fontFamily: 'Cornerstone' }}>Popular Styles</h3>
-                  <div className="space-y-2">
-                    {['Oxford', 'Derby', 'Loafer'].map((style) => (
-                      <button
-                        key={style}
-                        onClick={() => setSelectedCategory(style.toLowerCase())}
-                        className="w-full text-left p-3 rounded-lg hover:bg-neutral-50 transition-colors group border border-transparent hover:border-neutral-200"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-neutral-700 group-hover:text-neutral-900" style={{ fontFamily: 'Signika' }}>
-                            {style}
-                          </span>
-                          <Sparkles className="h-4 w-4 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#6F2232' }} />
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  {/* Spacer for scroll */}
+                  <div className="h-4"></div>
                 </div>
               </div>
             </div>
@@ -320,7 +357,7 @@ const BhyrossPage: React.FC = () => {
                 </div>
 
                 {/* Grid Size Controls */}
-                <div className="hidden lg:flex items-center gap-2 bg-white border rounded-lg p-1">
+                <div className="hidden lg:flex items-center gap-2 bg-white border rounded-lg p-1 shadow-sm">
                   {gridOptions.map((option) => (
                     <button
                       key={option.value}
@@ -347,20 +384,74 @@ const BhyrossPage: React.FC = () => {
                   {filteredProducts.map((product, index) => (
                     <div 
                       key={product.id} 
-                      className={`group cursor-pointer bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-neutral-300`}
+                      className={`group cursor-pointer bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-neutral-300 lg:cursor-default ${
+                        touchedCard === product.id ? 'scale-95 shadow-sm' : ''
+                      }`}
+                      onClick={() => window.innerWidth < 1024 && handleCardClick(product)}
+                      onTouchStart={() => handleCardTouch(product.id)}
                     >
                       <div className="relative overflow-hidden bg-neutral-50 aspect-square">
-                        <ProductImageGallery
-                          images={product.product_images.map(img => img.image_url)}
-                          productName={product.name}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-all duration-500 ease-out"
-                        />
-                        <div className="absolute top-2 lg:top-4 right-2 lg:right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-1 lg:p-2">
-                            <Star className="h-3 w-3 lg:h-4 lg:w-4" style={{ color: '#6F2232' }} />
+                        {/* Desktop Version - with ProductImageGallery */}
+                        <div className="hidden lg:block">
+                          <ProductImageGallery
+                            images={product.product_images.map(img => img.image_url)}
+                            productName={product.name}
+                            className="object-cover w-full h-full group-hover:scale-105 transition-all duration-500 ease-out"
+                          />
+                        </div>
+                        
+                        {/* Mobile Version - simple image with swipe functionality */}
+                        <div className="lg:hidden relative">
+                          <div 
+                            className="relative touch-pan-x"
+                            onTouchStart={(e) => {
+                              const touch = e.touches[0];
+                              e.currentTarget.dataset.startX = touch.clientX.toString();
+                            }}
+                            onTouchEnd={(e) => {
+                              const startX = parseFloat(e.currentTarget.dataset.startX || '0');
+                              const endX = e.changedTouches[0].clientX;
+                              const diff = startX - endX;
+                              
+                              if (Math.abs(diff) > 50) { // Minimum swipe distance
+                                if (diff > 0) {
+                                  // Swiped left (startX > endX) = next image
+                                  handleSwipe(product.id, 'right', product.product_images.length);
+                                } else {
+                                  // Swiped right (startX < endX) = previous image
+                                  handleSwipe(product.id, 'left', product.product_images.length);
+                                }
+                              }
+                            }}
+                          >
+                            <img 
+                              src={getCurrentImage(product)} 
+                              alt={product.name}
+                              className="object-cover w-full h-full transition-all duration-300"
+                            />
+                            {/* Image indicators */}
+                            {product.product_images.length > 1 && (
+                              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                                {product.product_images.map((_, index) => (
+                                  <div
+                                    key={index}
+                                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                                      index === (currentImageIndex[product.id] || 0) 
+                                        ? 'bg-white' 
+                                        : 'bg-white/50'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
+                          {/* Mobile interactive overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
                       </div>
+                      
+                      {/* Visual separator */}
+                      <div className="h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent lg:hidden"></div>
                       
                       <div className="p-3 lg:p-6">
                         <div className="mb-1 lg:mb-2">
@@ -378,7 +469,7 @@ const BhyrossPage: React.FC = () => {
                           ₹{product.price.toLocaleString()}
                         </p>
                         <Button 
-                          className="w-full text-white hover:opacity-90 uppercase tracking-wider text-xs lg:text-sm py-2 border-0"
+                          className="w-full text-white hover:opacity-90 uppercase tracking-wider text-xs lg:text-sm py-2 border-0 lg:block hidden"
                           style={{ fontFamily: 'Argent CF' }}
                           onClick={() => window.location.href = `/bhyross/${product.category}/${product.id}`}
                         >

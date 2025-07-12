@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { useProduct } from '@/hooks/useProducts';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { Star, Truck, Shield, ArrowLeft, ChevronLeft, ChevronRight, ZoomIn, Heart, Minus, Plus } from 'lucide-react';
 
 const ProductPage = () => {
@@ -15,6 +16,7 @@ const ProductPage = () => {
   const brand = location.pathname.includes('/bhyross/') ? 'bhyross' : 
                location.pathname.includes('/deecodes/') ? 'deecodes' : 'imcolus';
   const { addToCart } = useCart();
+  const { toggleWishlistItem, isInWishlist } = useWishlist();
   const { toast } = useToast();
   const analytics = useAnalytics();
   const [selectedSize, setSelectedSize] = useState<number>(9);
@@ -159,29 +161,31 @@ const ProductPage = () => {
     });
   };
 
-  const toggleFavorite = () => {
-    setIsFavorited(!isFavorited);
+ const toggleFavorite = async () => {
+  if (!product?.id) return;
+  
+  try {
+    // Toggle wishlist item (this handles the database operation and analytics in the context)
+    const success = await toggleWishlistItem(product.id);
     
-    // Track favorite toggle
-    analytics.trackCustomEvent('add_to_wishlist', {
-      currency: 'INR',
-      value: product?.price || 0,
-      items: [{
-        item_id: product?.id || '',
-        item_name: product?.name || '',
-        item_category: product?.category || 'Unknown',
-        item_brand: product?.brand || brand,
-        price: product?.price || 0,
-        quantity: 1,
-        item_variant: `${selectedColor || 'default'} - Size ${selectedSize}`
-      }]
-    });
-    
+    if (success) {
+      // The WishlistContext already handles the analytics tracking,
+      // so we don't need to duplicate it here
+      console.log('Wishlist item toggled successfully');
+    } else {
+      // Handle the case where the operation failed
+      console.error('Failed to toggle wishlist item');
+    }
+  } catch (error) {
+    console.error('Error toggling wishlist item:', error);
+    // You might want to show an error toast here if needed
     toast({
-      title: isFavorited ? "Removed from favorites" : "Added to favorites",
-      description: isFavorited ? "Item removed from your wishlist" : "Item added to your wishlist",
+      title: "Error",
+      description: "Failed to update wishlist. Please try again.",
+      variant: "destructive",
     });
-  };
+  }
+};
 
   if (isLoading) {
     return (
@@ -393,13 +397,13 @@ const ProductPage = () => {
                   {product.name}
                 </h1>
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleFavorite}
-                  className="p-2"
-                >
-                  <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-neutral-400'}`} />
-                </Button>
+  variant="ghost"
+  size="sm"
+  onClick={toggleFavorite}
+  className="p-2"
+>
+  <Heart className={`h-4 w-4 ${isInWishlist(product?.id || '') ? 'fill-red-500 text-red-500' : 'text-neutral-400'}`} />
+</Button>
               </div>
               
               <div className="flex items-baseline space-x-3 mb-4">
