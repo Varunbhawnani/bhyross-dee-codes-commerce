@@ -120,12 +120,61 @@ const Navigation: React.FC = () => {
     accent: { fontFamily: 'Argent CF, sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase' as const } as React.CSSProperties
   };
 
-  // Custom active styles with gradient
-  const activeGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-  const activeBgGradient = 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)';
+  // Get brand colors based on current page
+  const getBrandColors = () => {
+    switch (location.pathname) {
+      case '/bhyross':
+        return {
+          primary: '#6F2232',
+          navBg: 'rgba(111, 34, 50, 0.2)',
+          navBorder: 'rgba(111, 34, 50, 0.2)',
+          hoverBg: 'rgba(111, 34, 50, 0.3)',
+          mobileBg: 'rgba(111, 34, 50, 0.2)',
+          mobileBorder: 'rgba(111, 34, 50, 0.2)',
+          dropdownBg: 'rgba(111, 34, 50, 0.1)',
+          gradient: 'linear-gradient(135deg, #6F2232 0%, #8B2A42 100%)'
+        };
+      case '/imcolus':
+        return {
+          primary: '#A89F91',
+          navBg: 'rgba(168, 159, 145, 0.2)',
+          navBorder: 'rgba(168, 159, 145, 0.2)',
+          hoverBg: 'rgba(168, 159, 145, 0.3)',
+          mobileBg: 'rgba(168, 159, 145, 0.2)',
+          mobileBorder: 'rgba(168, 159, 145, 0.2)',
+          dropdownBg: 'rgba(168, 159, 145, 0.1)',
+          gradient: 'linear-gradient(135deg, #A89F91 0%, #B8AFA1 100%)'
+        };
+      case '/deecodes':
+        return {
+          primary: '#5A6F8D',
+          navBg: 'rgba(90, 111, 141, 0.2)',
+          navBorder: 'rgba(90, 111, 141, 0.2)',
+          hoverBg: 'rgba(90, 111, 141, 0.3)',
+          mobileBg: 'rgba(90, 111, 141, 0.2)',
+          mobileBorder: 'rgba(90, 111, 141, 0.2)',
+          dropdownBg: 'rgba(90, 111, 141, 0.1)',
+          gradient: 'linear-gradient(135deg, #5A6F8D 0%, #6A7F9D 100%)'
+        };
+      default:
+        return {
+          primary: '#667eea',
+          navBg: 'rgba(255, 255, 255, 0.2)',
+          navBorder: 'rgba(255, 255, 255, 0.2)',
+          hoverBg: 'rgba(255, 255, 255, 0.3)',
+          mobileBg: 'rgba(255, 255, 255, 0.2)',
+          mobileBorder: 'rgba(255, 255, 255, 0.2)',
+          dropdownBg: 'rgba(255, 255, 255, 0.1)',
+          gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        };
+    }
+  };
 
+  const brandColors = getBrandColors();
+
+  // Custom active styles with dynamic gradient
   const getActiveLinkStyle = (isActive: boolean) => ({
-    background: isActive ? activeGradient : '',
+    background: isActive ? brandColors.gradient : '',
     WebkitBackgroundClip: isActive ? 'text' : '',
     WebkitTextFillColor: isActive ? 'transparent' : '',
     backgroundClip: isActive ? 'text' : '',
@@ -147,7 +196,7 @@ const Navigation: React.FC = () => {
     }`;
 
   const getMobileActiveLinkStyle = (isActive: boolean) => ({
-    background: isActive ? activeGradient : '',
+    background: isActive ? brandColors.gradient : '',
     WebkitBackgroundClip: isActive ? 'text' : '',
     WebkitTextFillColor: isActive ? 'transparent' : '',
     backgroundClip: isActive ? 'text' : '',
@@ -158,7 +207,13 @@ const Navigation: React.FC = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/20 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/5">
+      <nav 
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b shadow-lg shadow-black/5"
+        style={{
+          backgroundColor: brandColors.navBg,
+          borderBottomColor: brandColors.navBorder
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -200,21 +255,36 @@ const Navigation: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 drop-shadow-sm" 
-                    style={fontStyles.body}
+                    className="text-sm font-medium text-neutral-700 hover:text-neutral-900 backdrop-blur-sm transition-all duration-300 hover:scale-105 drop-shadow-sm"
+                    style={{
+                      ...fontStyles.body,
+                      '--hover-bg': brandColors.hoverBg
+                    } as React.CSSProperties}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     onClick={() => trackEvent('brands_dropdown_open', { page_location: window.location.href })}
                   >
                     Brands
                     <ChevronDown className="ml-1 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="md:bg-white/10 md:backdrop-blur-2xl bg-white border border-gray-200 shadow-2xl rounded-2xl min-w-[600px] p-4 sm:bg-white">
+                <DropdownMenuContent align="center" className="border border-gray-200 shadow-2xl rounded-2xl min-w-[600px] p-4 sm:bg-white"
+                  style={{
+                    backgroundColor: `${brandColors.dropdownBg}`,
+                    backdropFilter: 'blur(32px)'
+                  }}
+                >
                   <div className="flex items-stretch justify-center space-x-2">
                     {brands.map((brand, index) => (
                       <DropdownMenuItem key={brand.path} asChild className="p-0 flex-1">
                         <Link 
                           to={brand.path} 
-                          className="cursor-pointer md:hover:bg-white/20 hover:bg-gray-50 transition-all duration-300 rounded-xl flex flex-col items-center justify-center text-center px-4 py-6 group w-[180px] h-[120px] sm:hover:bg-gray-50"
+                          className="cursor-pointer transition-all duration-300 rounded-xl flex flex-col items-center justify-center text-center px-4 py-6 group w-[180px] h-[120px] sm:hover:bg-gray-50"
+                          style={{
+                            '--hover-bg': brandColors.hoverBg
+                          } as React.CSSProperties}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                           onClick={() => handleBrandClick(brand.name, brand.path)}
                         >
                           <span className="text-base font-semibold text-neutral-900 mb-2 leading-tight" style={fontStyles.heading}>
@@ -257,7 +327,12 @@ const Navigation: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                      className="backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                      style={{
+                        '--hover-bg': brandColors.hoverBg
+                      } as React.CSSProperties}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       onClick={() => trackEvent('user_menu_open', { page_location: window.location.href })}
                     >
                       <User className="h-4 w-4" />
@@ -265,7 +340,10 @@ const Navigation: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="z-50 bg-white/80 backdrop-blur-xl border border-white/30 shadow-2xl shadow-black/10 min-w-[200px] relative rounded-xl"
+                    className="z-50 backdrop-blur-xl border border-white/30 shadow-2xl shadow-black/10 min-w-[200px] relative rounded-xl"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                    }}
                     sideOffset={5}
                     avoidCollisions={true}
                     collisionPadding={8}
@@ -300,7 +378,17 @@ const Navigation: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="ghost" size="sm" asChild className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  asChild 
+                  className="backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                  style={{
+                    '--hover-bg': brandColors.hoverBg
+                  } as React.CSSProperties}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
                   <Link 
                     to="/auth" 
                     style={fontStyles.accent}
@@ -317,7 +405,12 @@ const Navigation: React.FC = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleCartClick}
-                className="relative hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                className="relative backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                style={{
+                  '--hover-bg': brandColors.hoverBg
+                } as React.CSSProperties}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <ShoppingCart className="h-4 w-4" />
                 {totalItems > 0 && (
@@ -330,7 +423,17 @@ const Navigation: React.FC = () => {
 
             {/* Mobile Menu Button */}
             <div className="md:hidden">
-              <Button variant="ghost" size="sm" onClick={toggleMobileMenu} className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={toggleMobileMenu} 
+                className="backdrop-blur-sm transition-all duration-300"
+                style={{
+                  '--hover-bg': brandColors.hoverBg
+                } as React.CSSProperties}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
@@ -347,9 +450,14 @@ const Navigation: React.FC = () => {
       )}
 
       {/* Mobile Menu */}
-      <div className={`fixed top-16 left-0 right-0 z-40 bg-white/20 backdrop-blur-xl border-b border-white/20 transition-transform duration-300 ease-in-out md:hidden shadow-2xl shadow-black/20 ${
+      <div className={`fixed top-16 left-0 right-0 z-40 backdrop-blur-xl border-b transition-transform duration-300 ease-in-out md:hidden shadow-2xl shadow-black/20 ${
         isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
-      }`}>
+      }`}
+      style={{
+        backgroundColor: brandColors.mobileBg,
+        borderBottomColor: brandColors.mobileBorder
+      }}
+      >
         <div className="px-4 py-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {/* Mobile Search */}
           <div className="pb-4 border-b border-white/30">
@@ -393,7 +501,12 @@ const Navigation: React.FC = () => {
                     key={brand.path}
                     to={brand.path}
                     onClick={() => handleBrandClick(brand.name, brand.path)}
-                    className="flex flex-col items-center text-center py-3 px-3 mx-2 rounded-xl text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
+                    className="flex flex-col items-center text-center py-3 px-3 mx-2 rounded-xl text-neutral-700 hover:text-neutral-900 backdrop-blur-sm transition-all duration-300"
+                    style={{
+                      '--hover-bg': brandColors.hoverBg
+                    } as React.CSSProperties}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <span className="text-sm font-semibold mb-1" style={fontStyles.heading}>{brand.name}</span>
                     <span className="text-xs text-neutral-600 mb-2" style={fontStyles.body}>{brand.tagline}</span>
@@ -424,7 +537,12 @@ const Navigation: React.FC = () => {
           <div className="pt-4 border-t border-white/30 space-y-2">
             {user ? (
               <>
-                <div className="px-3 py-2 text-sm font-medium text-neutral-900 bg-white/30 backdrop-blur-sm rounded-xl" style={fontStyles.body}>
+                <div className="px-3 py-2 text-sm font-medium text-neutral-900 backdrop-blur-sm rounded-xl" 
+                  style={{
+                    ...fontStyles.body,
+                    backgroundColor: brandColors.hoverBg
+                  }}
+                >
                   {user.email}
                 </div>
                 {isAdmin && (
@@ -434,8 +552,13 @@ const Navigation: React.FC = () => {
                       handleNavigationClick('Admin Dashboard', '/admin');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
-                    style={fontStyles.body}
+                    className="block py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 backdrop-blur-sm transition-all duration-300"
+                    style={{
+                      ...fontStyles.body,
+                      '--hover-bg': brandColors.hoverBg
+                    } as React.CSSProperties}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     Admin Dashboard
                   </Link>
@@ -459,8 +582,13 @@ const Navigation: React.FC = () => {
                   handleAuthClick();
                   setIsMobileMenuOpen(false);
                 }}
-                className="flex items-center py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
-                style={fontStyles.accent}
+                className="flex items-center py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 backdrop-blur-sm transition-all duration-300"
+                style={{
+                  ...fontStyles.accent,
+                  '--hover-bg': brandColors.hoverBg
+                } as React.CSSProperties}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <LogIn className="h-4 w-4 mr-2" />
                 Sign In
@@ -472,8 +600,13 @@ const Navigation: React.FC = () => {
                 handleCartClick();
                 setIsMobileMenuOpen(false);
               }}
-              className="flex items-center justify-between w-full py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
-              style={fontStyles.body}
+              className="flex items-center justify-between w-full py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 backdrop-blur-sm transition-all duration-300"
+              style={{
+                ...fontStyles.body,
+                '--hover-bg': brandColors.hoverBg
+              } as React.CSSProperties}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = brandColors.hoverBg}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <span className="flex items-center">
                 <ShoppingCart className="h-4 w-4 mr-2" />
