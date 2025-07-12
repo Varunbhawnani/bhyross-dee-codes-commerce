@@ -349,7 +349,7 @@ const wishlistCount = getWishlistCount();
               >
                 <Heart className="h-4 w-4" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-pink-500/90 backdrop-blur-sm text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg" style={fontStyles.accent}>
+                  <span className="absolute -top-2 -right-2 bg-red-500/90 backdrop-blur-sm text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg" style={fontStyles.accent}>
                     {wishlistCount}
                   </span>
                 )}
