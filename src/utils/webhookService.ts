@@ -20,7 +20,7 @@ interface WebhookPayload {
 }
 
 export const triggerCartWebhook = async (payload: WebhookPayload) => {
-  const webhookUrl = "https://varunworkspace.app.n8n.cloud/webhook/7f1feadf-2637-4eda-bd15-c2a4928f7455";
+  const webhookUrl = "https://varunworkspace.app.n8n.cloud/webhook-test/7f1feadf-2637-4eda-bd15-c2a4928f7455";
   
   console.log("Triggering cart webhook with payload:", payload);
   
