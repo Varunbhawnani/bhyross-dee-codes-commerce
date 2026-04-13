@@ -1,0 +1,9 @@
+# public/_redirects
+# This file helps with SPA routing and SEO
+
+# Redirect all routes to index.html for client-side routing
+/*    /index.html   200
+
+# Ensure sitemap and robots.txt are always accessible
+/sitemap.xml    /sitemap.xml    200
+/robots.txt     /robots.txt     200

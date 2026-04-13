@@ -1,0 +1,42 @@
+# robots.txt for imcolus.in
+# Allow all major search engines
+
+# robots.txt for imcolus.in
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /auth
+Disallow: /orders
+Disallow: /wishlist
+
+# Sitemap location
+Sitemap: https://imcolus.in/sitemap.xml
+
+# No crawl delay - let Google crawl freely
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /auth
+
+
+User-agent: Googlebot-Image
+Allow: /
+
+# Allow Bing bot
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /auth
+
+
+
+
+
+
+

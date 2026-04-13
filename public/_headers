@@ -1,0 +1,75 @@
+# Cache images for 6 months (longer than 1 month)
+/*.jpg
+  Cache-Control: public, max-age=15768000, immutable
+```
+
+**REPLACE with:**
+```
+# Cache images for 1 year (same as other assets)
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+```
+
+**Do this for all 5 image formats: .jpg, .jpeg, .png, .webp, .svg**
+
+---
+
+## **Complete Updated _headers:**
+```
+# Cache static assets for 1 year with immutable
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Cache images for 1 year (increased from 6 months)
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Cache fonts for 1 year
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Cache JS and CSS for 1 year
+/assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+/assets/*.css
+  Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Don't cache HTML
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+
+# Preconnect and DNS prefetch for performance
+/*
+  Link: <https://fonts.googleapis.com>; rel=preconnect
+  Link: <https://fonts.gstatic.com>; rel=preconnect; crossorigin
+  Link: <https://checkout.razorpay.com>; rel=dns-prefetch
+  Link: <https://connect.facebook.net>; rel=dns-prefetch
+  Link: <https://kyjbzmcdgkmqmlydsqgp.supabase.co>; rel=dns-prefetch
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

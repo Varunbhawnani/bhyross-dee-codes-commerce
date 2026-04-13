@@ -1,0 +1,1492 @@
+🔍 TypeScript-Aware CSS Analysis
+🎯 Analyzing your React/TypeScript project...
+
+📊 Project Overview:
+   CSS files found: 4
+   React/TS files found: 98
+
+📁 CSS Files to analyze:
+   1. src/App.css
+   2. src/index.css
+   3. src/pages/HomePage.css
+   4. src/styles/brands.css
+
+================================================================================
+📁 ANALYZING: src/App.css
+================================================================================
+📊 File Info:
+   Size: 606 characters
+   Lines: 37 (non-empty)
+
+📄 File Preview (first 8 lines):
+   01: #root {
+   02:   max-width: 1280px;
+   03:   margin: 0 auto;
+   04:   padding: 2rem;
+   05:   text-align: center;
+   06: }
+   07: .logo {
+   08:   height: 6em;
+   ... and 29 more lines
+
+📋 Import Analysis:
+   ❌ NOT IMPORTED in any file
+
+🎯 Class Analysis:
+   Found 4 CSS classes
+   ✅ .logo - Used in 2 location(s):
+      📄 HomePage.tsx:740
+         <a href="#" className="logo bhyross">BHYROSS</a>
+      📄 HomePage.tsx:1007
+         <a href="#" className="logo dee">DEE CODES</a>
+   ✅ .react - Used in 76 location(s):
+      📄 BannerCarousel.tsx:1
+         import React, { useState, useEffect } from 'react';
+      📄 BannerImageUpload.tsx:1
+         import React, { useState, useRef, useCallback } from 'react';
+      📄 Footer.tsx:1
+         import React, { useState } from 'react';
+      📄 MultiImageUploader.tsx:1
+         import React, { useState, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+      📄 Navigation.tsx:1
+         import React, { useState } from 'react';
+      📄 ProductImageGallery.tsx:1
+         import React, { useState } from 'react';
+      📄 ProductImageManager.tsx:1
+         import React, { useState, useCallback } from 'react';
+      📄 SearchDropdown.tsx:2
+         import React, { useState, useEffect, useMemo } from 'react';
+      📄 AdminBannerSection.tsx:1
+         import React, { useState } from 'react';
+      📄 CustomersTab.tsx:1
+         import React, { useState, useEffect } from 'react';
+      📄 DeleteConfirmModal.tsx:1
+         import React from 'react';
+      📄 OrdersTab.tsx:1
+         import React, { useState, useEffect } from 'react';
+      📄 OverviewStats.tsx:1
+         import React from 'react';
+      📄 ProductForm.tsx:1
+         import React from 'react';
+      📄 ProductList.tsx:1
+         import React from 'react';
+      📄 SettingsTab.tsx:1
+         import React from 'react';
+      📄 accordion.tsx:1
+         import * as React from "react"
+      📄 alert-dialog.tsx:1
+         import * as React from "react"
+      📄 alert.tsx:1
+         import * as React from "react"
+      📄 avatar.tsx:1
+         import * as React from "react"
+      📄 badge.tsx:1
+         import * as React from "react"
+      📄 breadcrumb.tsx:1
+         import * as React from "react"
+      📄 button.tsx:1
+         import * as React from "react"
+      📄 calendar.tsx:1
+         import * as React from "react";
+      📄 card.tsx:1
+         import * as React from "react"
+      📄 carousel.tsx:1
+         import * as React from "react"
+      📄 chart.tsx:1
+         import * as React from "react"
+      📄 checkbox.tsx:1
+         import * as React from "react"
+      📄 command.tsx:1
+         import * as React from "react"
+      📄 context-menu.tsx:1
+         import * as React from "react"
+      📄 dialog.tsx:1
+         import * as React from "react"
+      📄 drawer.tsx:1
+         import * as React from "react"
+      📄 dropdown-menu.tsx:2
+         import * as React from "react"
+      📄 form.tsx:1
+         import * as React from "react"
+      📄 hover-card.tsx:1
+         import * as React from "react"
+      📄 input-otp.tsx:1
+         import * as React from "react"
+      📄 input.tsx:1
+         import * as React from "react"
+      📄 label.tsx:1
+         import * as React from "react"
+      📄 menubar.tsx:1
+         import * as React from "react"
+      📄 navigation-menu.tsx:1
+         import * as React from "react"
+      📄 pagination.tsx:1
+         import * as React from "react"
+      📄 popover.tsx:1
+         import * as React from "react"
+      📄 progress.tsx:1
+         import * as React from "react"
+      📄 radio-group.tsx:1
+         import * as React from "react"
+      📄 scroll-area.tsx:1
+         import * as React from "react"
+      📄 select.tsx:1
+         import * as React from "react"
+      📄 separator.tsx:1
+         import * as React from "react"
+      📄 sheet.tsx:4
+         import * as React from "react"
+      📄 sidebar.tsx:1
+         import * as React from "react"
+      📄 slider.tsx:1
+         import * as React from "react"
+      📄 switch.tsx:1
+         import * as React from "react"
+      📄 table.tsx:1
+         import * as React from "react"
+      📄 tabs.tsx:1
+         import * as React from "react"
+      📄 textarea.tsx:1
+         import * as React from "react"
+      📄 toast.tsx:1
+         import * as React from "react"
+      📄 toggle-group.tsx:1
+         import * as React from "react"
+      📄 toggle.tsx:1
+         import * as React from "react"
+      📄 tooltip.tsx:1
+         import * as React from "react"
+      📄 CartContext.tsx:2
+         import React, { createContext, useContext, ReactNode } from 'react';
+      📄 SettingsContext.tsx:1
+         import React, { createContext, useContext, ReactNode } from 'react';
+      📄 use-mobile.tsx:1
+         import * as React from "react"
+      📄 use-toast.ts:1
+         import * as React from "react"
+      📄 useAuth.tsx:1
+         import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+      📄 useCart.tsx:5
+         import { useState } from 'react';
+      📄 AdminPage.tsx:1
+         import React, { useState } from 'react';
+      📄 AuthPage.tsx:1
+         import React, { useState, useEffect } from 'react';
+      📄 BhyrossPage.tsx:1
+         import React, { useState } from 'react';
+      📄 CartPage.tsx:1
+         import React from 'react';
+      📄 DeeCodesPage.tsx:1
+         import React, { useState } from 'react';
+      📄 HomePage.tsx:1
+         import React, { useState, useRef } from 'react';
+      📄 ImcolusPage.tsx:1
+         import React, { useState } from 'react';
+      📄 Index.tsx:1
+         import React, { useState } from 'react';
+      📄 NotFound.tsx:2
+         import { useEffect } from "react";
+      📄 ProductPage.tsx:1
+         import React, { useState, useRef } from 'react';
+      📄 Real_Home.tsx:1
+         import React from 'react';
+      📄 imageUpload.ts:3
+         import { useState } from 'react';
+   ✅ .card - Used in 12 location(s):
+      📄 HomePage.tsx:758
+         <div className="product-card">
+      📄 HomePage.tsx:765
+         <div className="product-card">
+      📄 HomePage.tsx:772
+         <div className="product-card">
+      📄 HomePage.tsx:779
+         <div className="product-card">
+      📄 HomePage.tsx:786
+         <div className="product-card">
+      📄 HomePage.tsx:793
+         <div className="product-card">
+      📄 HomePage.tsx:896
+         <div className="testimonial-card">
+      📄 HomePage.tsx:907
+         <div className="testimonial-card">
+      📄 HomePage.tsx:918
+         <div className="testimonial-card">
+      📄 Real_Home.tsx:165
+         <div className="brand-card group">
+      📄 Real_Home.tsx:212
+         <div className="brand-card group">
+      📄 Real_Home.tsx:277
+         <div key={`${product.brand}-${product.id}`} className="product-card">
+   ❌ .read-the-docs - UNUSED
+
+📊 Summary:
+   ✅ Used classes: 3
+   ❌ Unused classes: 1
+   📋 Import status: NOT IMPORTED
+
+🧹 RECOMMENDATION: CLEAN UP (remove unused classes)
+
+================================================================================
+📁 ANALYZING: src/index.css
+================================================================================
+📊 File Info:
+   Size: 16398 characters
+   Lines: 757 (non-empty)
+
+📄 File Preview (first 8 lines):
+   01: @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+   02: @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+   03: @tailwind base;
+   04: @tailwind components;
+   05: @tailwind utilities;
+   06: @import './styles/brands.css';
+   07: @layer base {
+   08:   :root {
+   ... and 749 more lines
+
+📋 Import Analysis:
+   ✅ Imported in 1 file(s):
+      📄 main.tsx:3
+         import './index.css'
+
+🎯 Class Analysis:
+   Found 77 CSS classes
+   ❌ .googleapis - UNUSED
+   ✅ .com - Used in 6 location(s):
+      📄 AdminPage.tsx:243
+         <span className="text-sm text-neutral-600">Welcome, {user.email}</span>
+      📄 HomePage.tsx:746
+         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
+      📄 HomePage.tsx:824
+         <img src="https://images.unsplash.com/photo-1608256246200-53e8b47b24f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury shoe crafting process" className="collection-image" />
+      📄 HomePage.tsx:898
+         <p className="testimonial-quote">"The quality is absolutely exceptional. These shoes have transformed my professional wardrobe and the comfort is unmatched."</p>
+      📄 HomePage.tsx:950
+         <p className="why-description">Classic silhouettes refined for the modern gentleman, creating shoes that transcend trends and become lifetime companions.</p>
+      📄 HomePage.tsx:1012
+         <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Modern lifestyle shoes" className="hero-background" />
+   ❌ .css - UNUSED
+   ❌ .dark - UNUSED
+   ❌ .typewriter - UNUSED
+   ❌ .glass-morphism - UNUSED
+   ✅ .text-shadow - Used in 1 location(s):
+      📄 BannerCarousel.tsx:59
+         <div className="text-center text-white px-4 font-serif [text-shadow:_2px_2px_4px_rgb(0_0_0_/_0.8)]">
+   ✅ .hover-lift - Used in 1 location(s):
+      📄 HomePage.tsx:871
+         <Card className="group overflow-hidden hover-lift">
+   ✅ .gradient-text - Used in 1 location(s):
+      📄 Real_Home.tsx:112
+         <h1 className="text-4xl lg:text-6xl font-bold mb-4 tracking-tight gradient-text font-cornerstone">
+   ✅ .dual-landing - Used in 1 location(s):
+      📄 HomePage.tsx:691
+         <section id="dual-landing" className="dual-landing">
+   ✅ .choice-container - Used in 1 location(s):
+      📄 HomePage.tsx:693
+         <div className="choice-container">
+   ✅ .brand-button - Used in 2 location(s):
+      📄 HomePage.tsx:695
+         className="brand-button bhyross"
+      📄 HomePage.tsx:713
+         className="brand-button dee-codes"
+   ✅ .video-background - Used in 2 location(s):
+      📄 HomePage.tsx:703
+         className="video-background"
+      📄 HomePage.tsx:721
+         className="video-background"
+   ✅ .button-text - Used in 2 location(s):
+      📄 HomePage.tsx:709
+         <span className="button-text">Explore Bhyross</span>
+      📄 HomePage.tsx:727
+         <span className="button-text">Explore Dee Codes</span>
+   ✅ .brand-landing - Used in 2 location(s):
+      📄 HomePage.tsx:735
+         <div id="bhyross-landing" className="brand-landing">
+      📄 HomePage.tsx:1005
+         <div id="dee-codes-landing" className="brand-landing">
+   ✅ .header - Used in 3 location(s):
+      📄 sidebar.tsx:358
+         data-sidebar="header"
+      📄 HomePage.tsx:738
+         <header className="header">
+      📄 HomePage.tsx:1006
+         <header className="header">
+   ✅ .logo - Used in 2 location(s):
+      📄 HomePage.tsx:740
+         <a href="#" className="logo bhyross">BHYROSS</a>
+      📄 HomePage.tsx:1007
+         <a href="#" className="logo dee">DEE CODES</a>
+   ✅ .home-button - Used in 2 location(s):
+      📄 HomePage.tsx:741
+         <a className="home-button" onClick={() => setBrand('dual')}>Home</a>
+      📄 HomePage.tsx:1008
+         <a className="home-button" onClick={() => setBrand('dual')}>Home</a>
+   ✅ .hero - Used in 12 location(s):
+      📄 HomePage.tsx:745
+         <section className="hero">
+      📄 HomePage.tsx:746
+         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
+      📄 HomePage.tsx:747
+         <div className="hero-overlay"></div>
+      📄 HomePage.tsx:748
+         <div className="hero-content">
+      📄 HomePage.tsx:749
+         <h1 className="hero-title">Crafted Excellence</h1>
+      📄 HomePage.tsx:750
+         <p className="hero-subtitle">Where luxury meets artisanal precision in every step</p>
+      📄 HomePage.tsx:1011
+         <section className="hero">
+      📄 HomePage.tsx:1012
+         <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Modern lifestyle shoes" className="hero-background" />
+      📄 HomePage.tsx:1013
+         <div className="hero-overlay"></div>
+      📄 HomePage.tsx:1014
+         <div className="hero-content">
+      📄 HomePage.tsx:1015
+         <h1 className="hero-title">Code Your Style</h1>
+      📄 HomePage.tsx:1016
+         <p className="hero-subtitle">Where modern lifestyle meets digital innovation</p>
+   ✅ .hero-background - Used in 2 location(s):
+      📄 HomePage.tsx:746
+         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
+      📄 HomePage.tsx:1012
+         <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Modern lifestyle shoes" className="hero-background" />
+   ✅ .hero-overlay - Used in 2 location(s):
+      📄 HomePage.tsx:747
+         <div className="hero-overlay"></div>
+      📄 HomePage.tsx:1013
+         <div className="hero-overlay"></div>
+   ✅ .hero-content - Used in 2 location(s):
+      📄 HomePage.tsx:748
+         <div className="hero-content">
+      📄 HomePage.tsx:1014
+         <div className="hero-content">
+   ✅ .hero-title - Used in 2 location(s):
+      📄 HomePage.tsx:749
+         <h1 className="hero-title">Crafted Excellence</h1>
+      📄 HomePage.tsx:1015
+         <h1 className="hero-title">Code Your Style</h1>
+   ✅ .hero-subtitle - Used in 2 location(s):
+      📄 HomePage.tsx:750
+         <p className="hero-subtitle">Where luxury meets artisanal precision in every step</p>
+      📄 HomePage.tsx:1016
+         <p className="hero-subtitle">Where modern lifestyle meets digital innovation</p>
+   ✅ .cta-button - Used in 2 location(s):
+      📄 HomePage.tsx:751
+         <a href="#" className="cta-button bhyross">Shop Now</a>
+      📄 HomePage.tsx:1017
+         <a href="#" className="cta-button dee">Discover Now</a>
+   ✅ .products-section - Used in 1 location(s):
+      📄 HomePage.tsx:755
+         <section className="products-section">
+   ✅ .section-title - Used in 4 location(s):
+      📄 HomePage.tsx:756
+         <h2 className="section-title bhyross">Featured Collection</h2>
+      📄 HomePage.tsx:831
+         <h2 className="section-title bhyross">The Bhyross Process</h2>
+      📄 HomePage.tsx:894
+         <h2 className="section-title bhyross">What Our Customers Say</h2>
+      📄 HomePage.tsx:935
+         <h2 className="section-title bhyross">Why Bhyross?</h2>
+   ✅ .products-grid - Used in 1 location(s):
+      📄 HomePage.tsx:757
+         <div className="products-grid">
+   ✅ .product-card - Used in 7 location(s):
+      📄 HomePage.tsx:758
+         <div className="product-card">
+      📄 HomePage.tsx:765
+         <div className="product-card">
+      📄 HomePage.tsx:772
+         <div className="product-card">
+      📄 HomePage.tsx:779
+         <div className="product-card">
+      📄 HomePage.tsx:786
+         <div className="product-card">
+      📄 HomePage.tsx:793
+         <div className="product-card">
+      📄 Real_Home.tsx:277
+         <div key={`${product.brand}-${product.id}`} className="product-card">
+   ✅ .product-image - Used in 6 location(s):
+      📄 HomePage.tsx:759
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:766
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:773
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:780
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:787
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:794
+         <div className="product-image">👞</div>
+   ✅ .product-name - Used in 6 location(s):
+      📄 HomePage.tsx:761
+         <h3 className="product-name">Executive Oxford</h3>
+      📄 HomePage.tsx:768
+         <h3 className="product-name">Heritage Brogue</h3>
+      📄 HomePage.tsx:775
+         <h3 className="product-name">Milano Loafer</h3>
+      📄 HomePage.tsx:782
+         <h3 className="product-name">Windsor Boot</h3>
+      📄 HomePage.tsx:789
+         <h3 className="product-name">Gentleman Derby</h3>
+      📄 HomePage.tsx:796
+         <h3 className="product-name">Royal Monk Strap</h3>
+   ✅ .product-price - Used in 6 location(s):
+      📄 HomePage.tsx:762
+         <p className="product-price bhyross">$489</p>
+      📄 HomePage.tsx:769
+         <p className="product-price bhyross">$529</p>
+      📄 HomePage.tsx:776
+         <p className="product-price bhyross">$399</p>
+      📄 HomePage.tsx:783
+         <p className="product-price bhyross">$649</p>
+      📄 HomePage.tsx:790
+         <p className="product-price bhyross">$459</p>
+      📄 HomePage.tsx:797
+         <p className="product-price bhyross">$579</p>
+   ✅ .collection-showcase - Used in 1 location(s):
+      📄 HomePage.tsx:803
+         <section className="collection-showcase">
+   ✅ .collection-content - Used in 1 location(s):
+      📄 HomePage.tsx:804
+         <div className="collection-content">
+   ✅ .collection-text - Used in 1 location(s):
+      📄 HomePage.tsx:805
+         <div className="collection-text bhyross">
+   ✅ .collection-stats - Used in 1 location(s):
+      📄 HomePage.tsx:808
+         <div className="collection-stats">
+   ✅ .stat-item - Used in 3 location(s):
+      📄 HomePage.tsx:809
+         <div className="stat-item">
+      📄 HomePage.tsx:813
+         <div className="stat-item">
+      📄 HomePage.tsx:817
+         <div className="stat-item">
+   ✅ .stat-number - Used in 3 location(s):
+      📄 HomePage.tsx:810
+         <span className="stat-number bhyross">190+</span>
+      📄 HomePage.tsx:814
+         <span className="stat-number bhyross">72hrs</span>
+      📄 HomePage.tsx:818
+         <span className="stat-number bhyross">100%</span>
+   ✅ .stat-label - Used in 3 location(s):
+      📄 HomePage.tsx:811
+         <span className="stat-label">Crafting Steps</span>
+      📄 HomePage.tsx:815
+         <span className="stat-label">Creation Time</span>
+      📄 HomePage.tsx:819
+         <span className="stat-label">Hand-Made</span>
+   ✅ .collection-image - Used in 1 location(s):
+      📄 HomePage.tsx:824
+         <img src="https://images.unsplash.com/photo-1608256246200-53e8b47b24f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury shoe crafting process" className="collection-image" />
+   ✅ .process-section - Used in 1 location(s):
+      📄 HomePage.tsx:829
+         <section className="process-section">
+   ✅ .process-container - Used in 1 location(s):
+      📄 HomePage.tsx:830
+         <div className="process-container">
+   ✅ .process-steps - Used in 1 location(s):
+      📄 HomePage.tsx:832
+         <div className="process-steps">
+   ✅ .process-step - Used in 5 location(s):
+      📄 HomePage.tsx:832
+         <div className="process-steps">
+      📄 HomePage.tsx:833
+         <div className="process-step">
+      📄 HomePage.tsx:838
+         <div className="process-step">
+      📄 HomePage.tsx:843
+         <div className="process-step">
+      📄 HomePage.tsx:848
+         <div className="process-step">
+   ✅ .process-number - Used in 4 location(s):
+      📄 HomePage.tsx:834
+         <div className="process-number bhyross">1</div>
+      📄 HomePage.tsx:839
+         <div className="process-number bhyross">2</div>
+      📄 HomePage.tsx:844
+         <div className="process-number bhyross">3</div>
+      📄 HomePage.tsx:849
+         <div className="process-number bhyross">4</div>
+   ✅ .testimonials-section - Used in 1 location(s):
+      📄 HomePage.tsx:892
+         <section className="testimonials-section">
+   ✅ .testimonials-container - Used in 1 location(s):
+      📄 HomePage.tsx:893
+         <div className="testimonials-container">
+   ✅ .testimonials-grid - Used in 1 location(s):
+      📄 HomePage.tsx:895
+         <div className="testimonials-grid">
+   ✅ .testimonial-card - Used in 3 location(s):
+      📄 HomePage.tsx:896
+         <div className="testimonial-card">
+      📄 HomePage.tsx:907
+         <div className="testimonial-card">
+      📄 HomePage.tsx:918
+         <div className="testimonial-card">
+   ✅ .stars - Used in 3 location(s):
+      📄 HomePage.tsx:897
+         <div className="stars">★★★★★</div>
+      📄 HomePage.tsx:908
+         <div className="stars">★★★★★</div>
+      📄 HomePage.tsx:919
+         <div className="stars">★★★★★</div>
+   ✅ .testimonial-quote - Used in 3 location(s):
+      📄 HomePage.tsx:898
+         <p className="testimonial-quote">"The quality is absolutely exceptional. These shoes have transformed my professional wardrobe and the comfort is unmatched."</p>
+      📄 HomePage.tsx:909
+         <p className="testimonial-quote">"I've owned luxury shoes from many brands, but Bhyross stands apart. The attention to detail is extraordinary."</p>
+      📄 HomePage.tsx:920
+         <p className="testimonial-quote">"Worth every penny. The craftsmanship is visible in every stitch, and they've aged beautifully over the years."</p>
+   ✅ .testimonial-author - Used in 3 location(s):
+      📄 HomePage.tsx:899
+         <div className="testimonial-author">
+      📄 HomePage.tsx:910
+         <div className="testimonial-author">
+      📄 HomePage.tsx:921
+         <div className="testimonial-author">
+   ✅ .author-avatar - Used in 3 location(s):
+      📄 HomePage.tsx:900
+         <div className="author-avatar">👤</div>
+      📄 HomePage.tsx:911
+         <div className="author-avatar">👤</div>
+      📄 HomePage.tsx:922
+         <div className="author-avatar">👤</div>
+   ✅ .author-info - Used in 3 location(s):
+      📄 HomePage.tsx:901
+         <div className="author-info">
+      📄 HomePage.tsx:912
+         <div className="author-info">
+      📄 HomePage.tsx:923
+         <div className="author-info">
+   ✅ .why-section - Used in 1 location(s):
+      📄 HomePage.tsx:933
+         <section className="why-section">
+   ✅ .why-container - Used in 1 location(s):
+      📄 HomePage.tsx:934
+         <div className="why-container">
+   ✅ .why-grid - Used in 1 location(s):
+      📄 HomePage.tsx:936
+         <div className="why-grid">
+   ✅ .why-item - Used in 3 location(s):
+      📄 HomePage.tsx:937
+         <div className="why-item">
+      📄 HomePage.tsx:942
+         <div className="why-item">
+      📄 HomePage.tsx:947
+         <div className="why-item">
+   ✅ .why-icon - Used in 3 location(s):
+      📄 HomePage.tsx:938
+         <div className="why-icon bhyross">✨</div>
+      📄 HomePage.tsx:943
+         <div className="why-icon bhyross">🏆</div>
+      📄 HomePage.tsx:948
+         <div className="why-icon bhyross">👑</div>
+   ✅ .why-title - Used in 3 location(s):
+      📄 HomePage.tsx:939
+         <h3 className="why-title">Premium Materials</h3>
+      📄 HomePage.tsx:944
+         <h3 className="why-title">Master Craftsmanship</h3>
+      📄 HomePage.tsx:949
+         <h3 className="why-title">Timeless Design</h3>
+   ✅ .why-description - Used in 3 location(s):
+      📄 HomePage.tsx:940
+         <p className="why-description">Hand-selected Italian leather and finest materials sourced from renowned tanneries worldwide, ensuring unmatched quality and durability.</p>
+      📄 HomePage.tsx:945
+         <p className="why-description">Each pair is meticulously handcrafted by skilled artisans with decades of experience, blending traditional techniques with modern precision.</p>
+      📄 HomePage.tsx:950
+         <p className="why-description">Classic silhouettes refined for the modern gentleman, creating shoes that transcend trends and become lifetime companions.</p>
+   ✅ .newsletter-section - Used in 1 location(s):
+      📄 HomePage.tsx:956
+         <section className="newsletter-section">
+   ✅ .newsletter-title - Used in 1 location(s):
+      📄 HomePage.tsx:958
+         <h2 className="newsletter-title">Stay Connected</h2>
+   ✅ .newsletter-subtitle - Used in 1 location(s):
+      📄 HomePage.tsx:959
+         <p className="newsletter-subtitle">Be the first to know about new collections, exclusive events, and craftsmanship stories.</p>
+   ✅ .newsletter-form - Used in 1 location(s):
+      📄 HomePage.tsx:960
+         <form className="newsletter-form">
+   ✅ .newsletter-input - Used in 1 location(s):
+      📄 HomePage.tsx:961
+         <input type="email" className="newsletter-input" placeholder="Enter your email" required />
+   ✅ .newsletter-btn - Used in 1 location(s):
+      📄 HomePage.tsx:962
+         <button type="submit" className="newsletter-btn bhyross">Subscribe</button>
+   ✅ .footer - Used in 10 location(s):
+      📄 Footer.tsx:201
+         <footer className="bg-gray-50 border-t">
+      📄 sidebar.tsx:373
+         data-sidebar="footer"
+      📄 HomePage.tsx:967
+         <footer className="footer">
+      📄 HomePage.tsx:968
+         <div className="footer-content">
+      📄 HomePage.tsx:969
+         <div className="footer-section bhyross">
+      📄 HomePage.tsx:971
+         <ul className="footer-links">
+      📄 HomePage.tsx:978
+         <div className="footer-section">
+      📄 HomePage.tsx:980
+         <ul className="footer-links">
+      📄 HomePage.tsx:987
+         <div className="footer-section">
+      📄 HomePage.tsx:997
+         <div className="footer-bottom">
+   ✅ .footer-content - Used in 1 location(s):
+      📄 HomePage.tsx:968
+         <div className="footer-content">
+   ✅ .footer-section - Used in 3 location(s):
+      📄 HomePage.tsx:969
+         <div className="footer-section bhyross">
+      📄 HomePage.tsx:978
+         <div className="footer-section">
+      📄 HomePage.tsx:987
+         <div className="footer-section">
+   ✅ .footer-links - Used in 2 location(s):
+      📄 HomePage.tsx:971
+         <ul className="footer-links">
+      📄 HomePage.tsx:980
+         <ul className="footer-links">
+   ✅ .social-links - Used in 1 location(s):
+      📄 HomePage.tsx:989
+         <div className="social-links">
+   ✅ .social-link - Used in 5 location(s):
+      📄 HomePage.tsx:989
+         <div className="social-links">
+      📄 HomePage.tsx:990
+         <a href="#" className="social-link">📘</a>
+      📄 HomePage.tsx:991
+         <a href="#" className="social-link">📷</a>
+      📄 HomePage.tsx:992
+         <a href="#" className="social-link">🐦</a>
+      📄 HomePage.tsx:993
+         <a href="#" className="social-link">📧</a>
+   ✅ .footer-bottom - Used in 1 location(s):
+      📄 HomePage.tsx:997
+         <div className="footer-bottom">
+   ❌ .animation-delay-200 - UNUSED
+   ❌ .animation-delay-400 - UNUSED
+   ❌ .animation-delay-600 - UNUSED
+
+📊 Summary:
+   ✅ Used classes: 69
+   ❌ Unused classes: 8
+   📋 Import status: IMPORTED
+
+🧹 RECOMMENDATION: CLEAN UP (remove unused classes)
+
+================================================================================
+📁 ANALYZING: src/pages/HomePage.css
+================================================================================
+📊 File Info:
+   Size: 20936 characters
+   Lines: 678 (non-empty)
+
+📄 File Preview (first 8 lines):
+   01:         :root {
+   02:             /* Color Palette */
+   03:             --primary-dark: #1a1a1a;
+   04:             --primary-light: #ffffff;
+   05:             --accent-gold: #d4af37;
+   06:             --accent-blue: #2563eb;
+   07:             --neutral-100: #f8fafc;
+   08:             --neutral-200: #e2e8f0;
+   ... and 670 more lines
+
+📋 Import Analysis:
+   ❌ NOT IMPORTED in any file
+
+🎯 Class Analysis:
+   Found 74 CSS classes
+   ✅ .dual-landing - Used in 1 location(s):
+      📄 HomePage.tsx:691
+         <section id="dual-landing" className="dual-landing">
+   ✅ .choice-container - Used in 1 location(s):
+      📄 HomePage.tsx:693
+         <div className="choice-container">
+   ✅ .brand-button - Used in 2 location(s):
+      📄 HomePage.tsx:695
+         className="brand-button bhyross"
+      📄 HomePage.tsx:713
+         className="brand-button dee-codes"
+   ✅ .bhyross - Used in 89 location(s):
+      📄 BannerCarousel.tsx:5
+         brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
+      📄 BannerCarousel.tsx:25
+         case 'bhyross':
+      📄 BannerImageUpload.tsx:11
+         brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections'; // Added 'imcolus' here
+      📄 Footer.tsx:8
+         brand: 'bhyross' | 'deecodes' | 'imcolus';
+      📄 Footer.tsx:19
+         const brandName = brand === 'bhyross' ? 'Bhyross' : brand === 'deecodes' ? 'DeeCodes' : 'Imcolus';
+      📄 SearchDropdown.tsx:11
+         brand?: 'bhyross' | 'deecodes';
+      📄 SearchDropdown.tsx:83
+         const brandPath = brand || 'bhyross';
+      📄 SearchDropdown.tsx:92
+         const brandPath = brand || 'bhyross';
+      📄 AdminBannerSection.tsx:16
+         brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
+      📄 AdminBannerSection.tsx:32
+         brand: 'bhyross',
+      📄 AdminBannerSection.tsx:53
+         brand: 'bhyross',
+      📄 AdminBannerSection.tsx:97
+         brand: 'bhyross',
+      📄 AdminBannerSection.tsx:118
+         brand: 'bhyross',
+      📄 AdminBannerSection.tsx:172
+         onValueChange={(value: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections') =>
+      📄 AdminBannerSection.tsx:180
+         <SelectItem value="bhyross">Bhyross</SelectItem>
+      📄 AdminBannerSection.tsx:360
+         variant={banner.brand === 'bhyross' ? 'default' : banner.brand === 'deecodes' ? 'secondary' : 'default'}
+      📄 AdminBannerSection.tsx:363
+         {banner.brand === 'bhyross' ? 'Bhyross' :
+      📄 ProductForm.tsx:14
+         brand: 'bhyross' | 'deecodes' | 'imcolus';
+      📄 ProductForm.tsx:77
+         onValueChange={(value: 'bhyross' | 'deecodes' | 'imcolus') =>
+      📄 ProductForm.tsx:85
+         <SelectItem value="bhyross">Bhyross</SelectItem>
+      📄 ProductList.tsx:52
+         <Badge variant={product.brand === 'bhyross' ? 'default' : product.brand === 'imcolus' ? 'default' : 'secondary'}>
+      📄 useBannerImages.tsx:8
+         brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
+      📄 useBannerImages.tsx:33
+         brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
+      📄 useBannerImages.tsx:48
+         export const useBannerImages = (brand: 'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections') => {
+      📄 useProductOperations.tsx:10
+         brand: 'bhyross' | 'deecodes' | 'imcolus';
+      📄 useProducts.tsx:19
+         brand: 'bhyross' | 'deecodes' | 'imcolus';
+      📄 useProducts.tsx:49
+         export const useProducts = (brand?: 'bhyross' | 'deecodes' | 'imcolus', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
+      📄 useProducts.tsx:67
+         if (brand && ['bhyross', 'deecodes', 'imcolus'].includes(brand)) {
+      📄 useProducts.tsx:99
+         export const useAllProducts = (brand?: 'bhyross' | 'deecodes' | 'imcolus', category?: 'oxford' | 'derby' | 'monk-strap' | 'loafer') => {
+      📄 useProducts.tsx:116
+         if (brand && ['bhyross', 'deecodes', 'imcolus'].includes(brand)) {
+      📄 types.ts:509
+         brand_type: "bhyross" | "deecodes" | "imcolus"
+      📄 types.ts:634
+         brand_type: ["bhyross", "deecodes", "imcolus"],
+      📄 AboutPage.tsx:156
+         <Footer brand="bhyross" />
+      📄 AdminPage.tsx:52
+         brand: 'bhyross' as 'bhyross' | 'deecodes' | 'imcolus',
+      📄 AdminPage.tsx:98
+         brand: 'bhyross',
+      📄 AdminPage.tsx:120
+         brand: 'bhyross',
+      📄 AdminPage.tsx:184
+         brand: 'bhyross',
+      📄 BhyrossPage.tsx:18
+         const { data: banners, isLoading: bannersLoading } = useBannerImages('bhyross');
+      📄 BhyrossPage.tsx:19
+         const { data: products, isLoading: productsLoading } = useProducts('bhyross');
+      📄 BhyrossPage.tsx:112
+         <Footer brand="bhyross" />
+      📄 BhyrossPage.tsx:123
+         <BannerCarousel brand="bhyross" />
+      📄 BhyrossPage.tsx:422
+         <Footer brand="bhyross" />
+      📄 CartPage.tsx:60
+         <Button className="bg-bhyross-500 hover:bg-bhyross-600">
+      📄 CartPage.tsx:149
+         <Button variant="ghost" className="text-bhyross-600 hover:text-bhyross-700">
+      📄 HomePage.tsx:8
+         type Brand = 'dual' | 'bhyross' | 'dee';
+      📄 HomePage.tsx:695
+         className="brand-button bhyross"
+      📄 HomePage.tsx:698
+         onClick={() => setBrand('bhyross')}
+      📄 HomePage.tsx:733
+         {brand === 'bhyross' && (
+      📄 HomePage.tsx:735
+         <div id="bhyross-landing" className="brand-landing">
+      📄 HomePage.tsx:740
+         <a href="#" className="logo bhyross">BHYROSS</a>
+      📄 HomePage.tsx:751
+         <a href="#" className="cta-button bhyross">Shop Now</a>
+      📄 HomePage.tsx:756
+         <h2 className="section-title bhyross">Featured Collection</h2>
+      📄 HomePage.tsx:762
+         <p className="product-price bhyross">$489</p>
+      📄 HomePage.tsx:769
+         <p className="product-price bhyross">$529</p>
+      📄 HomePage.tsx:776
+         <p className="product-price bhyross">$399</p>
+      📄 HomePage.tsx:783
+         <p className="product-price bhyross">$649</p>
+      📄 HomePage.tsx:790
+         <p className="product-price bhyross">$459</p>
+      📄 HomePage.tsx:797
+         <p className="product-price bhyross">$579</p>
+      📄 HomePage.tsx:805
+         <div className="collection-text bhyross">
+      📄 HomePage.tsx:810
+         <span className="stat-number bhyross">190+</span>
+      📄 HomePage.tsx:814
+         <span className="stat-number bhyross">72hrs</span>
+      📄 HomePage.tsx:818
+         <span className="stat-number bhyross">100%</span>
+      📄 HomePage.tsx:831
+         <h2 className="section-title bhyross">The Bhyross Process</h2>
+      📄 HomePage.tsx:834
+         <div className="process-number bhyross">1</div>
+      📄 HomePage.tsx:839
+         <div className="process-number bhyross">2</div>
+      📄 HomePage.tsx:844
+         <div className="process-number bhyross">3</div>
+      📄 HomePage.tsx:849
+         <div className="process-number bhyross">4</div>
+      📄 HomePage.tsx:857
+         <section className="py-8 sm:py-12 md:py-16 bg-gradient-to-br from-neutral-50 to-bhyross-50/30">
+      📄 HomePage.tsx:894
+         <h2 className="section-title bhyross">What Our Customers Say</h2>
+      📄 HomePage.tsx:935
+         <h2 className="section-title bhyross">Why Bhyross?</h2>
+      📄 HomePage.tsx:938
+         <div className="why-icon bhyross">✨</div>
+      📄 HomePage.tsx:943
+         <div className="why-icon bhyross">🏆</div>
+      📄 HomePage.tsx:948
+         <div className="why-icon bhyross">👑</div>
+      📄 HomePage.tsx:962
+         <button type="submit" className="newsletter-btn bhyross">Subscribe</button>
+      📄 HomePage.tsx:969
+         <div className="footer-section bhyross">
+      📄 ImcolusPage.tsx:112
+         <Footer brand="bhyross" />
+      📄 ImcolusPage.tsx:422
+         <Footer brand="bhyross" />
+      📄 Index.tsx:24
+         const { data: bhyrossProducts } = useProducts('bhyross');
+      📄 Index.tsx:31
+         { value: 'bhyross', label: 'Bhyross' },
+      📄 Index.tsx:171
+         case 'bhyross': return 'text-bhyross-500';
+      📄 Index.tsx:180
+         case 'bhyross': return 'border-bhyross-500';
+      📄 Index.tsx:517
+         <Footer brand="bhyross" />
+      📄 Privacy.tsx:262
+         <Footer brand='bhyross'/>
+      📄 ProductPage.tsx:14
+         const brand = location.pathname.includes('/bhyross/') ? 'bhyross' :
+      📄 ProductPage.tsx:102
+         const features = brand === 'bhyross'
+      📄 ProductPage.tsx:408
+         <Footer brand='bhyross'/>
+      📄 Real_Home.tsx:13
+         const { data: bhyrossProducts } = useProducts('bhyross');
+      📄 Terms.tsx:242
+         <Footer brand='bhyross' />
+      📄 imageUpload.ts:26
+         export type SupportedBrand =  'bhyross' | 'deecodes' | 'imcolus' | 'home' | 'collections';
+   ✅ .dee-codes - Used in 2 location(s):
+      📄 HomePage.tsx:713
+         className="brand-button dee-codes"
+      📄 HomePage.tsx:1005
+         <div id="dee-codes-landing" className="brand-landing">
+   ✅ .button-text - Used in 2 location(s):
+      📄 HomePage.tsx:709
+         <span className="button-text">Explore Bhyross</span>
+      📄 HomePage.tsx:727
+         <span className="button-text">Explore Dee Codes</span>
+   ✅ .video-background - Used in 2 location(s):
+      📄 HomePage.tsx:703
+         className="video-background"
+      📄 HomePage.tsx:721
+         className="video-background"
+   ✅ .brand-landing - Used in 2 location(s):
+      📄 HomePage.tsx:735
+         <div id="bhyross-landing" className="brand-landing">
+      📄 HomePage.tsx:1005
+         <div id="dee-codes-landing" className="brand-landing">
+   ✅ .active - Used in 3 location(s):
+      📄 OverviewStats.tsx:96
+         <p className="text-3xl font-bold text-neutral-900">{stats?.activeProducts || 0}</p>
+      📄 OverviewStats.tsx:97
+         <p className="text-sm text-neutral-600 mt-1">{stats?.inactiveProducts || 0} inactive</p>
+      📄 AdminPage.tsx:254
+         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+   ✅ .header - Used in 3 location(s):
+      📄 sidebar.tsx:358
+         data-sidebar="header"
+      📄 HomePage.tsx:738
+         <header className="header">
+      📄 HomePage.tsx:1006
+         <header className="header">
+   ✅ .logo - Used in 2 location(s):
+      📄 HomePage.tsx:740
+         <a href="#" className="logo bhyross">BHYROSS</a>
+      📄 HomePage.tsx:1007
+         <a href="#" className="logo dee">DEE CODES</a>
+   ✅ .home-button - Used in 2 location(s):
+      📄 HomePage.tsx:741
+         <a className="home-button" onClick={() => setBrand('dual')}>Home</a>
+      📄 HomePage.tsx:1008
+         <a className="home-button" onClick={() => setBrand('dual')}>Home</a>
+   ✅ .hero - Used in 12 location(s):
+      📄 HomePage.tsx:745
+         <section className="hero">
+      📄 HomePage.tsx:746
+         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
+      📄 HomePage.tsx:747
+         <div className="hero-overlay"></div>
+      📄 HomePage.tsx:748
+         <div className="hero-content">
+      📄 HomePage.tsx:749
+         <h1 className="hero-title">Crafted Excellence</h1>
+      📄 HomePage.tsx:750
+         <p className="hero-subtitle">Where luxury meets artisanal precision in every step</p>
+      📄 HomePage.tsx:1011
+         <section className="hero">
+      📄 HomePage.tsx:1012
+         <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Modern lifestyle shoes" className="hero-background" />
+      📄 HomePage.tsx:1013
+         <div className="hero-overlay"></div>
+      📄 HomePage.tsx:1014
+         <div className="hero-content">
+      📄 HomePage.tsx:1015
+         <h1 className="hero-title">Code Your Style</h1>
+      📄 HomePage.tsx:1016
+         <p className="hero-subtitle">Where modern lifestyle meets digital innovation</p>
+   ✅ .hero-background - Used in 2 location(s):
+      📄 HomePage.tsx:746
+         <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Premium leather craftsmanship" className="hero-background" />
+      📄 HomePage.tsx:1012
+         <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Modern lifestyle shoes" className="hero-background" />
+   ✅ .hero-overlay - Used in 2 location(s):
+      📄 HomePage.tsx:747
+         <div className="hero-overlay"></div>
+      📄 HomePage.tsx:1013
+         <div className="hero-overlay"></div>
+   ✅ .hero-content - Used in 2 location(s):
+      📄 HomePage.tsx:748
+         <div className="hero-content">
+      📄 HomePage.tsx:1014
+         <div className="hero-content">
+   ✅ .hero-title - Used in 2 location(s):
+      📄 HomePage.tsx:749
+         <h1 className="hero-title">Crafted Excellence</h1>
+      📄 HomePage.tsx:1015
+         <h1 className="hero-title">Code Your Style</h1>
+   ✅ .hero-subtitle - Used in 2 location(s):
+      📄 HomePage.tsx:750
+         <p className="hero-subtitle">Where luxury meets artisanal precision in every step</p>
+      📄 HomePage.tsx:1016
+         <p className="hero-subtitle">Where modern lifestyle meets digital innovation</p>
+   ✅ .cta-button - Used in 2 location(s):
+      📄 HomePage.tsx:751
+         <a href="#" className="cta-button bhyross">Shop Now</a>
+      📄 HomePage.tsx:1017
+         <a href="#" className="cta-button dee">Discover Now</a>
+   ✅ .products-section - Used in 1 location(s):
+      📄 HomePage.tsx:755
+         <section className="products-section">
+   ✅ .section-title - Used in 4 location(s):
+      📄 HomePage.tsx:756
+         <h2 className="section-title bhyross">Featured Collection</h2>
+      📄 HomePage.tsx:831
+         <h2 className="section-title bhyross">The Bhyross Process</h2>
+      📄 HomePage.tsx:894
+         <h2 className="section-title bhyross">What Our Customers Say</h2>
+      📄 HomePage.tsx:935
+         <h2 className="section-title bhyross">Why Bhyross?</h2>
+   ✅ .products-grid - Used in 1 location(s):
+      📄 HomePage.tsx:757
+         <div className="products-grid">
+   ✅ .product-card - Used in 7 location(s):
+      📄 HomePage.tsx:758
+         <div className="product-card">
+      📄 HomePage.tsx:765
+         <div className="product-card">
+      📄 HomePage.tsx:772
+         <div className="product-card">
+      📄 HomePage.tsx:779
+         <div className="product-card">
+      📄 HomePage.tsx:786
+         <div className="product-card">
+      📄 HomePage.tsx:793
+         <div className="product-card">
+      📄 Real_Home.tsx:277
+         <div key={`${product.brand}-${product.id}`} className="product-card">
+   ✅ .product-image - Used in 6 location(s):
+      📄 HomePage.tsx:759
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:766
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:773
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:780
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:787
+         <div className="product-image">👞</div>
+      📄 HomePage.tsx:794
+         <div className="product-image">👞</div>
+   ✅ .product-info - Used in 6 location(s):
+      📄 HomePage.tsx:760
+         <div className="product-info">
+      📄 HomePage.tsx:767
+         <div className="product-info">
+      📄 HomePage.tsx:774
+         <div className="product-info">
+      📄 HomePage.tsx:781
+         <div className="product-info">
+      📄 HomePage.tsx:788
+         <div className="product-info">
+      📄 HomePage.tsx:795
+         <div className="product-info">
+   ✅ .product-name - Used in 6 location(s):
+      📄 HomePage.tsx:761
+         <h3 className="product-name">Executive Oxford</h3>
+      📄 HomePage.tsx:768
+         <h3 className="product-name">Heritage Brogue</h3>
+      📄 HomePage.tsx:775
+         <h3 className="product-name">Milano Loafer</h3>
+      📄 HomePage.tsx:782
+         <h3 className="product-name">Windsor Boot</h3>
+      📄 HomePage.tsx:789
+         <h3 className="product-name">Gentleman Derby</h3>
+      📄 HomePage.tsx:796
+         <h3 className="product-name">Royal Monk Strap</h3>
+   ✅ .product-price - Used in 6 location(s):
+      📄 HomePage.tsx:762
+         <p className="product-price bhyross">$489</p>
+      📄 HomePage.tsx:769
+         <p className="product-price bhyross">$529</p>
+      📄 HomePage.tsx:776
+         <p className="product-price bhyross">$399</p>
+      📄 HomePage.tsx:783
+         <p className="product-price bhyross">$649</p>
+      📄 HomePage.tsx:790
+         <p className="product-price bhyross">$459</p>
+      📄 HomePage.tsx:797
+         <p className="product-price bhyross">$579</p>
+   ✅ .why-section - Used in 1 location(s):
+      📄 HomePage.tsx:933
+         <section className="why-section">
+   ✅ .why-container - Used in 1 location(s):
+      📄 HomePage.tsx:934
+         <div className="why-container">
+   ✅ .why-grid - Used in 1 location(s):
+      📄 HomePage.tsx:936
+         <div className="why-grid">
+   ✅ .why-item - Used in 3 location(s):
+      📄 HomePage.tsx:937
+         <div className="why-item">
+      📄 HomePage.tsx:942
+         <div className="why-item">
+      📄 HomePage.tsx:947
+         <div className="why-item">
+   ✅ .why-icon - Used in 3 location(s):
+      📄 HomePage.tsx:938
+         <div className="why-icon bhyross">✨</div>
+      📄 HomePage.tsx:943
+         <div className="why-icon bhyross">🏆</div>
+      📄 HomePage.tsx:948
+         <div className="why-icon bhyross">👑</div>
+   ✅ .why-title - Used in 3 location(s):
+      📄 HomePage.tsx:939
+         <h3 className="why-title">Premium Materials</h3>
+      📄 HomePage.tsx:944
+         <h3 className="why-title">Master Craftsmanship</h3>
+      📄 HomePage.tsx:949
+         <h3 className="why-title">Timeless Design</h3>
+   ✅ .why-description - Used in 3 location(s):
+      📄 HomePage.tsx:940
+         <p className="why-description">Hand-selected Italian leather and finest materials sourced from renowned tanneries worldwide, ensuring unmatched quality and durability.</p>
+      📄 HomePage.tsx:945
+         <p className="why-description">Each pair is meticulously handcrafted by skilled artisans with decades of experience, blending traditional techniques with modern precision.</p>
+      📄 HomePage.tsx:950
+         <p className="why-description">Classic silhouettes refined for the modern gentleman, creating shoes that transcend trends and become lifetime companions.</p>
+   ✅ .collection-showcase - Used in 1 location(s):
+      📄 HomePage.tsx:803
+         <section className="collection-showcase">
+   ❌ .w3 - UNUSED
+   ❌ .org - UNUSED
+   ✅ .collection-content - Used in 1 location(s):
+      📄 HomePage.tsx:804
+         <div className="collection-content">
+   ✅ .collection-text - Used in 1 location(s):
+      📄 HomePage.tsx:805
+         <div className="collection-text bhyross">
+   ✅ .collection-stats - Used in 1 location(s):
+      📄 HomePage.tsx:808
+         <div className="collection-stats">
+   ✅ .stat-item - Used in 3 location(s):
+      📄 HomePage.tsx:809
+         <div className="stat-item">
+      📄 HomePage.tsx:813
+         <div className="stat-item">
+      📄 HomePage.tsx:817
+         <div className="stat-item">
+   ✅ .stat-number - Used in 3 location(s):
+      📄 HomePage.tsx:810
+         <span className="stat-number bhyross">190+</span>
+      📄 HomePage.tsx:814
+         <span className="stat-number bhyross">72hrs</span>
+      📄 HomePage.tsx:818
+         <span className="stat-number bhyross">100%</span>
+   ✅ .stat-label - Used in 3 location(s):
+      📄 HomePage.tsx:811
+         <span className="stat-label">Crafting Steps</span>
+      📄 HomePage.tsx:815
+         <span className="stat-label">Creation Time</span>
+      📄 HomePage.tsx:819
+         <span className="stat-label">Hand-Made</span>
+   ✅ .collection-visual - Used in 1 location(s):
+      📄 HomePage.tsx:823
+         <div className="collection-visual">
+   ✅ .collection-image - Used in 1 location(s):
+      📄 HomePage.tsx:824
+         <img src="https://images.unsplash.com/photo-1608256246200-53e8b47b24f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Luxury shoe crafting process" className="collection-image" />
+   ✅ .testimonials-section - Used in 1 location(s):
+      📄 HomePage.tsx:892
+         <section className="testimonials-section">
+   ✅ .testimonials-container - Used in 1 location(s):
+      📄 HomePage.tsx:893
+         <div className="testimonials-container">
+   ✅ .testimonials-grid - Used in 1 location(s):
+      📄 HomePage.tsx:895
+         <div className="testimonials-grid">
+   ✅ .testimonial-card - Used in 3 location(s):
+      📄 HomePage.tsx:896
+         <div className="testimonial-card">
+      📄 HomePage.tsx:907
+         <div className="testimonial-card">
+      📄 HomePage.tsx:918
+         <div className="testimonial-card">
+   ✅ .testimonial-quote - Used in 3 location(s):
+      📄 HomePage.tsx:898
+         <p className="testimonial-quote">"The quality is absolutely exceptional. These shoes have transformed my professional wardrobe and the comfort is unmatched."</p>
+      📄 HomePage.tsx:909
+         <p className="testimonial-quote">"I've owned luxury shoes from many brands, but Bhyross stands apart. The attention to detail is extraordinary."</p>
+      📄 HomePage.tsx:920
+         <p className="testimonial-quote">"Worth every penny. The craftsmanship is visible in every stitch, and they've aged beautifully over the years."</p>
+   ✅ .testimonial-author - Used in 3 location(s):
+      📄 HomePage.tsx:899
+         <div className="testimonial-author">
+      📄 HomePage.tsx:910
+         <div className="testimonial-author">
+      📄 HomePage.tsx:921
+         <div className="testimonial-author">
+   ✅ .author-avatar - Used in 3 location(s):
+      📄 HomePage.tsx:900
+         <div className="author-avatar">👤</div>
+      📄 HomePage.tsx:911
+         <div className="author-avatar">👤</div>
+      📄 HomePage.tsx:922
+         <div className="author-avatar">👤</div>
+   ✅ .author-info - Used in 3 location(s):
+      📄 HomePage.tsx:901
+         <div className="author-info">
+      📄 HomePage.tsx:912
+         <div className="author-info">
+      📄 HomePage.tsx:923
+         <div className="author-info">
+   ✅ .stars - Used in 3 location(s):
+      📄 HomePage.tsx:897
+         <div className="stars">★★★★★</div>
+      📄 HomePage.tsx:908
+         <div className="stars">★★★★★</div>
+      📄 HomePage.tsx:919
+         <div className="stars">★★★★★</div>
+   ✅ .process-section - Used in 1 location(s):
+      📄 HomePage.tsx:829
+         <section className="process-section">
+   ✅ .process-container - Used in 1 location(s):
+      📄 HomePage.tsx:830
+         <div className="process-container">
+   ✅ .process-steps - Used in 1 location(s):
+      📄 HomePage.tsx:832
+         <div className="process-steps">
+   ✅ .process-step - Used in 5 location(s):
+      📄 HomePage.tsx:832
+         <div className="process-steps">
+      📄 HomePage.tsx:833
+         <div className="process-step">
+      📄 HomePage.tsx:838
+         <div className="process-step">
+      📄 HomePage.tsx:843
+         <div className="process-step">
+      📄 HomePage.tsx:848
+         <div className="process-step">
+   ✅ .process-number - Used in 4 location(s):
+      📄 HomePage.tsx:834
+         <div className="process-number bhyross">1</div>
+      📄 HomePage.tsx:839
+         <div className="process-number bhyross">2</div>
+      📄 HomePage.tsx:844
+         <div className="process-number bhyross">3</div>
+      📄 HomePage.tsx:849
+         <div className="process-number bhyross">4</div>
+   ✅ .newsletter-section - Used in 1 location(s):
+      📄 HomePage.tsx:956
+         <section className="newsletter-section">
+   ✅ .newsletter-container - Used in 1 location(s):
+      📄 HomePage.tsx:957
+         <div className="newsletter-container">
+   ✅ .newsletter-title - Used in 1 location(s):
+      📄 HomePage.tsx:958
+         <h2 className="newsletter-title">Stay Connected</h2>
+   ✅ .newsletter-subtitle - Used in 1 location(s):
+      📄 HomePage.tsx:959
+         <p className="newsletter-subtitle">Be the first to know about new collections, exclusive events, and craftsmanship stories.</p>
+   ✅ .newsletter-form - Used in 1 location(s):
+      📄 HomePage.tsx:960
+         <form className="newsletter-form">
+   ✅ .newsletter-input - Used in 1 location(s):
+      📄 HomePage.tsx:961
+         <input type="email" className="newsletter-input" placeholder="Enter your email" required />
+   ✅ .newsletter-btn - Used in 1 location(s):
+      📄 HomePage.tsx:962
+         <button type="submit" className="newsletter-btn bhyross">Subscribe</button>
+   ✅ .footer - Used in 10 location(s):
+      📄 Footer.tsx:201
+         <footer className="bg-gray-50 border-t">
+      📄 sidebar.tsx:373
+         data-sidebar="footer"
+      📄 HomePage.tsx:967
+         <footer className="footer">
+      📄 HomePage.tsx:968
+         <div className="footer-content">
+      📄 HomePage.tsx:969
+         <div className="footer-section bhyross">
+      📄 HomePage.tsx:971
+         <ul className="footer-links">
+      📄 HomePage.tsx:978
+         <div className="footer-section">
+      📄 HomePage.tsx:980
+         <ul className="footer-links">
+      📄 HomePage.tsx:987
+         <div className="footer-section">
+      📄 HomePage.tsx:997
+         <div className="footer-bottom">
+   ✅ .footer-content - Used in 1 location(s):
+      📄 HomePage.tsx:968
+         <div className="footer-content">
+   ✅ .footer-section - Used in 3 location(s):
+      📄 HomePage.tsx:969
+         <div className="footer-section bhyross">
+      📄 HomePage.tsx:978
+         <div className="footer-section">
+      📄 HomePage.tsx:987
+         <div className="footer-section">
+   ✅ .footer-links - Used in 2 location(s):
+      📄 HomePage.tsx:971
+         <ul className="footer-links">
+      📄 HomePage.tsx:980
+         <ul className="footer-links">
+   ✅ .footer-bottom - Used in 1 location(s):
+      📄 HomePage.tsx:997
+         <div className="footer-bottom">
+   ✅ .social-links - Used in 1 location(s):
+      📄 HomePage.tsx:989
+         <div className="social-links">
+   ✅ .social-link - Used in 5 location(s):
+      📄 HomePage.tsx:989
+         <div className="social-links">
+      📄 HomePage.tsx:990
+         <a href="#" className="social-link">📘</a>
+      📄 HomePage.tsx:991
+         <a href="#" className="social-link">📷</a>
+      📄 HomePage.tsx:992
+         <a href="#" className="social-link">🐦</a>
+      📄 HomePage.tsx:993
+         <a href="#" className="social-link">📧</a>
+   ✅ .sr-only - Used in 7 location(s):
+      📄 breadcrumb.tsx:102
+         <span className="sr-only">More</span>
+      📄 carousel.tsx:218
+         <span className="sr-only">Previous slide</span>
+      📄 carousel.tsx:247
+         <span className="sr-only">Next slide</span>
+      📄 dialog.tsx:47
+         <span className="sr-only">Close</span>
+      📄 pagination.tsx:104
+         <span className="sr-only">More pages</span>
+      📄 sheet.tsx:68
+         <span className="sr-only">Close</span>
+      📄 sidebar.tsx:280
+         <span className="sr-only">Toggle Sidebar</span>
+
+📊 Summary:
+   ✅ Used classes: 72
+   ❌ Unused classes: 2
+   📋 Import status: NOT IMPORTED
+
+🧹 RECOMMENDATION: CLEAN UP (remove unused classes)
+
+================================================================================
+📁 ANALYZING: src/styles/brands.css
+================================================================================
+📊 File Info:
+   Size: 5882 characters
+   Lines: 221 (non-empty)
+
+📄 File Preview (first 8 lines):
+   01: /* Professional Brand Styling */
+   02: /* Bhyross Brand Styling */
+   03: .brand-bhyross {
+   04:   background: linear-gradient(135deg, #f67e0b 0%, #c04f08 100%);
+   05:   background-clip: text;
+   06:   -webkit-background-clip: text;
+   07:   -webkit-text-fill-color: transparent;
+   08:   background-size: 200% 200%;
+   ... and 213 more lines
+
+📋 Import Analysis:
+   ❌ NOT IMPORTED in any file
+
+🎯 Class Analysis:
+   Found 26 CSS classes
+   ❌ .brand-bhyross - UNUSED
+   ✅ .hero-title - Used in 2 location(s):
+      📄 HomePage.tsx:749
+         <h1 className="hero-title">Crafted Excellence</h1>
+      📄 HomePage.tsx:1015
+         <h1 className="hero-title">Code Your Style</h1>
+   ❌ .brand-deecodes - UNUSED
+   ✅ .section-title - Used in 4 location(s):
+      📄 HomePage.tsx:756
+         <h2 className="section-title bhyross">Featured Collection</h2>
+      📄 HomePage.tsx:831
+         <h2 className="section-title bhyross">The Bhyross Process</h2>
+      📄 HomePage.tsx:894
+         <h2 className="section-title bhyross">What Our Customers Say</h2>
+      📄 HomePage.tsx:935
+         <h2 className="section-title bhyross">Why Bhyross?</h2>
+   ❌ .brand-bhyross-modern - UNUSED
+   ❌ .brand-deecodes-modern - UNUSED
+   ❌ .brand-card-bhyross - UNUSED
+   ❌ .brand-card-deecodes - UNUSED
+   ❌ .professional-page - UNUSED
+   ❌ .professional-card - UNUSED
+   ❌ .btn-bhyross - UNUSED
+   ❌ .btn-deecodes - UNUSED
+   ❌ .animate-in - UNUSED
+   ❌ .professional-fade-in - UNUSED
+   ❌ .professional-fade-in-up - UNUSED
+   ❌ .professional-slide-in-from-bottom - UNUSED
+   ❌ .professional-scale-in - UNUSED
+   ✅ .duration-300 - Used in 26 location(s):
+      📄 Navigation.tsx:125
+         <Button variant="ghost" size="sm" className="text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 drop-shadow-sm" style={fontStyles.body}>
+      📄 Navigation.tsx:136
+         className="cursor-pointer hover:bg-white/20 backdrop-blur-sm transition-all duration-300 rounded-xl flex flex-col items-center justify-center text-center px-4 py-6 group w-[180px] h-[120px]"
+      📄 Navigation.tsx:145
+         className="w-16 h-1 rounded-full transition-all duration-300 group-hover:w-20 group-hover:h-1.5 shadow-lg"
+      📄 Navigation.tsx:174
+         <Button variant="ghost" size="sm" className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+      📄 Navigation.tsx:210
+         <Button variant="ghost" size="sm" asChild className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+      📄 Navigation.tsx:223
+         className="relative hover:bg-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+      📄 Navigation.tsx:236
+         <Button variant="ghost" size="sm" onClick={toggleMobileMenu} className="hover:bg-white/30 backdrop-blur-sm transition-all duration-300">
+      📄 Navigation.tsx:247
+         className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden transition-all duration-300"
+      📄 Navigation.tsx:253
+         <div className={`fixed top-16 left-0 right-0 z-40 bg-white/80 backdrop-blur-xl border-b border-white/30 transition-transform duration-300 ease-in-out md:hidden shadow-2xl shadow-black/10 ${
+      📄 Navigation.tsx:292
+         className="flex flex-col items-center text-center py-3 px-3 rounded-xl text-neutral-700 hover:text-neutral-900 hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
+      📄 Navigation.tsx:329
+         className="block py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
+      📄 Navigation.tsx:340
+         className="flex items-center w-full text-left py-2 px-3 rounded-xl text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50/80 backdrop-blur-sm transition-all duration-300"
+      📄 Navigation.tsx:351
+         className="flex items-center py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
+      📄 Navigation.tsx:364
+         className="flex items-center justify-between w-full py-2 px-3 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
+      📄 ProductImageGallery.tsx:61
+         className={`w-full h-full object-cover transition-transform duration-300 ${
+      📄 BhyrossPage.tsx:350
+         className={`group cursor-pointer bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-neutral-300`}
+      📄 DeeCodesPage.tsx:311
+         className="group cursor-pointer bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-neutral-300"
+      📄 HomePage.tsx:876
+         className="w-full h-40 sm:h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+      📄 ImcolusPage.tsx:350
+         className={`group cursor-pointer bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-neutral-300`}
+      📄 Real_Home.tsx:130
+         className="bg-slate-900 text-white hover:bg-slate-800 font-semibold px-8 py-3 rounded-full font-argent transition-all duration-300 shadow-lg hover:shadow-xl"
+      📄 Real_Home.tsx:140
+         className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold px-8 py-3 rounded-full font-argent transition-all duration-300"
+      📄 Real_Home.tsx:166
+         <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl bg-white rounded-2xl h-full transition-all duration-300">
+      📄 Real_Home.tsx:196
+         className="font-semibold px-8 py-3 rounded-full transition-all duration-300 hover:scale-105"
+      📄 Real_Home.tsx:213
+         <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl bg-white rounded-2xl h-full transition-all duration-300">
+      📄 Real_Home.tsx:243
+         className="font-semibold px-8 py-3 rounded-full transition-all duration-300 hover:scale-105"
+      📄 Real_Home.tsx:444
+         <div className="aspect-square rounded-3xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2">
+   ✅ .duration-500 - Used in 8 location(s):
+      📄 BhyrossPage.tsx:356
+         className="object-cover w-full h-full group-hover:scale-105 transition-all duration-500 ease-out"
+      📄 DeeCodesPage.tsx:317
+         className="object-cover w-full h-full group-hover:scale-105 transition-all duration-500 ease-out"
+      📄 ImcolusPage.tsx:356
+         className="object-cover w-full h-full group-hover:scale-105 transition-all duration-500 ease-out"
+      📄 Index.tsx:472
+         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+      📄 Real_Home.tsx:284
+         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+      📄 Real_Home.tsx:379
+         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center group-hover:from-slate-900 group-hover:to-slate-800 transition-all duration-500 shadow-lg">
+      📄 Real_Home.tsx:380
+         <feature.icon className="h-8 w-8 text-slate-600 group-hover:text-white transition-colors duration-500" />
+      📄 Real_Home.tsx:458
+         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+   ❌ .duration-700 - UNUSED
+   ✅ .duration-1000 - Used in 2 location(s):
+      📄 BannerCarousel.tsx:53
+         className="w-full h-full object-cover transition-opacity duration-1000"
+      📄 input-otp.tsx:51
+         <div className="h-4 w-px animate-caret-blink bg-foreground duration-1000" />
+   ❌ .delay-100 - UNUSED
+   ❌ .delay-200 - UNUSED
+   ❌ .delay-300 - UNUSED
+   ❌ .delay-400 - UNUSED
+   ❌ .delay-500 - UNUSED
+
+📊 Summary:
+   ✅ Used classes: 5
+   ❌ Unused classes: 21
+   📋 Import status: NOT IMPORTED
+
+🧹 RECOMMENDATION: CLEAN UP (remove unused classes)
+
+
+================================================================================
+🎯 FINAL RECOMMENDATIONS
+================================================================================
+
+🧹 NEEDS CLEANING (4 files):
+   📁 src/App.css
+      → Keep 3 classes, remove 1 unused
+   📁 src/index.css
+      → Keep 69 classes, remove 8 unused
+   📁 src/pages/HomePage.css
+      → Keep 72 classes, remove 2 unused
+   📁 src/styles/brands.css
+      → Keep 5 classes, remove 21 unused
+
+📊 SUMMARY:
+   🗑️  Safe to delete: 0
+   🧹 Need cleaning: 4
+   ⚠️  Need review: 0
+   ✅ Keep as is: 0
