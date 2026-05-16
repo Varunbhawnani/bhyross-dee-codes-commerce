@@ -169,22 +169,37 @@ const saveSettingsToDb = async (settings: SettingsState): Promise<void> => {
       result = await supabase
         .from('site_settings')
         .update(settingsData)
-        .eq('id', existingData.id);
+        .eq('id', existingData.id)
+        .select();
+
+      if (result.error) {
+        console.error('Supabase error details:', {
+          message: result.error.message,
+          details: result.error.details,
+          hint: result.error.hint,
+          code: result.error.code
+        });
+        throw result.error;
+      }
+
+      if (!result.data || result.data.length === 0) {
+        throw new Error('Settings update was blocked by RLS. Check your Supabase policies.');
+      }
     } else {
       // Insert new record
       result = await supabase
         .from('site_settings')
         .insert(settingsData);
-    }
 
-    if (result.error) {
-      console.error('Supabase error details:', {
-        message: result.error.message,
-        details: result.error.details,
-        hint: result.error.hint,
-        code: result.error.code
-      });
-      throw result.error;
+      if (result.error) {
+        console.error('Supabase error details:', {
+          message: result.error.message,
+          details: result.error.details,
+          hint: result.error.hint,
+          code: result.error.code
+        });
+        throw result.error;
+      }
     }
 
   } catch (error) {
